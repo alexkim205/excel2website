@@ -1,12 +1,12 @@
 import {
-    Button, Divider, Input,
+    Button,
+    Input,
     Listbox,
     ListboxItem,
     Modal,
     ModalBody,
     ModalContent,
     ModalFooter,
-    ModalHeader
 } from "@nextui-org/react";
 import {useActions, useValues} from "kea";
 import {dataLogic, DataLogicProps} from "../logics/dataLogic";
