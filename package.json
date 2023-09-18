@@ -8,7 +8,8 @@
     "dev": "concurrently \"vite\" \"kea-typegen watch --write-paths\" -n APP,KEA -c blue,green",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "types": "supabase gen types typescript --project-id abcdefghijklmnopqrst > database.types.ts"
+    "types": "supabase gen types typescript --project-id abcdefghijklmnopqrst > database.types.ts",
+    "env:pull": "vercel env pull"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",

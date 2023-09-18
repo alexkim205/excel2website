@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const URL = process.env.VITE_SUPABASE_URL;
-const PUBLIC_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
+const URL = import.meta.env.VITE_SUPABASE_URL;
+const PUBLIC_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 let client: SupabaseClient;
 

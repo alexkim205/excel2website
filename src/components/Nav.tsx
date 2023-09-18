@@ -14,11 +14,11 @@ export function Nav() {
     <Navbar position="static">
         <NavbarBrand className="flex gap-4 items-center">
             <BsFillFileSpreadsheetFill className="text-2xl"/>
-            <p className="font-bold text-inherit">EXCEL 2 WEBSITE</p>
+            <p className="font-bold text-inherit">Excel 2 Website</p>
         </NavbarBrand>
         <NavbarContent justify="end">
             <NavbarItem className="hidden sm:flex">
-                <Button as={Link} color="primary" size="lg" startContent={<ImOnedrive className="text-2xl"/>} onPress={() => setOpen(true)}>
+                <Button as={Link} color="primary" size="lg" startContent={<ImOnedrive className="text-2xl"/>} onPress={() => signInWithMicrosoft()}>
                     Link with Microsoft OneDrive
                 </Button>
             </NavbarItem>
