@@ -1,12 +1,16 @@
 import {Button, Link, Navbar, NavbarBrand, NavbarContent, NavbarItem} from "@nextui-org/react";
 import {BsFillFileSpreadsheetFill} from "react-icons/bs";
 import {ImOnedrive} from "react-icons/im";
-import {useActions} from "kea";
+import {useActions, useValues} from "kea";
 import {SignInModal} from "./SignInModal";
 import {userLogic} from "../logics/userLogic";
 
 export function Nav() {
+    const {user} = useValues(userLogic)
     const {signInWithMicrosoft} = useActions(userLogic)
+
+    console.log("USER", user)
+
     return (
 <>
     <Navbar position="static">

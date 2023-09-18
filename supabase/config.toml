@@ -40,9 +40,9 @@ file_size_limit = "50MiB"
 [auth]
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "http://localhost:3000"
+site_url = "http://localhost:5173"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://localhost:3000"]
+additional_redirect_urls = ["https://localhost:5173","http://localhost:5173"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 seconds (one
 # week).
 jwt_expiry = 3600
@@ -63,11 +63,11 @@ enable_confirmations = false
 # `twitter`, `slack`, `spotify`, `workos`, `zoom`.
 [auth.external.azure]
 enabled = true
-client_id = "env(SUPABASE_AUTH_AZURE_CLIENT_ID)"
-secret = "env(SUPABASE_AUTH_AZURE_SECRET)"
+client_id = "fff80049-a08a-40fa-915a-8ce95fcbc650"
+secret = "tL.8Q~uYariI3SyW6H69mmKd84dOURXXFVM5tbfB"
 
 # Overrides the default auth redirectUrl.
-redirect_uri = ""
+redirect_uri = "http://localhost:5173"
 # Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
 # or any other third-party OIDC providers.
 url = ""

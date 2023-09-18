@@ -27,3 +27,4 @@ dist-ssr
 **/*LogicType.ts
 .vercel
 
+.env*.local

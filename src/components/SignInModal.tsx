@@ -5,7 +5,6 @@ import {dataLogic} from "../logics/dataLogic";
 export function SignInModal() {
     const {open} = useValues(dataLogic)
     const {setOpen} = useActions(dataLogic)
-    console.log("OPN", open)
 
     return (
         <Modal
