@@ -1,17 +1,16 @@
 import {actions, defaults, kea, listeners, path, reducers} from "kea";
 import type {userLogicType} from "./userLogicType";
 import supabase from "../supabase";
-import {User} from "@supabase/supabase-js";
 
 export const userLogic = kea<userLogicType>([
     path(["src", "logics", "userLogic"]),
     defaults(() => ({
-        user: null as User | null
+        user: null as Record<string, string> | null
     })),
     actions(() => ({
         signInWithMicrosoft: true,
         signOut: true,
-        setUser: (user: User | null) => ({user})
+        setUser: (user: Record<string, string> | null) => ({user})
     })),
     reducers(() => ({
         user: {

@@ -2,12 +2,10 @@ import {Button, Link, Navbar, NavbarBrand, NavbarContent, NavbarItem} from "@nex
 import {BsFillFileSpreadsheetFill} from "react-icons/bs";
 import {ImOnedrive} from "react-icons/im";
 import {useActions} from "kea";
-import {dataLogic} from "../logics/dataLogic";
 import {SignInModal} from "./SignInModal";
 import {userLogic} from "../logics/userLogic";
 
 export function Nav() {
-    const {setOpen} = useActions(dataLogic)
     const {signInWithMicrosoft} = useActions(userLogic)
     return (
 <>
