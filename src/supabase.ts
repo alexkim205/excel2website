@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const URL = process.env.REACT_APP_SUPABASE_URL;
-const PUBLIC_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const URL = process.env.VITE_SUPABASE_URL;
+const PUBLIC_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
 let client: SupabaseClient;
 
