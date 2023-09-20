@@ -4,7 +4,7 @@ import {userLogic} from "./userLogic";
 import type {dataLayerLogicType} from "./dataLayerLogicType";
 import {ChartPresetType, ChartType, WorkbookType} from "../types";
 import merge from "lodash.merge"
-import {DeepPartial} from "kea-forms";
+import type {DeepPartial} from "kea-forms/lib/types";
 
 export function graphFetch({url = "", method = "GET", providerToken, body}: {url: string, method?: "GET" | "POST", providerToken: string, body?: Record<string, any>}) {
     return fetch(`https://graph.microsoft.com/v1.0/me/drive/${url}`, {
