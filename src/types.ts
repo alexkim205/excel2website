@@ -5,6 +5,11 @@ export enum AxisType {
     Log = 'log'
 }
 
+export enum DataTableTab {
+    Expected = "expected",
+    Preview = 'preview'
+}
+
 export interface ChartType {
     id: string
     type: ChartPresetType
@@ -20,9 +25,14 @@ export interface ChartType {
     chart: {
         title: {
             text: string,
-            fontSize: number
+            subtext: string,
+            textStyle: {
+                fontSize: number
+            },
+            subtextStyle: {
+                fontSize: number
+            }
         }
-        description: string
         xAxis: {
             name: string
             type: AxisType | null

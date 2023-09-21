@@ -20,7 +20,7 @@ export function graphFetch({url = "", method = "GET", providerToken, body}: {url
 function generateEmptyChart(id: ChartType["id"]): ChartType {
     return {
         id,
-        type: ChartPresetType.StackedBar,
+        type: ChartPresetType.BasicBar,
         dataSourceId: "",
         dataRange: "'Sheet1'!A1:B17",
         selector: "",
@@ -28,9 +28,14 @@ function generateEmptyChart(id: ChartType["id"]): ChartType {
         chart: {
             title: {
                 text: "",
-                fontSize: 32
+                subtext: "",
+                textStyle: {
+                    fontSize: 24
+                },
+                subtextStyle: {
+                    fontSize: 16
+                }
             },
-            description: "",
             xAxis: {
                 name: "",
                 type: null

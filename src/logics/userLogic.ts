@@ -25,7 +25,7 @@ export const userLogic = kea<userLogicType>([
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'azure',
                 options: {
-                    scopes: 'email Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All',
+                    scopes: 'offline_access email Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All',
                 },
             })
             if (error) {

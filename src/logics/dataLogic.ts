@@ -4,7 +4,8 @@ import {dataLayerLogic, graphFetch} from "./dataLayerLogic";
 import {ChartType, DataType} from "../types";
 import {userLogic} from "./userLogic";
 import {loaders} from "kea-loaders";
-import type {DeepPartial} from "kea-forms/lib/types";
+import {DeepPartial} from "kea-forms/lib/types";
+
 
 export interface DataLogicProps {
     id: ChartType["id"]
