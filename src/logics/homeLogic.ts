@@ -22,7 +22,10 @@ export const homeLogic = kea<homeLogicType>([
                     return []
                 }
                 await breakpoint()
-                const {data, error} = await supabase.from(SupabaseTable.Dashboards).select().eq('user', values.user.user.id)
+                const {data, error} = await supabase
+                    .from(SupabaseTable.Dashboards)
+                    .select(`*, dashboard_items(*)`)
+                    .eq('user', values.user.user.id)
                 breakpoint()
                 if (error) {
                     throw new Error(error.message)

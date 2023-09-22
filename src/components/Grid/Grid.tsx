@@ -13,7 +13,7 @@ export function Grid({children, layouts}: {children: ReactNode, layouts: Layouts
             rowHeight={100}
             cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
             breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-            className="max-w-[1024px] w-full"
+            className="w-full"
             draggableHandle=".custom-draggable-handle"
         >
             {children}

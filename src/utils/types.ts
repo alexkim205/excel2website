@@ -13,7 +13,7 @@ export enum PanelTab {
     Chart = 'chart'
 }
 
-export type DashboardType = Omit<Database["public"]["Tables"]["dashboards"]["Row"], "data"> & {data: DashboardDataType}
+export type DashboardType = Omit<Database["public"]["Tables"]["dashboards"]["Row"], "data"> & {data: DashboardDataType, dashboard_items: DashboardItemType[]}
 
 export interface DashboardDataType {
     id: string

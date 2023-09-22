@@ -45,7 +45,8 @@ export const dashboardLogic = kea<dashboardLogicType>([
         workbooks: [] as WorkbookType[],
     }),
     actions(() => ({
-        setChart: (chart: DeepPartial<DashboardItemType>) => ({chart})
+        setChart: (chart: DeepPartial<DashboardItemType>) => ({chart}),
+        setDashboard: (dashboard: DeepPartial<DashboardType>) => ({dashboard})
     })),
     loaders(({values, props}) => ({
         dashboard: {
@@ -61,8 +62,6 @@ export const dashboardLogic = kea<dashboardLogicType>([
                 if (error) {
                     throw new Error(error.message)
                 }
-
-                console.log("DATA", data)
 
                 if (data) {
                     return data
@@ -80,8 +79,25 @@ export const dashboardLogic = kea<dashboardLogicType>([
                     throw new Error(insertError.message)
                 }
 
-                console.log("DASHBOARD DATA", insertData)
                 breakpoint()
+                return insertData
+            },
+            setDashboard: ({dashboard}) => {
+                return merge({}, values.dashboard, dashboard)
+            },
+            saveDashboard: async (_, breakpoint) => {
+                await breakpoint(100)
+                const {data, error} = await supabase
+                    .from(SupabaseTable.Dashboards)
+                    .update({
+                        data: values.dashboard?.data
+                    })
+                    .eq("id", props.id)
+                    .maybeSingle()
+                breakpoint()
+                if (error) {
+                    throw new Error(error.message)
+                }
                 return data
             }
         },
