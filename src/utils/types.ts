@@ -27,13 +27,11 @@ export interface DashboardItemDataType {
     id: string
     type: ChartPresetType
     dataSourceId: string | undefined | null // data file id related to Microsoft Graph API
-    dataRange: string | undefined // A1:C4
-    selector: string // Sheet and range in this format, i.e. 'Sheet1'!A3:B9
+    dataRange: string | undefined // Sheet and range in this format, i.e. 'Sheet1'!A3:B9
     coordinates: {
-        x: number,
-        y: number,
-        w: number,
-        h: number
+        sm: {x: number, y: number, w: number, h: number, static?: boolean},
+        md: {x: number, y: number, w: number, h: number, static?: boolean},
+        lg: {x: number, y: number, w: number, h: number, static?: boolean}
     },
     chart: {
         title: {

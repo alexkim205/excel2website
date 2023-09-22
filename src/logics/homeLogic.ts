@@ -1,10 +1,9 @@
-import {afterMount, connect, defaults, kea, path} from "kea";
+import {afterMount, connect, defaults, kea, listeners, path} from "kea";
 import {loaders} from "kea-loaders";
 import {DashboardType, SupabaseTable} from "../utils/types";
 import supabase from "../utils/supabase";
 import type {homeLogicType} from "./homeLogicType";
 import {userLogic} from "./userLogic";
-import {subscriptions} from "kea-subscriptions";
 
 export const homeLogic = kea<homeLogicType>([
     path(["src", "logics", "homeLogic"]),
@@ -12,12 +11,13 @@ export const homeLogic = kea<homeLogicType>([
         dashboards: [] as DashboardType[]
     }),
     connect(() => ({
-        values: [userLogic, ["user"]]
+        values: [userLogic, ["user"]],
+        actions: [userLogic, ["setUser", "signOut"]]
     })),
     loaders(({values}) => ({
         dashboards: {
             loadDashboards: async (_, breakpoint) => {
-                console.log("data values", values.user)
+                console.log("data values", values.user, values.dashboards)
                 if (!values.user) {
                     return []
                 }
@@ -31,20 +31,17 @@ export const homeLogic = kea<homeLogicType>([
                     throw new Error(error.message)
                 }
                 return data
-            }
+            },
+            signOut: () => []
         }
     })),
-    subscriptions(({actions}) => ({
-       user: (_, newUser) => {
-           if (newUser) {
-               actions.loadDashboards({})
-           }
+    listeners(({actions}) => ({
+       setUser: ({user}) => {
+           console.log("NEW SER", user)
+           actions.loadDashboards({})
        }
     })),
-    afterMount(({actions, values}) => {
-        if (!values.user) {
-            return
-        }
+    afterMount(({actions}) => {
         actions.loadDashboards({})
     })
 ])

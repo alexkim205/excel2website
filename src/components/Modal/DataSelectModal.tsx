@@ -23,15 +23,18 @@ import {dashboardItemLogic, DashboardItemLogicProps} from "../../logics/dashboar
 import {dashboardLogic, DashboardLogicProps} from "../../logics/dashboardLogic";
 import {FormEvent, useState} from "react";
 import {MdOutlineSync} from "react-icons/md";
-import {ChartEdit} from "./ChartEdit";
+import {Chart} from "./Chart";
 import {graphTypeTabs} from "./graph";
 import {ChartPresetType, PanelTab} from "../../utils/types";
 
-export function DataSelectModal({dashboardProps, props}: { dashboardProps: DashboardLogicProps, props: DashboardItemLogicProps }) {
+export function DataSelectModal({dashboardProps, props}: {
+    dashboardProps: DashboardLogicProps,
+    props: DashboardItemLogicProps
+}) {
     const dashLogic = dashboardLogic(dashboardProps)
     const logic = dashboardItemLogic(props)
     const {workbooks} = useValues(dashLogic)
-    const {open, thisChart, parsedRange, dataLoading, dataSourceReadyForSync, data} = useValues(logic)
+    const {open, thisChart, parsedRange, dataLoading, syncable, synced, data, chartLoading} = useValues(logic)
     const {setOpen, setThisChart, fetchData, saveThisChart} = useActions(logic)
     const [dataTableTab, setDataTableTab] = useState<PanelTab>(PanelTab.Chart)
 
@@ -87,7 +90,7 @@ export function DataSelectModal({dashboardProps, props}: { dashboardProps: Dashb
                                             className="font-semibold disabled:cursor-not-allowed disabled:opacity-60"
                                             startContent={dataLoading ? null : <MdOutlineSync className="text-xl"/>}
                                             color="primary" isLoading={dataLoading}
-                                            disabled={!dataSourceReadyForSync}
+                                            disabled={!(!synced && syncable)}
                                             onClick={() => {
                                                 fetchData({})
                                             }}>
@@ -104,7 +107,8 @@ export function DataSelectModal({dashboardProps, props}: { dashboardProps: Dashb
                                                 }}
                                         >
                                             {Object.values(graphTypeTabs).map((type) => (
-                                                <SelectItem key={type.id} value={type.id} startContent={<type.Icon className="text-lg"/>}>
+                                                <SelectItem key={type.id} value={type.id}
+                                                            startContent={<type.Icon className="text-lg"/>}>
                                                     {type.label}
                                                 </SelectItem>
                                             ))}
@@ -151,7 +155,8 @@ export function DataSelectModal({dashboardProps, props}: { dashboardProps: Dashb
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex flex-col w-full sm:w-[calc(66%-0.75rem)] p-2 bg-default-100 rounded-large">
+                                    <div
+                                        className="flex flex-col w-full sm:w-[calc(66%-0.75rem)] p-2 bg-default-100 rounded-large">
                                         <Tabs
                                             fullWidth
                                             aria-label="Data Table"
@@ -160,7 +165,7 @@ export function DataSelectModal({dashboardProps, props}: { dashboardProps: Dashb
                                             classNames={{panel: "px-1 py-1.5 h-full sticky top-0"}}
                                         >
                                             <Tab key={PanelTab.Chart} title="Chart">
-                                                <ChartEdit props={props}/>
+                                                <Chart props={props}/>
                                             </Tab>
                                             <Tab key={PanelTab.PreviewData} title="Data">
                                                 {data ? (
@@ -192,7 +197,8 @@ export function DataSelectModal({dashboardProps, props}: { dashboardProps: Dashb
                                                 )}
                                             </Tab>
                                             <Tab key={PanelTab.ExpectedData} title="Expected Format">
-                                                <div className="text-tiny justify-center w-full flex text-foreground-400 pb-1.5">
+                                                <div
+                                                    className="text-tiny justify-center w-full flex text-foreground-400 pb-1.5">
                                                     Showing expected shape of data for
                                                     a {graphTypeTabs[thisChart.data.type].label} chart.
                                                 </div>
@@ -223,7 +229,9 @@ export function DataSelectModal({dashboardProps, props}: { dashboardProps: Dashb
                             <Button color="danger" variant="light" onPress={onClose}>
                                 Cancel
                             </Button>
-                            <Button color="primary" onPress={() => saveThisChart()}>
+                            <Button className="font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+                                    color="primary" onPress={() => synced && syncable && saveThisChart()} isLoading={chartLoading}
+                                    disabled={!(synced && syncable)}>
                                 Save
                             </Button>
                         </ModalFooter>

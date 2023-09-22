@@ -22,8 +22,11 @@ export function generateEmptyDashboardItem(id: DashboardItemDataType["id"]): Das
         type: ChartPresetType.BasicBar,
         dataSourceId: "",
         dataRange: "'Sheet1'!A1:B17",
-        selector: "",
-        coordinates: {x: 0, y: 0, w: 3, h: 3},
+        coordinates: {
+            sm: {x: 0, y: 0, w: 3, h: 3, static: true},
+            md: {x: 0, y: 0, w: 3, h: 3, static: true},
+            lg: {x: 0, y: 0, w: 3, h: 3, static: true}
+        },
         chart: {
             title: {
                 text: "",

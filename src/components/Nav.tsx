@@ -1,6 +1,6 @@
 import {Button, Link, Navbar, NavbarBrand, NavbarContent, NavbarItem} from "@nextui-org/react";
 import {BsFillFileSpreadsheetFill} from "react-icons/bs";
-import {ImExit, ImOnedrive} from "react-icons/im";
+import {ImOnedrive} from "react-icons/im";
 import {useActions, useValues} from "kea";
 import {userLogic} from "../logics/userLogic";
 import {router} from "kea-router";
@@ -20,22 +20,17 @@ export function Nav() {
                 <NavbarContent justify="end">
                     {user ? (
                         <>
-                            <NavbarItem className="hidden sm:flex">
-                                <Button as={Link} color="primary" variant="light" size="lg" startContent={<ImExit className="text-2xl"/>}
-                                        onPress={() => signOut()}>
-                                    Sign out
-                                </Button>
-                            </NavbarItem>
-                            <NavbarItem className="flex sm:hidden">
-                                <Button isIconOnly color="primary" variant="light" size="lg" onPress={() => signInWithMicrosoft()}>
-                                    <ImExit className="text-2xl"/>
+                            <NavbarItem className="flex">
+                                <Button as={Link} color="default" variant="light" size="md"
+                                        onClick={() => signOut()}>
+                                    Logout
                                 </Button>
                             </NavbarItem>
                         </>
                         ) : (
                         <>
                             <NavbarItem className="hidden sm:flex">
-                                <Button as={Link} color="primary" variant="flat" size="lg" startContent={<ImOnedrive className="text-2xl"/>}
+                                <Button as={Link} color="primary" variant="flat" size="md" startContent={<ImOnedrive className="text-2xl"/>}
                                         onPress={() => signInWithMicrosoft()}>
                                     Link with Microsoft OneDrive
                                 </Button>

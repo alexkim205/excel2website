@@ -5,10 +5,9 @@ import {DashboardItemType, DashboardType, SupabaseTable, WorkbookType} from "../
 import merge from "lodash.merge"
 import type {DeepPartial} from "kea-forms/lib/types";
 import type {dashboardLogicType} from "./dashboardLogicType";
-import {router} from "kea-router";
-import {urls} from "../utils/routes";
 import supabase from "../utils/supabase";
 import {generateEmptyDashboardData, generateEmptyDashboardItem} from "../utils/utils";
+import type {Layouts} from "react-grid-layout";
 
 export function graphFetch({url = "", method = "GET", providerToken, body}: {
     url: string,
@@ -39,14 +38,21 @@ export const dashboardLogic = kea<dashboardLogicType>([
         values: [userLogic, ["providerToken", "user"]],
         actions: [userLogic, ["setUser"]]
     })),
-    defaults({
+    defaults(({props}) => ({
         dashboard: null as DashboardType | null,
-        charts: [] as DashboardItemType[],
+        charts: [{
+            id: props.newDashboardItemId,
+            dashboard: props.id,
+            data: generateEmptyDashboardItem(props.newDashboardItemId as string),
+            created_at: null
+        }] as DashboardItemType[],
         workbooks: [] as WorkbookType[],
-    }),
+    })),
     actions(() => ({
         setChart: (chart: DeepPartial<DashboardItemType>) => ({chart}),
-        setDashboard: (dashboard: DeepPartial<DashboardType>) => ({dashboard})
+        setCharts: (charts: DeepPartial<DashboardItemType>[]) => ({charts}),
+        setDashboard: (dashboard: DeepPartial<DashboardType>) => ({dashboard}),
+        onLayoutChange: (layouts: Layouts) => ({layouts})
     })),
     loaders(({values, props}) => ({
         dashboard: {
@@ -102,9 +108,28 @@ export const dashboardLogic = kea<dashboardLogicType>([
             }
         },
         charts: {
+            loadCharts: async (_, breakpoint) => {
+                await breakpoint(100)
+
+                const {data, error} = await supabase
+                    .from(SupabaseTable.DashboardItems)
+                    .select()
+                    .eq("dashboard", props.id)
+                    .eq("user", values.user?.user.id)
+                breakpoint()
+                if (error) {
+                    throw new Error(error.message)
+                }
+
+                // pick out new dashboard item
+                const newDashboardItem = values.charts.find(({id}) => id === props.newDashboardItemId)
+
+                return [newDashboardItem, ...data]
+            },
             setChart: ({chart}) => {
                 return values.charts.map((thisChart) => thisChart.id === chart.id ? merge({}, thisChart, chart) : thisChart)
-            }
+            },
+            setCharts: ({charts}) => charts as DashboardItemType[],
         },
         workbooks: {
             loadWorkbooks: async (_, breakpoint) => {
@@ -119,19 +144,29 @@ export const dashboardLogic = kea<dashboardLogicType>([
             }
         }
     })),
-    listeners(({actions}) => ({
+    listeners(({actions, values}) => ({
         setUser: ({user}) => {
             if (!user) {
                 return
             }
+            actions.loadDashboard({})
             actions.loadWorkbooks({})
+        },
+        loadDashboardSuccess: () => {
+            actions.loadCharts({})
+        },
+        onLayoutChange: ({layouts}) => {
+            const keys = layouts.sm.map(({i}) => i)
+            const idToNewDimensions = Object.fromEntries(keys.map((i) => [i, {
+                sm: layouts.sm.find(({i: thisI}) => thisI === i),
+                md: layouts.md.find(({i: thisI}) => thisI === i),
+                lg: layouts.lg.find(({i: thisI}) => thisI === i)
+            }]))
+
+            actions.setCharts(values.charts.map((chart) => merge({}, chart, {data: {coordinates: idToNewDimensions?.[chart.id] ?? chart.data.coordinates}})))
         }
     })),
     afterMount(({actions, values}) => {
-        if (!values.user) {
-            router.actions.push(urls.home())
-            return
-        }
         if (values.providerToken) {
             actions.loadDashboard({})
             actions.loadWorkbooks({})
@@ -139,16 +174,12 @@ export const dashboardLogic = kea<dashboardLogicType>([
     }),
     selectors(() => ({
         layouts: [
-            (s) => [s.charts, (_, props) => props.newDashboardItemId],
-            (charts, newDashboardItemId) => {
-                const newCharts = [...charts, ...(newDashboardItemId ? [{
-                    id: newDashboardItemId,
-                    data: generateEmptyDashboardItem(newDashboardItemId),
-                }] : [])]
+            (s) => [s.charts],
+            (charts) => {
                 return {
-                    sm: newCharts.map(chart => ({i: chart.id, ...chart.data.coordinates})),
-                    md: newCharts.map(chart => ({i: chart.id, ...chart.data.coordinates})),
-                    lg: newCharts.map(chart => ({i: chart.id, ...chart.data.coordinates})),
+                    sm: charts.map(chart => ({...chart.data.coordinates.sm, i: chart.id})),
+                    md: charts.map(chart => ({...chart.data.coordinates.md, i: chart.id})),
+                    lg: charts.map(chart => ({...chart.data.coordinates.lg, i: chart.id}))
                 }
             }
         ],

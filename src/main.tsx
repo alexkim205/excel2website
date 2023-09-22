@@ -2,7 +2,8 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 import {NextUIProvider} from "@nextui-org/react";
-import {ToastContainer} from "react-toastify";
+import {Slide, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.min.css';
 import {resetContext} from 'kea'
 import {subscriptionsPlugin} from 'kea-subscriptions'
 
@@ -13,6 +14,14 @@ resetContext({
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <NextUIProvider>
         <App/>
-        <ToastContainer/>
+        <ToastContainer
+            position="top-center"
+            transition={Slide}
+            autoClose={3000}
+            closeOnClick
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+        />
     </NextUIProvider>
 )

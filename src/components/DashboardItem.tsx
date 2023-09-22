@@ -7,13 +7,14 @@ import {DataSelectModal} from "./Modal/DataSelectModal";
 import {forwardRef} from "react";
 import {RxDragHandleDots2} from "react-icons/rx";
 import {DashboardLogicProps} from "../logics/dashboardLogic";
+import {Chart} from "./Modal/Chart";
 
 
 export const DashboardItem = forwardRef<HTMLDivElement, {
     chart: DashboardItemType,
     dashboardProps: DashboardLogicProps
 }>(({chart, dashboardProps}, ref) => {
-    const logicProps = {id: chart.id, dashboardProps}
+    const logicProps = {id: chart.id, dashboardProps, autoSync: true}
     const logic = dashboardItemLogic(logicProps)
     const {setOpen} = useActions(logic)
 
@@ -28,11 +29,12 @@ export const DashboardItem = forwardRef<HTMLDivElement, {
                 key={`${chart.id}-card`}
                 isPressable
                 onPress={() => setOpen(true)}
+                classNames={{
+                    body: "p-1 overflow-hidden"
+                }}
             >
-                <CardBody className="flex flex-row gap-3 justify-center items-center text-base text-default-400"
-                          onClick={() => {
-                          }}>
-                    <AiOutlinePlus className="text-lg"/> Add chart
+                <CardBody>
+                    <Chart props={logicProps}/>
                 </CardBody>
             </Card>
             <div className="custom-draggable-handle absolute top-2 left-1.5 cursor-grab w-2 h-2">
@@ -69,9 +71,6 @@ export const NewDashboardItem = forwardRef<HTMLDivElement, {
                     <AiOutlinePlus className="text-lg"/> Add chart
                 </CardBody>
             </Card>
-            <div className="custom-draggable-handle absolute top-2 left-1.5 cursor-grab w-2 h-2">
-                <RxDragHandleDots2 className="text-default-400 text-lg"/>
-            </div>
             <DataSelectModal props={logicProps} dashboardProps={dashboardProps}/>
         </>
     )

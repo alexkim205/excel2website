@@ -1,41 +1,47 @@
-import {actions, connect, defaults, kea, key, listeners, path, props, reducers, selectors} from "kea";
+import {actions, afterMount, connect, defaults, kea, key, listeners, path, props, reducers, selectors} from "kea";
 import {dashboardLogic, DashboardLogicProps, graphFetch} from "./dashboardLogic";
 import {DashboardItemType, DataType, SupabaseTable} from "../utils/types";
 import {userLogic} from "./userLogic";
 import {loaders} from "kea-loaders";
 import {DeepPartial} from "kea-forms/lib/types";
 import supabase from "../utils/supabase";
-import { v4 as uuidv4 } from 'uuid';
-import type { dashboardItemLogicType } from "./dashboardItemLogicType";
+import type {dashboardItemLogicType} from "./dashboardItemLogicType";
+import equal from "lodash.isequal"
+import pick from "lodash.pick"
+import omit from "lodash.omit"
+import {toast} from "react-toastify";
+import {v4 as uuidv4} from "uuid";
 import {generateEmptyDashboardItem} from "../utils/utils";
 
 export interface DashboardItemLogicProps {
     id: DashboardItemType["id"],
     dashboardProps: DashboardLogicProps
+    autoSync?: boolean
 }
 
 export const dashboardItemLogic = kea<dashboardItemLogicType>([
     key((props) => `${props.dashboardProps.id}-${props.id}`),
     path((key) => ["src", "dataLogic", key]),
-    props({} as DashboardItemLogicProps),
+    props({autoSync: false} as DashboardItemLogicProps),
     connect((props: DashboardItemLogicProps) => ({
         values: [dashboardLogic(props.dashboardProps), ["charts"], userLogic, ["providerToken", "user"]],
-        actions: [dashboardLogic(props.dashboardProps), ["setChart"]]
+        actions: [dashboardLogic(props.dashboardProps), ["setChart", "loadCharts", "setCharts"]]
     })),
     defaults({
         open: false as boolean,
         data: null as DataType | null
     }),
-    actions(()=> ({
+    actions(() => ({
         setOpen: (open: boolean) => ({open}),
         setThisChart: (chart: DeepPartial<DashboardItemType>) => ({chart}),
-        saveThisChart: true
+        saveThisChart: (shouldToast: boolean = true) => ({shouldToast}),
+        setLastSyncedChart: (lastSyncedChart: DashboardItemType) => ({lastSyncedChart}),
     })),
-    loaders(({values}) => ({
+    loaders(({values, props, actions}) => ({
         data: {
             fetchData: async (_, breakpoint) => {
                 // Make api call
-                if(!values.providerToken || !values.parsedRange.sheet || !values.parsedRange.range || !values.thisChart?.data?.dataSourceId) {
+                if (!values.syncable || !values.user) {
                     return
                 }
                 await breakpoint(100)
@@ -46,38 +52,68 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                 })
                 const data = await response.json()
                 breakpoint()
+
+                // Set last synced data
+                actions.setLastSyncedChart(values.thisChart)
+
                 return data
             }
         },
         chart: {
-            saveThisChart: async(_, breakpoint) => {
-                if (!values.dataSourceReadyForSync || !values.user) {
+            saveThisChart: async ({shouldToast}, breakpoint) => {
+                if (!values.syncable || !values.user) {
                     return
                 }
                 await breakpoint(100)
-                const newId = values.thisChart.id === "new" ? uuidv4() : values.thisChart.id
+                // generate new id if this is a new dashboard item
+                const newId = values.isNew ? uuidv4() : props.id
+                const findNewCoordinates = (size: "sm" | "md" | "lg") => newId ? {
+                    ...omit(values.thisChart.data.coordinates[size], ["static"]),
+                    x: 3
+                } : values.thisChart.data.coordinates[size]
                 const {data, error} = await supabase
                     .from(SupabaseTable.DashboardItems)
                     .upsert({
                         id: newId,
                         data: {
-                            ...values.thisChart,
+                            ...values.thisChart.data,
+                            coordinates: {
+                                sm: findNewCoordinates("sm"),
+                                md: findNewCoordinates("md"),
+                                lg: findNewCoordinates("lg")
+                            },
                             id: newId
                         },
+                        dashboard: props.dashboardProps.id,
                         user: values.user?.user?.id
                     }).select()
                 breakpoint()
                 if (error) {
                     throw new Error(error.message)
                 }
-                console.log("SAVED, ", data)
+
+                if (shouldToast) {
+                    toast.success("Dashboard item saved.")
+                }
+
+                if (values.isNew) {
+                    actions.loadCharts({})
+                    // reset data in new modal
+                    actions.setThisChart(generateEmptyDashboardItem(props.id))
+                }
+
+                actions.setOpen(false)
+
                 return data
             }
         }
     })),
     reducers(() => ({
         open: {
-            setOpen: (_,{open}) => open
+            setOpen: (_, {open}) => open
+        },
+        lastSyncedChart: {
+            setLastSyncedChart: (_, {lastSyncedChart}) => lastSyncedChart
         },
     })),
     listeners(({actions, props}) => ({
@@ -89,24 +125,13 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
         },
     })),
     selectors(() => ({
-        existingChart: [
-            (s) => [s.charts, (_, props) => props.id],
-            (charts, thisId): DashboardItemType | null => charts.find(({id}) => id === thisId) ?? null
+        isNew: [
+            () => [(_, props) => props.id, (_, props) => props.dashboardProps.newDashboardItemId],
+            (thisId, newDashboardItemId) => thisId === newDashboardItemId
         ],
         thisChart: [
-            (s) => [s.existingChart, (_, props) => props.id, (_, props) => props.dashboardProps, s.user],
-            (existingChart: DashboardItemType | null, thisId: DashboardItemType["id"], dashboardProps: DashboardLogicProps, user: any): DashboardItemType => {
-                if (existingChart) {
-                    return existingChart
-                }
-                return {
-                    id: thisId,
-                    dashboard: dashboardProps.id,
-                    user: user?.user?.id,
-                    data: generateEmptyDashboardItem(thisId),
-                    created_at: null
-                }
-            }
+            (s) => [s.charts, (_, props) => props.id],
+            (charts, thisId): DashboardItemType => charts.find(({id}) => id === thisId) as DashboardItemType
         ],
         parsedRange: [
             (s) => [s.thisChart],
@@ -116,7 +141,7 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                 const sheet = sheetAndRange?.[0]?.replace(/^'+|'+$/g, '')
                 const parsedRange = sheetAndRange?.[1]
 
-                if(!sheet || !parsedRange) {
+                if (!sheet || !parsedRange) {
                     return {
                         sheet: null,
                         range: null
@@ -129,11 +154,20 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                 }
             }
         ],
-        dataSourceReadyForSync: [
+        syncable: [
             (s) => [s.providerToken, s.parsedRange, s.thisChart],
             (providerToken, parsedRange, thisChart) => {
                 return providerToken && parsedRange.sheet && parsedRange.range && (thisChart?.data?.dataSourceId && thisChart.data.dataSourceId !== "null" && thisChart.data.dataSourceId != "undefined")
             }
         ],
+        synced: [
+            (s) => [s.lastSyncedChart, s.thisChart],
+            (lastSyncedChart, thisChart) => equal(pick(lastSyncedChart?.data, ["dataSourceId", "dataRange"]), pick(thisChart?.data, ["dataSourceId", "dataRange"]))
+        ],
     })),
+    afterMount(({props, actions}) => {
+        if (props.autoSync) {
+            actions.fetchData({})
+        }
+    })
 ])

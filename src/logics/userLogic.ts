@@ -2,33 +2,24 @@ import {actions, afterMount, beforeUnmount, defaults, kea, listeners, path, redu
 import type {userLogicType} from "./userLogicType";
 import supabase from "../utils/supabase";
 import type {Session} from "@supabase/gotrue-js/dist/module/lib/types";
-import dayjs from "dayjs";
+import {router} from "kea-router";
+import {urls} from "../utils/routes";
 
 export const userLogic = kea<userLogicType>([
     path(["src", "logics", "userLogic"]),
     defaults(() => ({
-        user: null as Session | null,
-        tokens: {
-            provider_token: null as string | null,
-            provider_refresh_token: null as string | null
-        }
+        user: null as Session | null
     })),
     actions(() => ({
         signInWithMicrosoft: true,
         signOut: true,
         setUser: (user: Session | null) => ({user}),
-        setTokens: (tokens: { provider_token: string | null, provider_refresh_token: string | null }) => ({tokens}),
     })),
     reducers(() => ({
         user: {
             setUser: (_, {user}) => user,
             signOut: () => null
         },
-        // most recent refreshed tokens
-        tokens: {
-            signOut: () => ({provider_token: null, provider_refresh_token: null}),
-            setTokens: (_, {tokens}) => tokens
-        }
     })),
     listeners(() => ({
         signInWithMicrosoft: async (_, breakpoint) => {
@@ -44,10 +35,13 @@ export const userLogic = kea<userLogicType>([
             }
         },
         signOut: async () => {
+            console.log("SIGN OUT GREAT")
             const {error} = await supabase.auth.signOut()
+            console.log("SIGN OUT", error)
             if (error) {
                 throw new Error(error.message)
             }
+            router.actions.push(urls.home())
         }
     })),
     afterMount(async ({actions, cache}) => {
@@ -57,33 +51,26 @@ export const userLogic = kea<userLogicType>([
         } = await supabase.auth.getSession();
 
         cache.unsubscribeOnAuthStateChange = supabase.auth.onAuthStateChange(
-            (_: any, session: Session | null) => {
+            (authState: any, session: Session | null) => {
+                if (authState === "SIGNED_OUT" || authState === "USER_UPDATED") {
+                    return
+                }
+                if (session) {
+                    // update provider access and refresh tokens on supabase
+                    supabase.auth.updateUser({
+                        data: {
+                            provider_token: session.provider_token,
+                            provider_refresh_token: session.provider_refresh_token
+                        }
+                    })
+                }
                 actions.setUser(session);
             }
         );
 
         // Check if user is already logged in
-        if (!currentSession || !currentSession.expires_at || !currentSession.provider_refresh_token) {
-            return
-        }
-        // Check if access token has expired
-        if (dayjs().isAfter(dayjs.unix(currentSession.expires_at))) {
-            const {data, error} = await supabase.functions.invoke('refresh-token', {
-                body: {refreshToken: currentSession.provider_refresh_token},
-            })
-            if (error) {
-                throw new Error(error.message)
-            }
-
-            actions.setTokens({
-                provider_token: data.access_token,
-                provider_refresh_token: data.refresh_token
-            })
-            actions.setUser({
-                ...currentSession,
-                provider_token: data.access_token,
-                provider_refresh_token: data.refresh_token
-            })
+        if (!currentSession) {
+            router.actions.push(urls.home())
             return
         }
 
@@ -94,15 +81,15 @@ export const userLogic = kea<userLogicType>([
     }),
     selectors(() => ({
         providerToken: [
-            (s) => [s.user, s.tokens],
-            (user, tokens) => {
-                return tokens.provider_token || user?.provider_token
+            (s) => [s.user],
+            (user) => {
+                return user?.user?.user_metadata?.provider_token
             }
         ],
         refreshToken: [
-            (s) => [s.user, s.tokens],
-            (user, tokens) => {
-                return tokens.provider_refresh_token || user?.provider_refresh_token
+            (s) => [s.user],
+            (user) => {
+                return user?.user?.user_metadata?.provider_refresh_token
             }
         ]
     }))
