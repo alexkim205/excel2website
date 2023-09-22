@@ -1,6 +1,6 @@
 import {actions, afterMount, beforeUnmount, defaults, kea, listeners, path, reducers, selectors} from "kea";
 import type {userLogicType} from "./userLogicType";
-import supabase from "../supabase";
+import supabase from "../utils/supabase";
 import {Session} from "@supabase/gotrue-js/dist/module/lib/types";
 
 export const userLogic = kea<userLogicType>([
@@ -46,8 +46,8 @@ export const userLogic = kea<userLogicType>([
         } = await supabase.auth.getSession();
 
         cache.unsubscribeOnAuthStateChange = supabase.auth.onAuthStateChange(
-            (_: any, session: Session | null) => {
-                console.log("USRE SESSION", session)
+            (authStateEvent: any, session: Session | null) => {
+                console.log("USRE SESSION", authStateEvent, session)
                 actions.setUser(session);
             }
         );

@@ -1,4 +1,4 @@
-import {AxisType, ChartPresetType, ChartType, DataType} from "../../types";
+import {AxisType, ChartPresetType, DashboardItemDataType, DataType} from "../../utils/types";
 import type {ECBasicOption} from "echarts/types/dist/shared";
 import {
     MdAreaChart,
@@ -11,7 +11,7 @@ import {
     MdStackedBarChart
 } from "react-icons/md";
 import dayjs from "dayjs";
-import {isNumeric} from "../../utils";
+import {isNumeric} from "../../utils/utils";
 
 const EXPECTED_DATA_MULTI_SERIES = [
     ["X-Axis Unit", "Series A", "Series B", "Series C", "Series D"],
@@ -93,7 +93,7 @@ export function determineAxisType(source: (string | number)[]): AxisType {
     return AxisType.Category
 }
 
-export const graphTypeToOptions: Record<ChartPresetType, (data: DataType, chart: ChartType) => ECBasicOption | null> = {
+export const graphTypeToOptions: Record<ChartPresetType, (data: DataType, chart: DashboardItemDataType) => ECBasicOption | null> = {
     [ChartPresetType.BasicBar]: (data, chart) => {
         const seriesNames = data.values?.[0]?.slice(1)
         return {

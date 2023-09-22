@@ -1,13 +1,13 @@
 import clsx from "clsx";
-import {dataLogic, DataLogicProps} from "../../logics/dataLogic";
+import {dashboardItemLogic, DashboardItemLogicProps} from "../../logics/dashboardItemLogic";
 import {useEffect, useRef} from "react";
 import {getInstanceByDom, init} from "echarts";
 import {useValues} from "kea";
 import {ECBasicOption} from "echarts/types/dist/shared";
 import {graphTypeToOptions} from "./graph";
 
-export function ChartEdit({props}: { props: DataLogicProps }) {
-    const logic = dataLogic(props)
+export function ChartEdit({props}: { props: DashboardItemLogicProps }) {
+    const logic = dashboardItemLogic(props)
     const {open, thisChart, dataLoading, data} = useValues(logic)
 
     const ref = useRef<HTMLDivElement>(null)
@@ -28,7 +28,7 @@ export function ChartEdit({props}: { props: DataLogicProps }) {
     useEffect(() => {
         if (ref.current && data) {
             const chart = init(ref.current);
-            const option = graphTypeToOptions[thisChart.type](data, thisChart)
+            const option = graphTypeToOptions[thisChart.data.type](data, thisChart.data)
             console.log("option", option)
             chart.setOption(option as ECBasicOption);
 
@@ -54,34 +54,22 @@ export function ChartEdit({props}: { props: DataLogicProps }) {
             return
         }
         const chart = getInstanceByDom(ref.current)
-        if (chart && thisChart.type) {
-            const option = graphTypeToOptions[thisChart.type](data, thisChart)
+        if (chart && thisChart.data.type) {
+            const option = graphTypeToOptions[thisChart.data.type](data, thisChart.data)
             console.log("option", option)
             chart.clear()
             chart.setOption(option as ECBasicOption);
         }
-    }, [thisChart.chart, thisChart.type])
-
-    // useEffect(() => {
-    //     if (!ref.current || !data) {
-    //         return
-    //     }
-    //     const chart = getInstanceByDom(ref.current)
-    //     if (chart) {
-    //         const option = graphTypeToOptions[thisChart.type](data, thisChart)
-    //         chart.clear()
-    //         chart.setOption(option as ECBasicOption);
-    //     }
-    // }, [thisChart?.type])
+    }, [thisChart.data.chart, thisChart.data.type])
 
     return (
         <div id={`${props.id}-chart`} ref={ref} className={
-            clsx("rounded-small w-full transition-background transition-colors",
-                !data && "flex justify-center items-center text-lg text-gray-400"
+            clsx("rounded-small w-full transition-background transition-colors p-4 bg-white",
+                !data && "flex grow justify-center items-center text-base text-default-400"
             )
-        } style={{height: data ? 500 : 300}}>
+        } style={{height: data ? 500 : "auto"}}>
             {!data && (
-                <span>Sync data above to preview the chart.</span>
+                <span className="h-40 flex justify-center items-center">Sync data preview the chart.</span>
             )}
         </div>
     )

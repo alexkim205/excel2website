@@ -38,6 +38,12 @@ dependencies:
   kea-loaders:
     specifier: ^3.0.0
     version: 3.0.0(kea@3.1.5)
+  kea-router:
+    specifier: ^3.1.4
+    version: 3.1.4(kea@3.1.5)
+  kea-subscriptions:
+    specifier: ^3.0.0
+    version: 3.0.0(kea@3.1.5)
   lodash.merge:
     specifier: ^4.6.2
     version: 4.6.2
@@ -53,15 +59,15 @@ dependencies:
   react-icons:
     specifier: ^4.11.0
     version: 4.11.0(react@18.2.0)
-  react-input-autosize:
-    specifier: ^3.0.0
-    version: 3.0.0(react@18.2.0)
   react-resizable:
     specifier: ^3.0.5
     version: 3.0.5(react-dom@18.2.0)(react@18.2.0)
-  react-textarea-autosize:
-    specifier: ^8.5.3
-    version: 8.5.3(@types/react@18.2.15)(react@18.2.0)
+  react-toastify:
+    specifier: ^9.1.3
+    version: 9.1.3(react-dom@18.2.0)(react@18.2.0)
+  uuid:
+    specifier: ^9.0.1
+    version: 9.0.1
 
 devDependencies:
   '@types/lodash.merge':
@@ -76,12 +82,9 @@ devDependencies:
   '@types/react-grid-layout':
     specifier: ^1.3.2
     version: 1.3.2
-  '@types/react-input-autosize':
-    specifier: ^2.2.1
-    version: 2.2.1
-  '@types/react-textarea-autosize':
-    specifier: ^8.0.0
-    version: 8.0.0(@types/react@18.2.15)(react@18.2.0)
+  '@types/uuid':
+    specifier: ^9.0.4
+    version: 9.0.4
   '@typescript-eslint/eslint-plugin':
     specifier: ^6.0.0
     version: 6.0.0(@typescript-eslint/parser@6.0.0)(eslint@8.45.0)(typescript@4.9.4)
@@ -3959,22 +3962,6 @@ packages:
       '@types/react': 18.2.15
     dev: true
 
-  /@types/react-input-autosize@2.2.1:
-    resolution: {integrity: sha512-RxzEjd4gbLAAdLQ92Q68/AC+TfsAKTc4evsArUH1aIShIMqQMIMjsxoSnwyjtbFTO/AGIW/RQI94XSdvOxCz/w==}
-    dependencies:
-      '@types/react': 18.2.15
-    dev: true
-
-  /@types/react-textarea-autosize@8.0.0(@types/react@18.2.15)(react@18.2.0):
-    resolution: {integrity: sha512-KVqk+/+RMQB3ZDpk7ZTpYHauU3Ue+Y0f09POvGaEpaGb+izzbpoM47tkDGlbF37iT7JYZ8QFwLzqiOPYbQaztA==}
-    deprecated: This is a stub types definition. react-textarea-autosize provides its own type definitions, so you do not need this installed.
-    dependencies:
-      react-textarea-autosize: 8.5.3(@types/react@18.2.15)(react@18.2.0)
-    transitivePeerDependencies:
-      - '@types/react'
-      - react
-    dev: true
-
   /@types/react@18.2.15:
     resolution: {integrity: sha512-oEjE7TQt1fFTFSbf8kkNuc798ahTUzn3Le67/PWjE8MAfYAD/qB7O8hSTcromLFqHCt9bcdOg5GXMokzTjJ5SA==}
     dependencies:
@@ -3987,6 +3974,10 @@ packages:
 
   /@types/semver@7.5.2:
     resolution: {integrity: sha512-7aqorHYgdNO4DM36stTiGO3DvKoex9TQRwsJU6vMaFGyqpBA1MNZkz+PG3gaNUPpTAOYhT1WR7M1JyA3fbS9Cw==}
+    dev: true
+
+  /@types/uuid@9.0.4:
+    resolution: {integrity: sha512-zAuJWQflfx6dYJM62vna+Sn5aeSWhh3OB+wfUEACNcqUSc0AGc5JKl+ycL1vrH7frGTXhJchYjE1Hak8L819dA==}
     dev: true
 
   /@types/websocket@1.0.6:
@@ -5821,6 +5812,23 @@ packages:
       kea: 3.1.5(react@18.2.0)
     dev: false
 
+  /kea-router@3.1.4(kea@3.1.5):
+    resolution: {integrity: sha512-KjATA2vwh90GDcO3iiUrQwhRSzRbvyplvtyDzEWevfSHccbrtxdDm/ZCApAvMACPZZH0Klk4aHk1ZAZ1DJtcbg==}
+    peerDependencies:
+      kea: '>= 3'
+    dependencies:
+      kea: 3.1.5(react@18.2.0)
+      url-pattern: 1.0.3
+    dev: false
+
+  /kea-subscriptions@3.0.0(kea@3.1.5):
+    resolution: {integrity: sha512-26iEvvAV6+s1YtFajjDndP/ht32Rx2IuElr8O6yUsOuMSPLn55/EpRIMEyeFu0Amim7BOVfn9MoKFsSSlr/Ilw==}
+    peerDependencies:
+      kea: '>= 3'
+    dependencies:
+      kea: 3.1.5(react@18.2.0)
+    dev: false
+
   /kea-typegen@3.3.0(typescript@4.9.4):
     resolution: {integrity: sha512-FA7QuCAIIZNMkOmJiI/lfK/ar2QbOtlwVYC4X/GAyZ4Omr4U0QjCjHZaDAbjOMTqsQuMMAl1tCTbhCN6r163Mw==}
     hasBin: true
@@ -5914,6 +5922,7 @@ packages:
     hasBin: true
     dependencies:
       js-tokens: 4.0.0
+    dev: false
 
   /lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
@@ -6347,15 +6356,6 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-input-autosize@3.0.0(react@18.2.0):
-    resolution: {integrity: sha512-nL9uS7jEs/zu8sqwFE5MAPx6pPkNAriACQ2rGLlqmKr2sPGtN7TXTyDdQt4lbNXVx7Uzadb40x8qotIuru6Rhg==}
-    peerDependencies:
-      react: ^16.3.0 || ^17.0.0
-    dependencies:
-      prop-types: 15.8.1
-      react: 18.2.0
-    dev: false
-
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
     dev: false
@@ -6436,12 +6436,25 @@ packages:
       use-latest: 1.2.1(@types/react@18.2.15)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
+    dev: false
+
+  /react-toastify@9.1.3(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-fPfb8ghtn/XMxw3LkxQBk3IyagNpF/LIKjOBflbexr2AWxAH1MJgvnESwEwBn9liLFXgTKWgBSdZpw9m4OTHTg==}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      clsx: 1.2.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /react@18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
+    dev: false
 
   /read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -6999,6 +7012,11 @@ packages:
       punycode: 2.3.0
     dev: true
 
+  /url-pattern@1.0.3:
+    resolution: {integrity: sha512-uQcEj/2puA4aq1R3A2+VNVBgaWYR24FdWjl7VNW83rnWftlhyzOZ/tBjezRiC2UkIzuxC8Top3IekN3vUf1WxA==}
+    engines: {node: '>=0.12.0'}
+    dev: false
+
   /use-callback-ref@1.3.0(@types/react@18.2.15)(react@18.2.0):
     resolution: {integrity: sha512-3FT9PRuRdbB9HfXhEq35u4oZkvpJ5kuYbpqhCfmiZyReuRgpnhDlbr2ZEnnuS0RrJAPn6l23xjFg9kpDM+Ms7w==}
     engines: {node: '>=10'}
@@ -7020,6 +7038,7 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
       react: 18.2.0
+    dev: false
 
   /use-isomorphic-layout-effect@1.1.2(@types/react@18.2.15)(react@18.2.0):
     resolution: {integrity: sha512-49L8yCO3iGT/ZF9QttjwLF/ZD9Iwto5LnH5LmEdk/6cFmXddqi2ulF0edxTwjj+7mqvpVVGQWvbXZdn32wRSHA==}
@@ -7032,6 +7051,7 @@ packages:
     dependencies:
       '@types/react': 18.2.15
       react: 18.2.0
+    dev: false
 
   /use-latest@1.2.1(@types/react@18.2.15)(react@18.2.0):
     resolution: {integrity: sha512-xA+AVm/Wlg3e2P/JiItTziwS7FK92LWrDB0p+hgXloIMuVCeJJ8v6f0eeHyPZaJrM+usM1FkFfbNCrJGs8A/zw==}
@@ -7045,6 +7065,7 @@ packages:
       '@types/react': 18.2.15
       react: 18.2.0
       use-isomorphic-layout-effect: 1.1.2(@types/react@18.2.15)(react@18.2.0)
+    dev: false
 
   /use-sidecar@1.1.2(@types/react@18.2.15)(react@18.2.0):
     resolution: {integrity: sha512-epTbsLuzZ7lPClpz2TyryBfztm7m+28DlEv2ZCQ3MDr5ssiwyOwGH/e5F9CkfWjJ1t4clvI58yF822/GUkjjhw==}
@@ -7090,6 +7111,11 @@ packages:
       is-typed-array: 1.1.12
       which-typed-array: 1.1.11
     dev: true
+
+  /uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    hasBin: true
+    dev: false
 
   /v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}

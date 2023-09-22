@@ -3,6 +3,8 @@ import {BsFillFileSpreadsheetFill} from "react-icons/bs";
 import {ImExit, ImOnedrive} from "react-icons/im";
 import {useActions, useValues} from "kea";
 import {userLogic} from "../logics/userLogic";
+import {router} from "kea-router";
+import {urls} from "../utils/routes";
 
 export function Nav() {
     const {user} = useValues(userLogic)
@@ -11,9 +13,9 @@ export function Nav() {
     return (
         <>
             <Navbar position="static">
-                <NavbarBrand className="flex gap-4 items-center">
+                <NavbarBrand className="flex gap-4 items-center cursor-pointer" onClick={() => router.actions.push(urls.home())}>
                     <BsFillFileSpreadsheetFill className="text-2xl"/>
-                    <p className="font-bold text-2xl text-inherit">Excel 2 Website</p>
+                    <p className="font-bold text-2xl text-inherit">Excel 2 Dashboard</p>
                 </NavbarBrand>
                 <NavbarContent justify="end">
                     {user ? (

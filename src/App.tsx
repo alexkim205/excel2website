@@ -1,20 +1,21 @@
 import {Nav} from "./components/Nav";
 import {useValues} from "kea";
-import {dataLayerLogic} from "./logics/dataLayerLogic";
-import {DashboardItem} from "./components/DashboardItem";
-import {Grid} from "./components/Grid/Grid";
+import {sceneLogic} from "./logics/sceneLogic";
+import {SceneKey} from "./utils/routes";
+import {Home} from "./scenes/Home";
+import {Dashboard} from "./scenes/Dashboard";
 
 function App() {
-    const {charts, layouts} = useValues(dataLayerLogic)
+    const {scene, params} = useValues(sceneLogic)
 
     return (
         <div className="flex flex-col min-h-screen items-center gap-12">
             <Nav/>
-            <Grid layouts={layouts}>
-                {charts.map((chart) => <div key={chart.id}>
-                    <DashboardItem key={chart.id} chart={chart}/>
-                </div>)}
-            </Grid>
+            {{
+                [SceneKey.Home]: <Home/>,
+                [SceneKey.Dashboard]: <Dashboard props={{id: params.id}}/>
+            }[scene]}
+
         </div>
     )
 }

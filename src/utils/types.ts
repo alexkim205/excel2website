@@ -1,3 +1,5 @@
+import {Database} from "./database.types";
+
 export enum AxisType {
     Value = 'value',
     Category = 'category',
@@ -5,12 +7,23 @@ export enum AxisType {
     Log = 'log'
 }
 
-export enum DataTableTab {
-    Expected = "expected",
-    Preview = 'preview'
+export enum PanelTab {
+    ExpectedData = "expected_data",
+    PreviewData = 'preview_data',
+    Chart = 'chart'
 }
 
-export interface ChartType {
+export type DashboardType = Omit<Database["public"]["Tables"]["dashboards"]["Row"], "data"> & {data: DashboardDataType}
+
+export interface DashboardDataType {
+    id: string
+    title: string
+    description: string
+}
+
+export type DashboardItemType = Omit<Database["public"]["Tables"]["dashboard_items"]["Row"], "data"> & {data: DashboardItemDataType}
+
+export interface DashboardItemDataType {
     id: string
     type: ChartPresetType
     dataSourceId: string | undefined | null // data file id related to Microsoft Graph API
@@ -64,4 +77,9 @@ export interface WorkbookType {
     lastModifiedDateTime: string
     createdDateTime: string,
     name: string
+}
+
+export enum SupabaseTable {
+    Dashboards = 'dashboards',
+    DashboardItems = 'dashboard_items'
 }
