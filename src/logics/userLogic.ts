@@ -35,9 +35,7 @@ export const userLogic = kea<userLogicType>([
             }
         },
         signOut: async () => {
-            console.log("SIGN OUT GREAT")
             const {error} = await supabase.auth.signOut()
-            console.log("SIGN OUT", error)
             if (error) {
                 throw new Error(error.message)
             }
