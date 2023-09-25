@@ -12,6 +12,9 @@ import omit from "lodash.omit"
 import {toast} from "react-toastify";
 import {v4 as uuidv4} from "uuid";
 import {generateEmptyDashboardItem} from "../utils/utils";
+import {router} from "kea-router";
+import {urls} from "../utils/routes";
+import merge from "lodash.merge";
 
 export interface DashboardItemLogicProps {
     id: DashboardItemType["id"],
@@ -25,17 +28,19 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
     props({autoSync: false} as DashboardItemLogicProps),
     connect((props: DashboardItemLogicProps) => ({
         values: [dashboardLogic(props.dashboardProps), ["charts"], userLogic, ["providerToken", "user"]],
-        actions: [dashboardLogic(props.dashboardProps), ["setChart", "loadCharts", "setCharts"]]
+        actions: [dashboardLogic(props.dashboardProps), ["setChart", "loadCharts", "setCharts", "setChildChartsLoading"], userLogic, ["signOut"]]
     })),
     defaults({
         open: false as boolean,
-        data: null as DataType | null
+        data: null as DataType | null,
+        localChart: {} as DeepPartial<DashboardItemType>
     }),
     actions(() => ({
         setOpen: (open: boolean) => ({open}),
         setThisChart: (chart: DeepPartial<DashboardItemType>) => ({chart}),
         saveThisChart: (shouldToast: boolean = true) => ({shouldToast}),
         setLastSyncedChart: (lastSyncedChart: DashboardItemType) => ({lastSyncedChart}),
+        setLocalChart: (chart: DeepPartial<DashboardItemType>) => ({chart})
     })),
     loaders(({values, props, actions}) => ({
         data: {
@@ -46,37 +51,43 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                 }
                 await breakpoint(100)
                 const response = await graphFetch({
-                    url: `items/${values.thisChart.data.dataSourceId}/workbook/worksheets/${values.parsedRange.sheet}/range(address='${values.parsedRange.range}')`,
+                    url: `items/${values.localMergedChart.data.dataSourceId}/workbook/worksheets/${values.parsedRange.sheet}/range(address='${values.parsedRange.range}')`,
                     method: "GET",
                     providerToken: values.providerToken,
                 })
                 const data = await response.json()
                 breakpoint()
+                if (response.status === 401) {
+                    actions.signOut()
+                    router.actions.push(urls.home())
+                    return
+                }
 
                 // Set last synced data
-                actions.setLastSyncedChart(values.thisChart)
+                actions.setLastSyncedChart(values.localMergedChart)
 
                 return data
             }
         },
         chart: {
             saveThisChart: async ({shouldToast}, breakpoint) => {
+                console.log("BLAH", props.id)
                 if (!values.syncable || !values.user) {
-                    return
+                    return null
                 }
                 await breakpoint(100)
                 // generate new id if this is a new dashboard item
                 const newId = values.isNew ? uuidv4() : props.id
-                const findNewCoordinates = (size: "sm" | "md" | "lg") => newId ? {
-                    ...omit(values.thisChart.data.coordinates[size], ["static"]),
+                const findNewCoordinates = (size: "sm" | "md" | "lg") => values.isNew ? {
+                    ...omit(values.localMergedChart.data.coordinates[size], ["static"]),
                     x: 3
-                } : values.thisChart.data.coordinates[size]
+                } : values.localMergedChart.data.coordinates[size]
                 const {data, error} = await supabase
                     .from(SupabaseTable.DashboardItems)
                     .upsert({
                         id: newId,
                         data: {
-                            ...values.thisChart.data,
+                            ...values.localMergedChart.data,
                             coordinates: {
                                 sm: findNewCoordinates("sm"),
                                 md: findNewCoordinates("md"),
@@ -86,7 +97,7 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                         },
                         dashboard: props.dashboardProps.id,
                         user: values.user?.user?.id
-                    }).select()
+                    }).select().maybeSingle()
                 breakpoint()
                 if (error) {
                     throw new Error(error.message)
@@ -100,15 +111,36 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                     actions.loadCharts({})
                     // reset data in new modal
                     actions.setThisChart(generateEmptyDashboardItem(props.id))
+                } else {
+                    console.log("SET GLOBAL", data)
+                    actions.setThisChart(data as DashboardItemType)
                 }
 
                 actions.setOpen(false)
 
                 return data
+            },
+            deleteThisChart: async (_, breakpoint) => {
+                await breakpoint(100)
+
+                const {error} = await supabase
+                    .from(SupabaseTable.DashboardItems)
+                    .delete()
+                    .eq('id', props.id)
+
+                breakpoint()
+                if (error) {
+                    throw new Error(error.message)
+                }
+                return null
             }
         }
     })),
     reducers(() => ({
+        localChart: {
+            setLocalChart: (lastChart, {chart}) => merge({}, lastChart, chart),
+            setOpen: () => ({})
+        },
         open: {
             setOpen: (_, {open}) => open
         },
@@ -116,13 +148,40 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
             setLastSyncedChart: (_, {lastSyncedChart}) => lastSyncedChart
         },
     })),
-    listeners(({actions, props}) => ({
+    listeners(({actions, props, values}) => ({
         setThisChart: ({chart}) => {
             actions.setChart({
                 ...chart,
                 id: props.id
             })
         },
+        // debounced save on changing layout
+        setCharts: async ({changedItemIds}, breakpoint) => {
+            if (changedItemIds.has(props.id)) {
+                actions.saveThisChart(false)
+            }
+            breakpoint()
+        },
+        // Handles loading states
+        deleteThisChart: () => {
+            actions.setChildChartsLoading(props.id, true)
+        },
+        deleteThisChartSuccess: () => {
+            actions.setCharts(values.charts.filter(chart => chart.id !== props.id), new Set())
+            actions.setChildChartsLoading(props.id, false)
+        },
+        deleteThisChartFailure: () => {
+            actions.setChildChartsLoading(props.id, false)
+        },
+        saveThisChart: () => {
+            actions.setChildChartsLoading(props.id, true)
+        },
+        saveThisChartSuccess: () => {
+            actions.setChildChartsLoading(props.id, false)
+        },
+        saveThisChartFailure: () => {
+            actions.setChildChartsLoading(props.id, false)
+        }
     })),
     selectors(() => ({
         isNew: [
@@ -133,10 +192,14 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
             (s) => [s.charts, (_, props) => props.id],
             (charts, thisId): DashboardItemType => charts.find(({id}) => id === thisId) as DashboardItemType
         ],
+        localMergedChart: [
+            (s) => [s.thisChart, s.localChart],
+            (thisChart, localChart): DashboardItemType => merge({},thisChart, localChart)
+        ],
         parsedRange: [
-            (s) => [s.thisChart],
-            (thisChart) => {
-                const range = thisChart?.data?.dataRange
+            (s) => [s.localMergedChart],
+            (localMergedChart) => {
+                const range = localMergedChart?.data?.dataRange
                 const sheetAndRange = range?.split("!")
                 const sheet = sheetAndRange?.[0]?.replace(/^'+|'+$/g, '')
                 const parsedRange = sheetAndRange?.[1]
@@ -155,14 +218,14 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
             }
         ],
         syncable: [
-            (s) => [s.providerToken, s.parsedRange, s.thisChart],
-            (providerToken, parsedRange, thisChart) => {
-                return providerToken && parsedRange.sheet && parsedRange.range && (thisChart?.data?.dataSourceId && thisChart.data.dataSourceId !== "null" && thisChart.data.dataSourceId != "undefined")
+            (s) => [s.providerToken, s.parsedRange, s.localMergedChart],
+            (providerToken, parsedRange, localMergedChart) => {
+                return providerToken && parsedRange.sheet && parsedRange.range && (localMergedChart?.data?.dataSourceId && localMergedChart.data.dataSourceId !== "null" && localMergedChart.data.dataSourceId != "undefined")
             }
         ],
         synced: [
-            (s) => [s.lastSyncedChart, s.thisChart],
-            (lastSyncedChart, thisChart) => equal(pick(lastSyncedChart?.data, ["dataSourceId", "dataRange"]), pick(thisChart?.data, ["dataSourceId", "dataRange"]))
+            (s) => [s.lastSyncedChart, s.localMergedChart],
+            (lastSyncedChart, localMergedChart) => equal(pick(lastSyncedChart?.data, ["dataSourceId", "dataRange"]), pick(localMergedChart?.data, ["dataSourceId", "dataRange"]))
         ],
     })),
     afterMount(({props, actions}) => {

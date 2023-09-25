@@ -8,9 +8,14 @@ import {graphTypeToOptions} from "./graph";
 import pick from "lodash.pick";
 import {Spinner} from "@nextui-org/react";
 
-export function Chart({props}: { props: DashboardItemLogicProps}) {
+export interface ChartProps {
+    props: DashboardItemLogicProps,
+    className?: string
+}
+
+export function Chart({props, className}: ChartProps) {
     const logic = dashboardItemLogic(props)
-    const {open, thisChart, dataLoading, data} = useValues(logic)
+    const {open, localMergedChart, dataLoading, data} = useValues(logic)
 
     const ref = useRef<HTMLDivElement>(null)
 
@@ -30,7 +35,7 @@ export function Chart({props}: { props: DashboardItemLogicProps}) {
     useEffect(() => {
         if (ref.current && data) {
             const chart = init(ref.current);
-            const option = graphTypeToOptions[thisChart.data.type](data, thisChart.data)
+            const option = graphTypeToOptions[localMergedChart.data.type](data, localMergedChart.data)
             chart.setOption(option as ECBasicOption);
 
             // Add chart resize listener
@@ -49,29 +54,29 @@ export function Chart({props}: { props: DashboardItemLogicProps}) {
             };
         }
     }, [ref.current, open, data, JSON.stringify([
-        pick(thisChart.data.coordinates.sm, ["w","h"]),
-        pick(thisChart.data.coordinates.md, ["w","h"]),
-        pick(thisChart.data.coordinates.lg, ["w","h"])
+        pick(localMergedChart.data.coordinates.sm, ["w", "h"]),
+        pick(localMergedChart.data.coordinates.md, ["w", "h"]),
+        pick(localMergedChart.data.coordinates.lg, ["w", "h"])
     ])])
 
     useEffect(() => {
-        console.log("THIS RELOAD2", thisChart.data.chart, thisChart.data.type)
         if (!ref.current || !data) {
             return
         }
         const chart = getInstanceByDom(ref.current)
-        if (chart && thisChart.data.type) {
-            const option = graphTypeToOptions[thisChart.data.type](data, thisChart.data)
+        if (chart && localMergedChart.data.type) {
+            const option = graphTypeToOptions[localMergedChart.data.type](data, localMergedChart.data)
             console.log("option", option)
             chart.clear()
             chart.setOption(option as ECBasicOption);
         }
-    }, [JSON.stringify(thisChart.data.chart), JSON.stringify(thisChart.data.type)])
+    }, [JSON.stringify(localMergedChart.data.chart), JSON.stringify(localMergedChart.data.type)])
 
     return (
         <div id={`${props.id}-chart`} ref={ref} className={
-            clsx("rounded-small w-full transition-background transition-colors p-4 bg-white",
-                data ? "sm:h-full h-[500px]" : "flex grow justify-center items-center text-base text-default-400 h-auto",
+            clsx("rounded-small w-full transition-background transition-colors py-4 px-2 bg-white",
+                data ? "sm:h-full h-[400px]" : "flex grow justify-center items-center text-base text-default-400 h-auto",
+                className
             )
         }>
             {dataLoading ? (

@@ -1,14 +1,24 @@
-import {Card, CardBody} from "@nextui-org/react";
+import {
+    Button,
+    Card,
+    CardBody,
+    Listbox,
+    ListboxItem,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+    Spinner
+} from "@nextui-org/react";
 import {AiOutlinePlus} from "react-icons/ai";
-import {useActions} from "kea";
+import {useActions, useValues} from "kea";
 import {dashboardItemLogic} from "../logics/dashboardItemLogic";
 import {DashboardItemType} from "../utils/types";
 import {DataSelectModal} from "./Modal/DataSelectModal";
-import {forwardRef} from "react";
-import {RxDragHandleDots2} from "react-icons/rx";
+import {forwardRef, useState} from "react";
+import {RxDotsVertical, RxDragHandleDots2, RxPencil1, RxTrash} from "react-icons/rx";
 import {DashboardLogicProps} from "../logics/dashboardLogic";
 import {Chart} from "./Modal/Chart";
-
+import clsx from "clsx";
 
 export const DashboardItem = forwardRef<HTMLDivElement, {
     chart: DashboardItemType,
@@ -16,7 +26,9 @@ export const DashboardItem = forwardRef<HTMLDivElement, {
 }>(({chart, dashboardProps}, ref) => {
     const logicProps = {id: chart.id, dashboardProps, autoSync: true}
     const logic = dashboardItemLogic(logicProps)
-    const {setOpen} = useActions(logic)
+    const {chartLoading} = useValues(logic)
+    const {setOpen, deleteThisChart} = useActions(logic)
+    const [popoverOpen, setPopoverOpen] = useState(false)
 
     return (
         <>
@@ -34,10 +46,54 @@ export const DashboardItem = forwardRef<HTMLDivElement, {
                 }}
             >
                 <CardBody>
-                    <Chart props={logicProps}/>
+                    <div className="custom-draggable-cancel relative self-end">
+                        <Popover key={`${chart.id}-menu`} placement="bottom-end" isOpen={popoverOpen} onOpenChange={(open) => setPopoverOpen(open)}>
+                            <PopoverTrigger>
+                                <Button variant="light" size="md" isIconOnly>
+                                    <RxDotsVertical className="text-default-400 text-md"/>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
+                                <Listbox
+                                    aria-label={`${chart.id}-menu-options`}
+                                >
+                                    <ListboxItem
+                                        key="edit"
+                                        color="default"
+                                        startContent={<RxPencil1 className="text-lg"/>}
+                                        onClick={() => {
+                                            setPopoverOpen(false)
+                                            setOpen(true)
+                                        }}
+                                    >
+                                        Edit
+                                    </ListboxItem>
+                                    <ListboxItem
+                                        key="delete"
+                                        color="danger"
+                                        startContent={chartLoading ? <Spinner color="white" size="sm"/> : <RxTrash  className="text-lg"/>}
+                                        className={clsx(chartLoading && "cursor-not-allowed opacity-60")}
+                                        onClick={() => {
+                                            if (chartLoading) {
+                                                return
+                                            }
+                                            if (confirm('Are you sure you want to delete this chart?')) {
+                                                deleteThisChart({})
+                                            } else {
+                                                // Do nothing!
+                                            }
+                                        }}
+                                    >
+                                        Delete
+                                    </ListboxItem>
+                                </Listbox>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    <Chart className="-mt-6 pt-0" props={logicProps}/>
                 </CardBody>
             </Card>
-            <div className="custom-draggable-handle absolute top-2 left-1.5 cursor-grab w-2 h-2">
+            <div className="custom-draggable-handle absolute top-1 left-1 cursor-grab w-10 h-10 justify-center flex items-center">
                 <RxDragHandleDots2 className="text-default-400 text-lg"/>
             </div>
             <DataSelectModal props={logicProps} dashboardProps={dashboardProps}/>

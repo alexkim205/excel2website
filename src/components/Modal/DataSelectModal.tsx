@@ -17,6 +17,7 @@ import {
     TableRow,
     Tabs,
     Textarea,
+    Checkbox
 } from "@nextui-org/react";
 import {useActions, useValues} from "kea";
 import {dashboardItemLogic, DashboardItemLogicProps} from "../../logics/dashboardItemLogic";
@@ -34,11 +35,69 @@ export function DataSelectModal({dashboardProps, props}: {
     const dashLogic = dashboardLogic(dashboardProps)
     const logic = dashboardItemLogic(props)
     const {workbooks} = useValues(dashLogic)
-    const {open, thisChart, parsedRange, dataLoading, syncable, synced, data, chartLoading} = useValues(logic)
-    const {setOpen, setThisChart, fetchData, saveThisChart} = useActions(logic)
+    const {
+        open,
+        localMergedChart,
+        isNew,
+        parsedRange,
+        dataLoading,
+        syncable,
+        synced,
+        data,
+        chartLoading
+    } = useValues(logic)
+    const {setOpen, setLocalChart, fetchData, saveThisChart} = useActions(logic)
     const [dataTableTab, setDataTableTab] = useState<PanelTab>(PanelTab.Chart)
 
-    const ThisChartIcon = graphTypeTabs[thisChart.data.type].Icon
+    const ThisChartIcon = graphTypeTabs[localMergedChart.data.type].Icon
+    const renderChartInputFields = () => <>
+        <Input type="text" key="chart-title-field" name="chart-title-field"
+               id="chart-title-field" label="Title" placeholder="Name this chart"
+               labelPlacement="outside" value={localMergedChart?.data?.chart?.title?.text}
+               onChange={(event: FormEvent<HTMLInputElement>) => {
+                   setLocalChart({data: {chart: {title: {text: event.currentTarget.value}}}})
+               }}/>
+        <Textarea
+            name="chart-description-field"
+            label="Description (optional)"
+            labelPlacement="outside"
+            minRows={2}
+            cacheMeasurements
+            value={localMergedChart?.data?.chart?.title?.subtext}
+            onValueChange={(value) => {
+                setLocalChart({data: {chart: {title: {subtext: value}}}})
+            }}
+            type="text"
+            placeholder="Write a description"
+        />
+        {![ChartPresetType.RingPie, ChartPresetType.BasicPie].includes(localMergedChart.data.type) && (
+            <>
+                <Input type="text" key="chart-xaxis-field" name="chart-xaxis-field"
+                       id="chart-xaxis-field" label="X-axis label"
+                       placeholder="Time"
+                       labelPlacement="outside"
+                       value={localMergedChart?.data?.chart?.xAxis?.name}
+                       onChange={(event: FormEvent<HTMLInputElement>) => {
+                           setLocalChart({data: {chart: {xAxis: {name: event.currentTarget.value}}}})
+                       }}/>
+                <Input type="text" key="chart-yaxis-field" name="chart-yaxis-field"
+                       id="chart-yaxis-field" label="Y-axis label"
+                       placeholder="Units"
+                       labelPlacement="outside"
+                       value={localMergedChart?.data?.chart?.yAxis?.name}
+                       onChange={(event: FormEvent<HTMLInputElement>) => {
+                           setLocalChart({data: {chart: {yAxis: {name: event.currentTarget.value}}}})
+                       }}/>
+            </>
+        )}
+        <Checkbox
+            size="sm"
+            className="font-medium"
+            isSelected={!!localMergedChart?.data?.chart?.legend?.show}
+                  onValueChange={(nextSelected) => setLocalChart({data: {chart: {legend: {show: nextSelected}}}})}>
+            Show legend
+        </Checkbox>
+    </>
 
     return (
         <Modal
@@ -62,9 +121,9 @@ export function DataSelectModal({dashboardProps, props}: {
                                         <h2 className="text-lg font-bold">Data</h2>
                                         <Select placeholder="Select workbook" aria-label="Workbook"
                                                 labelPlacement="outside" label="Workbook"
-                                                selectedKeys={new Set(thisChart?.data?.dataSourceId ? [String(thisChart.data.dataSourceId)] : [])}
+                                                selectedKeys={new Set(localMergedChart?.data?.dataSourceId ? [String(localMergedChart.data.dataSourceId)] : [])}
                                                 onSelectionChange={(keys) => {
-                                                    setThisChart({data: {dataSourceId: Array.from(keys)?.[0] ? String(Array.from(keys)[0]) : null}})
+                                                    setLocalChart({data: {dataSourceId: Array.from(keys)?.[0] ? String(Array.from(keys)[0]) : null}})
                                                 }}
                                         >
                                             {workbooks.map((workbook) => (
@@ -73,8 +132,8 @@ export function DataSelectModal({dashboardProps, props}: {
                                                 </SelectItem>
                                             ))}
                                         </Select>
-                                        <Input value={thisChart?.data?.dataRange}
-                                               onValueChange={(value) => setThisChart({data: {dataRange: value}})}
+                                        <Input value={localMergedChart?.data?.dataRange}
+                                               onValueChange={(value) => setLocalChart({data: {dataRange: value}})}
                                                isClearable
                                                label="Cell range"
                                                labelPlacement="outside"
@@ -101,9 +160,9 @@ export function DataSelectModal({dashboardProps, props}: {
                                         <Select placeholder="Chart type" aria-label="Chart type"
                                                 labelPlacement="outside" label="Chart type"
                                                 startContent={<ThisChartIcon className="text-lg"/>}
-                                                selectedKeys={new Set(thisChart?.data?.type ? [String(thisChart.data.type)] : [])}
+                                                selectedKeys={new Set(localMergedChart?.data?.type ? [String(localMergedChart.data.type)] : [])}
                                                 onSelectionChange={(keys) => {
-                                                    setThisChart({data: {type: Array.from(keys)?.[0] ? String(Array.from(keys)[0]) as ChartPresetType : undefined}})
+                                                    setLocalChart({data: {type: Array.from(keys)?.[0] ? String(Array.from(keys)[0]) as ChartPresetType : undefined}})
                                                 }}
                                         >
                                             {Object.values(graphTypeTabs).map((type) => (
@@ -113,46 +172,8 @@ export function DataSelectModal({dashboardProps, props}: {
                                                 </SelectItem>
                                             ))}
                                         </Select>
-                                        <div className="flex-col flex gap-3">
-                                            <Input type="text" key="chart-title-field" name="chart-title-field"
-                                                   id="chart-title-field" label="Title" placeholder="Name this chart"
-                                                   labelPlacement="outside" value={thisChart?.data?.chart?.title?.text}
-                                                   onChange={(event: FormEvent<HTMLInputElement>) => {
-                                                       setThisChart({data: {chart: {title: {text: event.currentTarget.value}}}})
-                                                   }}/>
-                                            <Textarea
-                                                name="chart-description-field"
-                                                label="Description (optional)"
-                                                labelPlacement="outside"
-                                                minRows={2}
-                                                cacheMeasurements
-                                                value={thisChart?.data?.chart?.title?.subtext}
-                                                onValueChange={(value) => {
-                                                    setThisChart({data: {chart: {title: {subtext: value}}}})
-                                                }}
-                                                type="text"
-                                                placeholder="Write a description"
-                                            />
-                                            {![ChartPresetType.RingPie, ChartPresetType.BasicPie].includes(thisChart.data.type) && (
-                                                <>
-                                                    <Input type="text" key="chart-xaxis-field" name="chart-xaxis-field"
-                                                           id="chart-xaxis-field" label="X-axis label"
-                                                           placeholder="Time"
-                                                           labelPlacement="outside"
-                                                           value={thisChart?.data?.chart?.xAxis?.name}
-                                                           onChange={(event: FormEvent<HTMLInputElement>) => {
-                                                               setThisChart({data: {chart: {xAxis: {name: event.currentTarget.value}}}})
-                                                           }}/>
-                                                    <Input type="text" key="chart-yaxis-field" name="chart-yaxis-field"
-                                                           id="chart-yaxis-field" label="Y-axis label"
-                                                           placeholder="Units"
-                                                           labelPlacement="outside"
-                                                           value={thisChart?.data?.chart?.yAxis?.name}
-                                                           onChange={(event: FormEvent<HTMLInputElement>) => {
-                                                               setThisChart({data: {chart: {yAxis: {name: event.currentTarget.value}}}})
-                                                           }}/>
-                                                </>
-                                            )}
+                                        <div className="flex-col gap-3 sm:flex hidden">
+                                            {renderChartInputFields()}
                                         </div>
                                     </div>
                                     <div
@@ -200,17 +221,17 @@ export function DataSelectModal({dashboardProps, props}: {
                                                 <div
                                                     className="text-tiny justify-center w-full flex text-foreground-400 pb-1.5">
                                                     Showing expected shape of data for
-                                                    a {graphTypeTabs[thisChart.data.type].label} chart.
+                                                    a {graphTypeTabs[localMergedChart.data.type].label} chart.
                                                 </div>
                                                 <Table aria-label="Expected Data Table" shadow="none">
                                                     <TableHeader className="rounded-none">
-                                                        {graphTypeTabs[thisChart.data.type].expectedData[0].map((column: string | number, columnIndex: number) =>
+                                                        {graphTypeTabs[localMergedChart.data.type].expectedData[0].map((column: string | number, columnIndex: number) =>
                                                             <TableColumn className="uppercase"
                                                                          key={columnIndex}>{column}</TableColumn>) ?? <>
                                                             <TableColumn>Data</TableColumn></>}
                                                     </TableHeader>
                                                     <TableBody emptyContent={"No rows to display."}>
-                                                        {graphTypeTabs[thisChart.data.type].expectedData.slice(1).map((row: (string | number)[], rowIndex: number) => (
+                                                        {graphTypeTabs[localMergedChart.data.type].expectedData.slice(1).map((row: (string | number)[], rowIndex: number) => (
                                                             <TableRow key={rowIndex}>
                                                                 {row.map((cell, cellIndex) => <TableCell
                                                                     key={cellIndex}>{cell}</TableCell>)}
@@ -221,6 +242,9 @@ export function DataSelectModal({dashboardProps, props}: {
                                             </Tab>
                                         </Tabs>
                                     </div>
+                                    <div className="flex-col gap-3 sm:hidden flex">
+                                        {renderChartInputFields()}
+                                    </div>
                                 </div>
                             </div>
                         </ModalBody>
@@ -230,9 +254,10 @@ export function DataSelectModal({dashboardProps, props}: {
                                 Cancel
                             </Button>
                             <Button className="font-semibold disabled:cursor-not-allowed disabled:opacity-60"
-                                    color="primary" onPress={() => synced && syncable && saveThisChart()} isLoading={chartLoading}
+                                    color="primary" onPress={() => synced && syncable && saveThisChart()}
+                                    isLoading={chartLoading}
                                     disabled={!(synced && syncable)}>
-                                Save
+                                Save{isNew ? "" : " changes"}
                             </Button>
                         </ModalFooter>
                     </>

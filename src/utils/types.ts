@@ -13,7 +13,10 @@ export enum PanelTab {
     Chart = 'chart'
 }
 
-export type DashboardType = Omit<Database["public"]["Tables"]["dashboards"]["Row"], "data"> & {data: DashboardDataType, dashboard_items: DashboardItemType[]}
+export type DashboardType = Omit<Database["public"]["Tables"]["dashboards"]["Row"], "data"> & {
+    data: DashboardDataType,
+    dashboard_items: DashboardItemType[]
+}
 
 export interface DashboardDataType {
     id: string
@@ -21,7 +24,9 @@ export interface DashboardDataType {
     description: string
 }
 
-export type DashboardItemType = Omit<Database["public"]["Tables"]["dashboard_items"]["Row"], "data"> & {data: DashboardItemDataType}
+export type DashboardItemType = Omit<Database["public"]["Tables"]["dashboard_items"]["Row"], "data"> & {
+    data: DashboardItemDataType
+}
 
 export interface DashboardItemDataType {
     id: string
@@ -29,9 +34,9 @@ export interface DashboardItemDataType {
     dataSourceId: string | undefined | null // data file id related to Microsoft Graph API
     dataRange: string | undefined // Sheet and range in this format, i.e. 'Sheet1'!A3:B9
     coordinates: {
-        sm: {x: number, y: number, w: number, h: number, static?: boolean},
-        md: {x: number, y: number, w: number, h: number, static?: boolean},
-        lg: {x: number, y: number, w: number, h: number, static?: boolean}
+        sm: { x: number, y: number, w: number, h: number, static?: boolean },
+        md: { x: number, y: number, w: number, h: number, static?: boolean },
+        lg: { x: number, y: number, w: number, h: number, static?: boolean }
     },
     chart: {
         title: {
@@ -43,6 +48,9 @@ export interface DashboardItemDataType {
             subtextStyle: {
                 fontSize: number
             }
+        }
+        legend: {
+            show: boolean
         }
         xAxis: {
             name: string

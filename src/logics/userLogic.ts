@@ -63,8 +63,8 @@ export const userLogic = kea<userLogicType>([
                             provider_refresh_token: session.provider_refresh_token
                         }
                     })
+                    actions.setUser(session);
                 }
-                actions.setUser(session);
             }
         );
 

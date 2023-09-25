@@ -14,8 +14,9 @@ export function Grid({children, layouts, onLayoutChange}: {children: ReactNode, 
             rowHeight={100}
             cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
             breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-            className="w-full"
+            className="w-full max-w-[1600px] mx-auto"
             draggableHandle=".custom-draggable-handle"
+            draggableCancel=".custom-draggable-cancel"
         >
             {children}
         </ResponsiveGridLayout>

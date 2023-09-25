@@ -110,7 +110,8 @@ export const graphTypeToOptions: Record<ChartPresetType, (data: DataType, chart:
                 data: seriesNames,
                 orient: 'vertical',
                 right: 10,
-                top: 'center'
+                top: 'center',
+                ...chart.chart.legend
             },
             dataset: {
                 source: data.values,
@@ -150,7 +151,8 @@ export const graphTypeToOptions: Record<ChartPresetType, (data: DataType, chart:
                 data: seriesNames,
                 orient: 'vertical',
                 right: 10,
-                top: 'center'
+                top: 'center',
+                ...chart.chart.legend
             },
             dataset: {
                 source: data.values,
@@ -195,7 +197,8 @@ export const graphTypeToOptions: Record<ChartPresetType, (data: DataType, chart:
                 data: seriesNames,
                 orient: 'vertical',
                 right: 10,
-                top: 'center'
+                top: 'center',
+                ...chart.chart.legend
             },
             dataset: {
                 source: data.values,
@@ -235,7 +238,8 @@ export const graphTypeToOptions: Record<ChartPresetType, (data: DataType, chart:
                 data: seriesNames,
                 orient: 'vertical',
                 right: 10,
-                top: 'center'
+                top: 'center',
+                ...chart.chart.legend
             },
             dataset: {
                 source: data.values,
@@ -276,7 +280,8 @@ export const graphTypeToOptions: Record<ChartPresetType, (data: DataType, chart:
                 data: seriesNames,
                 orient: 'vertical',
                 right: 10,
-                top: 'center'
+                top: 'center',
+                ...chart.chart.legend
             },
             dataset: {
                 source: data.values,
@@ -318,7 +323,8 @@ export const graphTypeToOptions: Record<ChartPresetType, (data: DataType, chart:
             legend: {
                 orient: 'vertical',
                 right: 10,
-                top: 'center'
+                top: 'center',
+                ...chart.chart.legend
             },
             dataset: {
                 source: datasetSource,
@@ -345,7 +351,8 @@ export const graphTypeToOptions: Record<ChartPresetType, (data: DataType, chart:
             legend: {
                 orient: 'vertical',
                 right: 10,
-                top: 'center'
+                top: 'center',
+                ...chart.chart.legend
             },
             dataset: {
                 source: datasetSource,
@@ -373,7 +380,8 @@ export const graphTypeToOptions: Record<ChartPresetType, (data: DataType, chart:
                 data: seriesNames,
                 orient: 'vertical',
                 right: 10,
-                top: 'center'
+                top: 'center',
+                ...chart.chart.legend
             },
             dataset: {
                 source: data.values,

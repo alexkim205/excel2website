@@ -1,4 +1,4 @@
-import {actions, afterMount, connect, defaults, kea, key, listeners, path, props, selectors} from "kea";
+import {actions, afterMount, connect, defaults, kea, key, listeners, path, props, reducers, selectors} from "kea";
 import {loaders} from "kea-loaders";
 import {userLogic} from "./userLogic";
 import {DashboardItemType, DashboardType, SupabaseTable, WorkbookType} from "../utils/types";
@@ -7,7 +7,11 @@ import type {DeepPartial} from "kea-forms/lib/types";
 import type {dashboardLogicType} from "./dashboardLogicType";
 import supabase from "../utils/supabase";
 import {generateEmptyDashboardData, generateEmptyDashboardItem} from "../utils/utils";
-import type {Layouts} from "react-grid-layout";
+import type {Layout, Layouts} from "react-grid-layout";
+import {router} from "kea-router";
+import {urls} from "../utils/routes";
+import equal from "lodash.isequal";
+import pick from "lodash.pick";
 
 export function graphFetch({url = "", method = "GET", providerToken, body}: {
     url: string,
@@ -36,7 +40,7 @@ export const dashboardLogic = kea<dashboardLogicType>([
     key((props) => props.id),
     connect(() => ({
         values: [userLogic, ["providerToken", "user"]],
-        actions: [userLogic, ["setUser"]]
+        actions: [userLogic, ["setUser", "signOut"]]
     })),
     defaults(({props}) => ({
         dashboard: null as DashboardType | null,
@@ -47,14 +51,21 @@ export const dashboardLogic = kea<dashboardLogicType>([
             created_at: null
         }] as DashboardItemType[],
         workbooks: [] as WorkbookType[],
+        childChartsLoading: {} as Record<DashboardItemType["id"], boolean>
     })),
     actions(() => ({
         setChart: (chart: DeepPartial<DashboardItemType>) => ({chart}),
-        setCharts: (charts: DeepPartial<DashboardItemType>[]) => ({charts}),
+        setCharts: (charts: DeepPartial<DashboardItemType>[], changedItemIds: Set<DashboardItemType["id"]>) => ({charts, changedItemIds}),
         setDashboard: (dashboard: DeepPartial<DashboardType>) => ({dashboard}),
-        onLayoutChange: (layouts: Layouts) => ({layouts})
+        onLayoutChange: (layouts: Layouts) => ({layouts}),
+        setChildChartsLoading: (id: DashboardItemType["id"], loading: boolean) => ({id, loading})
     })),
-    loaders(({values, props}) => ({
+    reducers(() => ({
+        childChartsLoading: {
+            setChildChartsLoading: (prev, {id, loading}) => merge({}, prev, {[id]: loading})
+        }
+    })),
+    loaders(({values, props, actions}) => ({
         dashboard: {
             loadDashboard: async (_, breakpoint) => {
                 await breakpoint(100)
@@ -92,7 +103,7 @@ export const dashboardLogic = kea<dashboardLogicType>([
                 return merge({}, values.dashboard, dashboard)
             },
             saveDashboard: async (_, breakpoint) => {
-                await breakpoint(100)
+                await breakpoint(3000)
                 const {data, error} = await supabase
                     .from(SupabaseTable.Dashboards)
                     .update({
@@ -140,6 +151,11 @@ export const dashboardLogic = kea<dashboardLogicType>([
                 const response = await graphFetch({url: "root/children", providerToken: values.providerToken})
                 const data = await response.json()
                 breakpoint()
+                if (response.status === 401) {
+                    actions.signOut()
+                    router.actions.push(urls.home())
+                    return
+                }
                 return data.value.filter(({name}: { name: string }) => name.endsWith(".xlsx")) ?? []
             }
         }
@@ -155,15 +171,25 @@ export const dashboardLogic = kea<dashboardLogicType>([
         loadDashboardSuccess: () => {
             actions.loadCharts({})
         },
-        onLayoutChange: ({layouts}) => {
+        onLayoutChange: async ({layouts}) => {
             const keys = layouts.sm.map(({i}) => i)
-            const idToNewDimensions = Object.fromEntries(keys.map((i) => [i, {
-                sm: layouts.sm.find(({i: thisI}) => thisI === i),
-                md: layouts.md.find(({i: thisI}) => thisI === i),
-                lg: layouts.lg.find(({i: thisI}) => thisI === i)
+            const stripDimension = (layout: Layout | undefined): Layout | undefined => layout ? pick(layout, ["h","w","x","y","i"]) : undefined
+            const idToOldDimensions = Object.fromEntries(keys.map((i) => [i, {
+                sm: stripDimension(values.layouts.sm.find(({i: thisI}) => thisI === i)),
+                md: stripDimension(values.layouts.md.find(({i: thisI}) => thisI === i)),
+                lg: stripDimension(values.layouts.lg.find(({i: thisI}) => thisI === i))
             }]))
+            const idToNewDimensions = Object.fromEntries(keys.map((i) => [i, {
+                sm: stripDimension(layouts.sm.find(({i: thisI}) => thisI === i)),
+                md: stripDimension(layouts.md.find(({i: thisI}) => thisI === i)),
+                lg: stripDimension(layouts.lg.find(({i: thisI}) => thisI === i))
+            }]))
+            const changedItemIds = keys.filter((key) => !equal(idToOldDimensions?.[key], idToNewDimensions?.[key]))
 
-            actions.setCharts(values.charts.map((chart) => merge({}, chart, {data: {coordinates: idToNewDimensions?.[chart.id] ?? chart.data.coordinates}})))
+            actions.setCharts(values.charts.map((chart) => merge({}, chart, {data: {coordinates: idToNewDimensions?.[chart.id] ?? chart.data.coordinates}})), new Set(changedItemIds))
+        },
+        setDashboard: async () => {
+            actions.saveDashboard({})
         }
     })),
     afterMount(({actions, values}) => {
@@ -183,5 +209,11 @@ export const dashboardLogic = kea<dashboardLogicType>([
                 }
             }
         ],
+        saving: [
+            (s) => [s.dashboardLoading, s.childChartsLoading],
+            (dashboardLoading, childChartsLoading) => {
+                return dashboardLoading || Object.values(childChartsLoading).some(b=>!!b)
+            }
+        ]
     }))
 ])

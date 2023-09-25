@@ -38,6 +38,9 @@ export function generateEmptyDashboardItem(id: DashboardItemDataType["id"]): Das
                     fontSize: 16
                 }
             },
+            legend: {
+              show: true
+            },
             xAxis: {
                 name: "",
                 type: null
