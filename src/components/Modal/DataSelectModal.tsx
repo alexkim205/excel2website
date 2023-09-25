@@ -27,6 +27,7 @@ import {MdOutlineSync} from "react-icons/md";
 import {Chart} from "./Chart";
 import {graphTypeTabs} from "./graph";
 import {ChartPresetType, PanelTab} from "../../utils/types";
+import {RxTrash} from "react-icons/rx";
 
 export function DataSelectModal({dashboardProps, props}: {
     dashboardProps: DashboardLogicProps,
@@ -46,7 +47,7 @@ export function DataSelectModal({dashboardProps, props}: {
         data,
         chartLoading
     } = useValues(logic)
-    const {setOpen, setLocalChart, fetchData, saveThisChart} = useActions(logic)
+    const {setOpen, setLocalChart, fetchData, saveThisChart, deleteThisChart} = useActions(logic)
     const [dataTableTab, setDataTableTab] = useState<PanelTab>(PanelTab.Chart)
 
     const ThisChartIcon = graphTypeTabs[localMergedChart.data.type].Icon
@@ -249,16 +250,34 @@ export function DataSelectModal({dashboardProps, props}: {
                             </div>
                         </ModalBody>
                         <Divider/>
-                        <ModalFooter>
-                            <Button color="danger" variant="light" onPress={onClose}>
-                                Cancel
-                            </Button>
-                            <Button className="font-semibold disabled:cursor-not-allowed disabled:opacity-60"
-                                    color="primary" onPress={() => synced && syncable && saveThisChart()}
-                                    isLoading={chartLoading}
-                                    disabled={!(synced && syncable)}>
-                                Save{isNew ? "" : " changes"}
-                            </Button>
+                        <ModalFooter className="flex flex-row items-center justify-between">
+                            <div className="flex flex-row items-center">
+                                {!isNew && (
+                                    <Button color="danger" variant="light" isIconOnly onPress={()=>{
+                                        if (chartLoading) {
+                                            return
+                                        }
+                                        if (confirm('Are you sure you want to delete this chart?')) {
+                                            deleteThisChart({})
+                                        } else {
+                                            // Do nothing!
+                                        }
+                                    }}>
+                                        <RxTrash className="text-xl"/>
+                                    </Button>
+                                )}
+                            </div>
+                            <div className="flex flex-row gap-2 items-center">
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    Cancel
+                                </Button>
+                                <Button className="font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+                                        color="primary" onPress={() => synced && syncable && saveThisChart()}
+                                        isLoading={chartLoading}
+                                        disabled={!(synced && syncable)}>
+                                    Save{isNew ? "" : " changes"}
+                                </Button>
+                            </div>
                         </ModalFooter>
                     </>
                 )}
