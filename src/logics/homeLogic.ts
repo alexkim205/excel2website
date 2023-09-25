@@ -1,4 +1,4 @@
-import {afterMount, connect, defaults, kea, listeners, path} from "kea";
+import {actions, afterMount, connect, defaults, kea, listeners, path} from "kea";
 import {loaders} from "kea-loaders";
 import {DashboardType, SupabaseTable} from "../utils/types";
 import supabase from "../utils/supabase";
@@ -14,14 +14,16 @@ export const homeLogic = kea<homeLogicType>([
         values: [userLogic, ["user"]],
         actions: [userLogic, ["setUser", "signOut"]]
     })),
+    actions(() => ({
+        deleteDashboard: (id: DashboardType["id"]) => ({id})
+    })),
     loaders(({values}) => ({
         dashboards: {
             loadDashboards: async (_, breakpoint) => {
-                console.log("data values", values.user, values.dashboards)
                 if (!values.user) {
                     return []
                 }
-                await breakpoint()
+                await breakpoint(100)
                 const {data, error} = await supabase
                     .from(SupabaseTable.Dashboards)
                     .select(`*, dashboard_items(*)`)
@@ -32,14 +34,27 @@ export const homeLogic = kea<homeLogicType>([
                 }
                 return data
             },
-            signOut: () => []
+            signOut: () => [],
+            deleteDashboard: async ({id}, breakpoint) => {
+                await breakpoint(100)
+                const {error} = await supabase
+                    .from(SupabaseTable.Dashboards)
+                    .delete()
+                    .eq('id', id)
+                breakpoint()
+
+                if (error) {
+                    throw new Error(error.message)
+                }
+                return values.dashboards.filter(({id: thisId}) => thisId !== id)
+            }
         }
     })),
     listeners(({actions}) => ({
-       setUser: ({user}) => {
-           console.log("NEW SER", user)
-           actions.loadDashboards({})
-       }
+        setUser: ({user}) => {
+            console.log("NEW SER", user)
+            actions.loadDashboards({})
+        }
     })),
     afterMount(({actions}) => {
         actions.loadDashboards({})

@@ -33,7 +33,7 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                                 value={dashboard?.data?.title}
                                 placeholder="Name this dashboard"
                                 inputStyle={{
-                                    fontWeight: 600,
+                                    fontWeight: 700,
                                     fontSize: 30
                                 }}
                                 className="!bg-transparent outline-none focus:outline-none max-w-full overflow-hidden overflow-ellipsis placeholder:text-foreground-500 is-filled"
