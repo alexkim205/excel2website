@@ -13,7 +13,7 @@ export async function refreshToken(refreshToken: string) {
             Host: "https://login.microsoftonline.com"
         }),
         body: new URLSearchParams({
-            scope: 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All',
+            scope: 'Files.Read Files.Read.All',
             grant_type: 'refresh_token',
             refresh_token: refreshToken,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -28,7 +28,7 @@ export async function refreshToken(refreshToken: string) {
 
 serve(async (req: any) => {
     if (req.method === 'OPTIONS') {
-        return new Response('ok', { headers: corsHeaders })
+        return new Response('ok', {headers: corsHeaders})
     }
 
     const {refreshToken: token} = await req.json()

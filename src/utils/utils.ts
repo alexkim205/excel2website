@@ -1,4 +1,7 @@
 import {ChartPresetType, DashboardDataType, DashboardItemDataType} from "./types";
+import { customAlphabet } from 'nanoid'
+
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8)
 
 export function isNumeric(str: any) {
     if (typeof str != "string") return false // we only process strings!
@@ -51,4 +54,8 @@ export function generateEmptyDashboardItem(id: DashboardItemDataType["id"]): Das
             },
         }
     }
+}
+
+export function generateDashboardSubdomain(): string {
+    return nanoid()
 }

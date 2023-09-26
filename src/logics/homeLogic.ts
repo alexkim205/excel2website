@@ -51,8 +51,7 @@ export const homeLogic = kea<homeLogicType>([
         }
     })),
     listeners(({actions}) => ({
-        setUser: ({user}) => {
-            console.log("NEW SER", user)
+        setUser: () => {
             actions.loadDashboards({})
         }
     })),

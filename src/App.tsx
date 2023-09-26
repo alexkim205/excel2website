@@ -5,18 +5,23 @@ import {SceneKey} from "./utils/routes";
 import {Home} from "./scenes/Home";
 import {Dashboard} from "./scenes/Dashboard";
 import {homeLogic} from "./logics/homeLogic";
+import {PublicDashboard} from "./scenes/PublicDashboard";
 
 function App() {
     useMountedLogic(homeLogic)
-    const {scene, params} = useValues(sceneLogic)
+    const {scene, params, subdomain} = useValues(sceneLogic)
+
+    if (subdomain) {
+        return <PublicDashboard subdomain={subdomain}/>
+    }
 
     return (
         <div className="flex flex-col min-h-screen items-center gap-8">
             <Nav/>
             {{
                 [SceneKey.Home]: <Home/>,
-                [SceneKey.Dashboard]: <Dashboard props={{id: params.id}}/>
-            }[scene]}
+                [SceneKey.Dashboard]: <Dashboard props={{id: params.id}}/>,
+            }[scene as SceneKey.Home | SceneKey.Dashboard]}
 
         </div>
     )

@@ -71,7 +71,6 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
         },
         chart: {
             saveThisChart: async ({shouldToast}, breakpoint) => {
-                console.log("BLAH", props.id)
                 if (!values.syncable || !values.user) {
                     return null
                 }

@@ -6,7 +6,7 @@ import merge from "lodash.merge"
 import type {DeepPartial} from "kea-forms/lib/types";
 import type {dashboardLogicType} from "./dashboardLogicType";
 import supabase from "../utils/supabase";
-import {generateEmptyDashboardData, generateEmptyDashboardItem} from "../utils/utils";
+import {generateDashboardSubdomain, generateEmptyDashboardData, generateEmptyDashboardItem} from "../utils/utils";
 import type {Layout, Layouts} from "react-grid-layout";
 import {router} from "kea-router";
 import {urls} from "../utils/routes";
@@ -90,7 +90,8 @@ export const dashboardLogic = kea<dashboardLogicType>([
                     .insert({
                         id: props.id,
                         user: values.user?.user.id,
-                        data: generateEmptyDashboardData(props.id)
+                        data: generateEmptyDashboardData(props.id),
+                        subdomain: generateDashboardSubdomain()
                     }).select().maybeSingle()
                 if (insertError) {
                     throw new Error(insertError.message)

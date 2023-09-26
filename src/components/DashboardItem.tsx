@@ -17,8 +17,9 @@ import {DataSelectModal} from "./Modal/DataSelectModal";
 import {forwardRef, useState} from "react";
 import {RxDotsVertical, RxDragHandleDots2, RxPencil1, RxTrash} from "react-icons/rx";
 import {DashboardLogicProps} from "../logics/dashboardLogic";
-import {Chart} from "./Modal/Chart";
+import {Chart, StaticChart} from "./Modal/Chart";
 import clsx from "clsx";
+import {PublicDashboardItemLogicProps} from "../logics/publicDashboardItemLogic";
 
 export const DashboardItem = forwardRef<HTMLDivElement, {
     chart: DashboardItemType,
@@ -100,6 +101,28 @@ export const DashboardItem = forwardRef<HTMLDivElement, {
         </>
     )
 })
+
+export function StaticDashboardItem(props: PublicDashboardItemLogicProps) {
+
+    return (
+        <>
+            <Card
+                id={`${props.chart.id}-card`}
+                shadow="sm"
+                fullWidth
+                className="h-full"
+                key={`${props.chart.id}-card`}
+                classNames={{
+                    body: "p-1 overflow-hidden"
+                }}
+            >
+                <CardBody>
+                    <StaticChart className="-mt-6 pt-0" props={props}/>
+                </CardBody>
+            </Card>
+        </>
+    )
+}
 
 export const NewDashboardItem = forwardRef<HTMLDivElement, {
     newId: DashboardItemType["id"],

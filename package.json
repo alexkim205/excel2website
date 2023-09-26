@@ -12,7 +12,7 @@
     "env:pull": "vercel env pull",
     "sync:secrets": "vercel pull --environment=development && cp .vercel/.env.development.local ./supabase/.env.local && sed -i '' '/^SUPABASE/d' ./supabase/.env.local && vercel pull --environment=production && cp .vercel/.env.production.local ./supabase/.env && sed -i '' '/^SUPABASE/d' ./supabase/.env && supabase secrets set --env-file ./supabase/.env",
     "start:functions": "supabase start && supabase functions serve --env-file ./supabase/.env.local",
-    "push:functions": "pnpm sync:secrets && supabase functions deploy refresh-token --project-ref qsnewyjxoevltgutfuts"
+    "push:functions": "pnpm sync:secrets && supabase functions deploy refresh-token --project-ref qsnewyjxoevltgutfuts && supabase functions deploy fetch-chart-data --project-ref qsnewyjxoevltgutfuts"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
@@ -32,6 +32,7 @@
     "lodash.merge": "^4.6.2",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
+    "nanoid": "^5.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-grid-layout": "^1.4.1",
