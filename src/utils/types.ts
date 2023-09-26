@@ -89,3 +89,10 @@ export enum SupabaseTable {
     Dashboards = 'dashboards',
     DashboardItems = 'dashboard_items'
 }
+
+export enum PricingTier {
+    Free = "free",
+    Tiny = "tiny",
+    Small = "small",
+    Large = "large"
+}
