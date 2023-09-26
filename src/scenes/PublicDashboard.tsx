@@ -3,6 +3,8 @@ import {publicDashboardLogic} from "../logics/publicDashboardLogic";
 import {Button, Link, Spinner} from "@nextui-org/react";
 import {Grid} from "../components/Grid/Grid";
 import {StaticDashboardItem} from "../components/DashboardItem";
+import {BsFillFileEarmarkSpreadsheetFill} from "react-icons/bs";
+import {RxHeartFilled} from "react-icons/rx";
 
 export interface PublicDashboardProps {
     subdomain: string | null
@@ -48,6 +50,18 @@ export function PublicDashboard({subdomain}: PublicDashboardProps) {
                         {dashboard?.data?.description}
                     </h1>
                 </div>
+                <Link
+                    href={import.meta.env.DEV ? "http://localhost:5173/" : "https://www.sheetstodashboard.com"}
+                    underline="none"
+                    isExternal
+                    showAnchorIcon
+                    isBlock
+                    size="sm"
+                    className="whitespace-nowrap text-default-500 self-start hover:text-primary"
+                    color="primary"
+                >
+                    Made with <BsFillFileEarmarkSpreadsheetFill className="text-sm text-green-700 ml-1.5 mr-1"/> SheetsToDashboard + <RxHeartFilled className="text-sm ml-1 text-red-500"/>
+                </Link>
             </div>
             <Grid layouts={layouts} isDraggable={false} isResizable={false} isDroppable={false}>
                 {dashboard?.dashboard_items?.map((chart) => (
