@@ -90,10 +90,9 @@ export function Chart({props, className}: ChartProps) {
 
 export interface StaticChartProps {
     props: PublicDashboardItemLogicProps,
-    className?: string
 }
 
-export function StaticChart({props, className}: StaticChartProps) {
+export function StaticChart({props}: StaticChartProps) {
     const logic = publicDashboardItemLogic(props)
     const thisChart = props.chart
     const {data, dataLoading} = useValues(logic)
@@ -156,7 +155,6 @@ export function StaticChart({props, className}: StaticChartProps) {
         <div id={`${props.chart.id}-chart`} ref={ref} className={
             clsx("rounded-small w-full transition-background transition-colors py-4 px-2 bg-white",
                 data ? "sm:h-full h-[400px]" : "flex grow justify-center items-center text-base text-default-400 h-auto",
-                className
             )
         }>
             {dataLoading ? (

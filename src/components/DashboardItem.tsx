@@ -117,7 +117,7 @@ export function StaticDashboardItem(props: PublicDashboardItemLogicProps) {
                 }}
             >
                 <CardBody>
-                    <StaticChart className="-mt-6 pt-0" props={props}/>
+                    <StaticChart props={props}/>
                 </CardBody>
             </Card>
         </>

@@ -67,15 +67,15 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                     )}
                 </div>
             </div>
+            <div className="w-full max-w-[1600px] mx-auto px-[10px]">
+                <NewDashboardItem newId={newUUID} dashboardProps={dashboardProps}/>
+            </div>
             <Grid layouts={layouts} onLayoutChange={(layouts) => onLayoutChange(layouts)}>
-                {charts.map((chart) => chart.id === newUUID
-                    ? <div key={newUUID} className="relative">
-                        <NewDashboardItem newId={newUUID} dashboardProps={dashboardProps}/>
-                    </div>
-                    : <div key={chart.id} className="relative">
+                {charts.filter(({id}) => id !== newUUID).map((chart) => (
+                    <div key={chart.id} className="relative">
                         <DashboardItem key={chart.id} chart={chart} dashboardProps={dashboardProps}/>
                     </div>
-                )}
+                ))}
             </Grid>
         </div>
     )

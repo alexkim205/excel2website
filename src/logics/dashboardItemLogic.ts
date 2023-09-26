@@ -79,7 +79,8 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                 const newId = values.isNew ? uuidv4() : props.id
                 const findNewCoordinates = (size: "sm" | "md" | "lg") => values.isNew ? {
                     ...omit(values.localMergedChart.data.coordinates[size], ["static"]),
-                    x: 3
+                    x: 0,
+                    y: 0
                 } : values.localMergedChart.data.coordinates[size]
                 const {data, error} = await supabase
                     .from(SupabaseTable.DashboardItems)

@@ -41,7 +41,7 @@ export function PublicDashboard({subdomain}: PublicDashboardProps) {
                         id="dashboard-title-field"
                         className="text-3xl font-bold"
                     >
-                        {dashboard?.data?.title}
+                        {dashboard?.data?.title || <span className="italic text-default-400">Untitled Dashboard</span>}
                     </h1>
                     <h1
                         id="dashboard-title-field"
