@@ -5,12 +5,15 @@ import {SceneKey} from "./utils/routes";
 import {Home} from "./scenes/Home";
 import {Dashboard} from "./scenes/Dashboard";
 import {homeLogic} from "./logics/homeLogic";
-import {PublicDashboard} from "./scenes/PublicDashboard";
+import {lazy} from "react";
+
+const PublicDashboard = lazy(() => import('./scenes/PublicDashboard'))
 
 function App() {
     useMountedLogic(homeLogic)
     const {scene, params, subdomain} = useValues(sceneLogic)
 
+    console.log("SUBDOMAIN", scene, params, subdomain)
     if (subdomain) {
         return <PublicDashboard subdomain={subdomain}/>
     }

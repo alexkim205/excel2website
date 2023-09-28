@@ -8,8 +8,6 @@ import type {dashboardLogicType} from "./dashboardLogicType";
 import supabase from "../utils/supabase";
 import {generateDashboardSubdomain, generateEmptyDashboardData, generateEmptyDashboardItem} from "../utils/utils";
 import type {Layout, Layouts} from "react-grid-layout";
-import {router} from "kea-router";
-import {urls} from "../utils/routes";
 import equal from "lodash.isequal";
 import pick from "lodash.pick";
 
@@ -40,7 +38,7 @@ export const dashboardLogic = kea<dashboardLogicType>([
     key((props) => props.id),
     connect(() => ({
         values: [userLogic, ["providerToken", "user"]],
-        actions: [userLogic, ["setUser", "signOut"]]
+        actions: [userLogic, ["setUser", "signOut", "refreshToken"]]
     })),
     defaults(({props}) => ({
         dashboard: null as DashboardType | null,
@@ -68,6 +66,9 @@ export const dashboardLogic = kea<dashboardLogicType>([
     loaders(({values, props, actions}) => ({
         dashboard: {
             loadDashboard: async (_, breakpoint) => {
+                if (props.id === "global") {
+                    return
+                }
                 await breakpoint(100)
                 const {data, error} = await supabase
                     .from(SupabaseTable.Dashboards)
@@ -153,8 +154,7 @@ export const dashboardLogic = kea<dashboardLogicType>([
                 const data = await response.json()
                 breakpoint()
                 if (response.status === 401) {
-                    actions.signOut()
-                    router.actions.push(urls.home())
+                    actions.refreshToken()
                     return
                 }
                 return data.value.filter(({name}: { name: string }) => name.endsWith(".xlsx")) ?? []

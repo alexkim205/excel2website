@@ -51,18 +51,21 @@ export interface Database {
           created_at: string | null
           data: Json
           id: string
+          subdomain: string | null
           user: string
         }
         Insert: {
           created_at?: string | null
           data?: Json
           id?: string
+          subdomain?: string | null
           user: string
         }
         Update: {
           created_at?: string | null
           data?: Json
           id?: string
+          subdomain?: string | null
           user?: string
         }
         Relationships: [

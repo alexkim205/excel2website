@@ -14,6 +14,7 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    "no-case-declarations": "off",
     "@typescript-eslint/no-explicit-any": "off"
   },
 }

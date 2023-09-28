@@ -5,12 +5,13 @@ import {Grid} from "../components/Grid/Grid";
 import {StaticDashboardItem} from "../components/DashboardItem";
 import {BsFillFileEarmarkSpreadsheetFill} from "react-icons/bs";
 import {RxHeartFilled} from "react-icons/rx";
+import {dashboardLogic} from "../logics/dashboardLogic";
 
 export interface PublicDashboardProps {
     subdomain: string | null
 }
 
-export function PublicDashboard({subdomain}: PublicDashboardProps) {
+function PublicDashboard({subdomain}: PublicDashboardProps) {
     const logicProps = {
         id: subdomain
     }
@@ -24,6 +25,7 @@ export function PublicDashboard({subdomain}: PublicDashboardProps) {
         )
     }
 
+    console.log("dashboard", dashboard, dashboardLoading)
     if (!dashboardLoading && !dashboard) {
         return (
             <div className="flex flex-col gap-6 w-screen h-screen text-default-600 justify-center items-center">
@@ -73,3 +75,5 @@ export function PublicDashboard({subdomain}: PublicDashboardProps) {
         </div>
     )
 }
+
+export default PublicDashboard

@@ -3,96 +3,104 @@ import {
     Card,
     CardBody,
     CardFooter,
-    CardHeader, Link,
-    Listbox,
-    ListboxItem,
+    CardHeader,
+    Divider,
+    Input,
+    Link,
     Modal,
     ModalBody,
-    ModalContent,
+    ModalContent, ModalFooter,
     ModalHeader,
 } from "@nextui-org/react";
 import {useActions, useValues} from "kea";
-import {publishModalLogic, PublishModalLogicProps} from "../../logics/publishModalLogic";
+import {publishModalLogic} from "../../logics/publishModalLogic";
 import {PricingTier} from "../../utils/types";
 import {TbLayoutGrid, TbMessageQuestion, TbWorldWww} from "react-icons/tb";
 import {capitalizeFirstLetter} from "kea-forms/lib/utils";
+import {userLogic} from "../../logics/userLogic";
+import {TierPerks} from "../TierPerks";
+import {DashboardLogicProps} from "../../logics/dashboardLogic";
 
 export interface PublishModalProps {
-    props: PublishModalLogicProps
+    props: DashboardLogicProps
 }
+
+export const TIERS = [
+    {
+        value: PricingTier.Free,
+        price: 0,
+        perks: [
+            {
+                Icon: TbLayoutGrid,
+                label: "Unlimited personal offline dashboards"
+            },
+        ]
+    },
+    {
+        value: PricingTier.Tiny,
+        price: 5,
+        perks: [
+            {
+                Icon: TbLayoutGrid,
+                label: "Up to 5 shareable dashboards"
+            },
+            {
+                Icon: TbWorldWww,
+                label: "Custom domain"
+            },
+        ]
+    },
+    {
+        value: PricingTier.Small,
+        price: 10,
+        perks: [
+            {
+                Icon: TbLayoutGrid,
+                label: "Up to 15 shareable dashboards"
+            },
+            {
+                Icon: TbWorldWww,
+                label: "Custom domain"
+            },
+        ]
+    },
+    {
+        value: PricingTier.Mega,
+        price: 20,
+        perks: [
+            {
+                Icon: TbLayoutGrid,
+                label: "Unlimited shareable dashboards"
+            },
+            {
+                Icon: TbWorldWww,
+                label: "Custom domain"
+            },
+            {
+                Icon: TbMessageQuestion,
+                label: "Priority support"
+            },
+        ]
+    }
+]
 
 export function PublishModal({props}: PublishModalProps) {
     const logic = publishModalLogic(props)
-    const {open} = useValues(logic)
-    const {setOpen} = useActions(logic)
+    const {plan} = useValues(userLogic)
+    const {open, loadingPaymentLinkPricingTier, dashboard} = useValues(logic)
+    const {setOpen, generatePaymentLink} = useActions(logic)
 
-    const tiers = [
-        {
-            value: PricingTier.Free,
-            price: 0,
-            perks: [
-                {
-                    Icon: TbLayoutGrid,
-                    label: "Unlimited personal offline dashboards"
-                },
-            ]
-        },
-        {
-            value: PricingTier.Tiny,
-            price: 5,
-            perks: [
-                {
-                    Icon: TbLayoutGrid,
-                    label: "Up to 5 shareable dashboards"
-                },
-                {
-                    Icon: TbWorldWww,
-                    label: "Custom domain"
-                },
-            ]
-        },
-        {
-            value: PricingTier.Small,
-            price: 10,
-            perks: [
-                {
-                    Icon: TbLayoutGrid,
-                    label: "Up to 15 shareable dashboards"
-                },
-                {
-                    Icon: TbWorldWww,
-                    label: "Custom domain"
-                },
-            ]
-        },
-        {
-            value: PricingTier.Mega,
-            price: 20,
-            perks: [
-                {
-                    Icon: TbLayoutGrid,
-                    label: "Unlimited shareable dashboards"
-                },
-                {
-                    Icon: TbWorldWww,
-                    label: "Custom domain"
-                },
-                {
-                    Icon: TbMessageQuestion,
-                    label: "Priority support"
-                },
-            ]
-        }
-    ]
+    console.log("dashboard", dashboard)
 
     return (
-        <Modal size="3xl" isOpen={open} onClose={() => setOpen(false)} scrollBehavior="inside">
+        <Modal size={plan === PricingTier.Free ? "3xl" : "lg"} isOpen={open} onClose={() => setOpen(false)} scrollBehavior="inside">
             <ModalContent>
-                {() => (
+                {() => plan === PricingTier.Free ? (
                     <>
                         <ModalHeader className="flex-col items-center justify-center">
                             <h3 className="text-2xl font-bold">Pricing and Why</h3>
                         </ModalHeader>
+                        <Divider/>
                         <ModalBody>
                             <p className="text-sm font-normal mb-2">Hi 👋 this is Alex, the solo founder of Sheets to
                                 Dashboard. I initially made this product to solve a problem I was running into, and was
@@ -109,35 +117,26 @@ export function PublishModal({props}: PublishModalProps) {
                                 non-profit or current student, shoot me an email at
                                 <Link size="sm" className="mx-1"
                                       href="mailto:hellosimplelanding@gmail.com">hellosimplelanding@gmail.com</Link>
-                                with details for a heavily discounted license.</p>
-                            <p className="text-sm">Thank you for supporting this product and as always looking forward
-                                to hearing your feedback! :)</p>
+                                with details for a discounted license.</p>
+                            <p className="text-sm">Thank you for supporting this product. Looking forward
+                                to hearing your feedback and making a great product! :)</p>
                             <div className="grid sm:grid-cols-4 grid-cols-2 gap-3">
-                                {tiers.map(({value, price, perks}) => (
-                                    <Card shadow="none" className="w-full border-medium p-2 gap-3"
+                                {TIERS.map(({value, price, perks}) => (
+                                    <Card key={value} shadow="none" className="w-full border-medium p-2 gap-3"
                                           classNames={{body: "p-0", footer: "p-0"}}>
                                         <CardHeader
                                             className="text-lg flex flex-col gap-1 font-medium text-center justify-center bg-default-200 p-3 rounded-medium">
                                             {capitalizeFirstLetter(value)}
-                                            <div className="flex flex-row text-4xl"><span
-                                                className="text-lg self-start">$</span>{price}<span
-                                                className="text-lg self-end">/mo</span></div>
+                                            <div className="flex flex-row gap-1 text-4xl">
+                                                <span className="text-lg self-start">$</span>{price}
+                                                <div className="flex flex-col justify-start items-start">
+                                                    <span className="text-sm">per</span>
+                                                    <span className="text-sm -mt-1">mo</span>
+                                                </div>
+                                            </div>
                                         </CardHeader>
                                         <CardBody>
-                                            <Listbox
-                                                aria-label={`${value}-perks`}
-                                                color="default"
-                                                variant="solid"
-                                                className="p-0"
-                                                itemClasses={{base: "data-[hover=true]:bg-white cursor-default select-none"}}
-                                            >
-                                                {perks.map(({Icon, label}) => (
-                                                    <ListboxItem
-                                                        classNames={{title: "whitespace-normal"}}
-                                                        startContent={<Icon className="text-lg"/>}
-                                                        key={label}>{label}</ListboxItem>
-                                                ))}
-                                            </Listbox>
+                                            <TierPerks perks={perks}/>
                                         </CardBody>
                                         <CardFooter>
                                             {value === PricingTier.Free ? (
@@ -148,9 +147,17 @@ export function PublishModal({props}: PublishModalProps) {
                                                     Current plan
                                                 </Button>
                                             ) : (
-                                                <Button variant="flat" radius="md" className="text-base font-medium" color="primary"
-                                                        fullWidth size="lg">
-                                                    Select
+                                                <Button
+                                                    variant="flat" radius="md" className="text-base font-medium disabled:opacity-50"
+                                                    color="primary"
+                                                    fullWidth size="lg"
+                                                    disabled={value === loadingPaymentLinkPricingTier}
+                                                    isLoading={value === loadingPaymentLinkPricingTier}
+                                                    onPress={() => {
+                                                        generatePaymentLink(value)
+                                                    }}
+                                                >
+                                                    Subscribe
                                                 </Button>
                                             )}
                                         </CardFooter>
@@ -158,6 +165,41 @@ export function PublishModal({props}: PublishModalProps) {
                                 ))}
                             </div>
                         </ModalBody>
+                    </>
+                ) : (
+                    <>
+                        <ModalHeader className="flex-col items-center justify-center">
+                            <h3 className="text-2xl font-bold">Publish Dashboard</h3>
+                        </ModalHeader>
+                        <Divider className="my-2"/>
+                        <ModalBody className="flex flex-col">
+                            <h2 className="text-lg font-bold mb-6">Domains</h2>
+                            <Input value={`${dashboard?.subdomain}.sheetstodashboard.com`}
+                                   isDisabled
+                                   label="Default Domain"
+                                   labelPlacement="outside"
+                                   size="md"
+                                   radius="sm" type="text"
+                                   classNames={{
+                                       inputWrapper: "shadow-none"
+                                   }}
+                                   description="Cannot be changed"
+                            />
+                            <Input value={`${dashboard?.subdomain}.sheetstodashboard.com`}
+                                   isDisabled
+                                   label="Default Domain"
+                                   labelPlacement="outside"
+                                   size="md"
+                                   radius="sm" type="text"
+                                   classNames={{
+                                       inputWrapper: "shadow-none"
+                                   }}
+                                   description="Cannot be changed"
+                            />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary">Publish</Button>
+                        </ModalFooter>
                     </>
                 )}
             </ModalContent>

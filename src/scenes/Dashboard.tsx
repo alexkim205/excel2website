@@ -32,7 +32,7 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                                     <div className="h-[21px] rounded-lg bg-default-300"></div>
                                 </Skeleton>
                             </>
-                        ): (
+                        ) : (
                             <>
                                 <AutosizeInput
                                     name="dashboard-title-field"
@@ -66,7 +66,15 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                         {dashboardLoading && !dashboard ? (<></>) : (
                             <>
                                 <div className="text-base text-default-400">{saving ? "Saving..." : "Saved"}</div>
-                                <Button color="primary" className="font-medium text-base" size="md" startContent={<RxGlobe className="text-lg"/>} onPress={() => setOpen(true)}>
+                                <Button
+                                    color="primary"
+                                    className="font-medium text-base"
+                                    size="md"
+                                    startContent={<RxGlobe className="text-lg"/>}
+                                    onPress={() => {
+                                        setOpen(true)
+                                    }}
+                                >
                                     Publish
                                 </Button>
                             </>

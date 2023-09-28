@@ -41,6 +41,7 @@ export const sceneLogic = kea<sceneLogicType>([
     afterMount(({actions}) => {
         const host = window.location.host
         const arr = host.split(".").slice(0, host.includes("localhost") ? -1 : -2);
+        console.log("HOST", host, arr)
         if (arr.length > 0) {
             actions.setSubdomain(arr[0])
             actions.setScene(SceneKey.PublicDashboard, {})

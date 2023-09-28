@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "stripe": "https://esm.sh/stripe@11.0.0?target=deno&no-check  ",
+    "https://esm.sh/v132/utils@0.3.1/index.d.ts": "https://esm.sh/utils@0.3.1",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.33.2",
+    "kea-router": "https://esm.sh/kea-router@3.1.4"
+  }
+}

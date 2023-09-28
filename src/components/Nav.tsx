@@ -5,6 +5,7 @@ import {userLogic} from "../logics/userLogic";
 import {router} from "kea-router";
 import {urls} from "../utils/routes";
 import {BsFillFileEarmarkSpreadsheetFill} from "react-icons/bs";
+import {UserCircle} from "./Modal/UserCircle";
 
 export function Nav() {
     const {user} = useValues(userLogic)
@@ -21,10 +22,13 @@ export function Nav() {
                     {user ? (
                         <>
                             <NavbarItem className="flex">
-                                <Button as={Link} color="default" className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent" variant="flat" size="md"
+                                <Button as={Link} color="default" className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent" variant="flat" size="lg"
                                         onClick={() => signOut()}>
                                     Logout
                                 </Button>
+                            </NavbarItem>
+                            <NavbarItem>
+                                <UserCircle/>
                             </NavbarItem>
                         </>
                         ) : (

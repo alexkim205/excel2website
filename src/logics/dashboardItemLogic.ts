@@ -12,8 +12,6 @@ import omit from "lodash.omit"
 import {toast} from "react-toastify";
 import {v4 as uuidv4} from "uuid";
 import {generateEmptyDashboardItem} from "../utils/utils";
-import {router} from "kea-router";
-import {urls} from "../utils/routes";
 import merge from "lodash.merge";
 
 export interface DashboardItemLogicProps {
@@ -28,7 +26,7 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
     props({autoSync: false} as DashboardItemLogicProps),
     connect((props: DashboardItemLogicProps) => ({
         values: [dashboardLogic(props.dashboardProps), ["charts"], userLogic, ["providerToken", "user"]],
-        actions: [dashboardLogic(props.dashboardProps), ["setChart", "loadCharts", "setCharts", "setChildChartsLoading"], userLogic, ["signOut"]]
+        actions: [dashboardLogic(props.dashboardProps), ["setChart", "loadCharts", "setCharts", "setChildChartsLoading"], userLogic, ["signOut", "refreshToken"]]
     })),
     defaults({
         open: false as boolean,
@@ -58,8 +56,7 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                 const data = await response.json()
                 breakpoint()
                 if (response.status === 401) {
-                    actions.signOut()
-                    router.actions.push(urls.home())
+                    actions.refreshToken()
                     return
                 }
 
@@ -112,7 +109,6 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                     // reset data in new modal
                     actions.setThisChart(generateEmptyDashboardItem(props.id))
                 } else {
-                    console.log("SET GLOBAL", data)
                     actions.setThisChart(data as DashboardItemType)
                 }
 

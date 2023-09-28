@@ -1,24 +1,93 @@
-import {kea, key, props, path, reducers, defaults, actions} from "kea";
-import {DashboardType} from "../utils/types";
+import {kea, key, props, path, reducers, defaults, actions, connect, listeners} from "kea";
+import {combineUrl} from "kea-router";
+import {loaders} from "kea-loaders";
+import {PricingTier} from "../utils/types";
 import type { publishModalLogicType } from "./publishModalLogicType";
-
-export interface PublishModalLogicProps {
-    id: DashboardType["id"]
-}
+import supabase from "../utils/supabase";
+import {Session} from "@supabase/gotrue-js/dist/module/lib/types";
+import {userLogic} from "./userLogic";
+import {dashboardLogic, DashboardLogicProps} from "./dashboardLogic";
 
 export const publishModalLogic = kea<publishModalLogicType>([
+    props({} as DashboardLogicProps),
     path((key) => ["src", "logics", "publishModalLogic", key]),
-    props({} as PublishModalLogicProps),
     key((props) => props.id),
+    connect((props: DashboardLogicProps) => ({
+        values: [userLogic, ["user"], dashboardLogic(props), ["dashboard"]]
+    })),
     defaults({
-        open: false as boolean
+        open: false as boolean,
+        paymentLink: {} as Partial<Record<PricingTier, string>>,
+        loadingPaymentLinkPricingTier: null as PricingTier | null
     }),
     actions(() => ({
-        setOpen: (open: boolean) => ({open})
+        setOpen: (open: boolean) => ({open}),
+        generatePaymentLink: (plan: PricingTier) => ({plan})
     })),
     reducers(() => ({
         open: {
             setOpen: (_, {open}) => open
+        },
+        loadingPaymentLinkPricingTier: {
+            generatePaymentLink: (_,{plan}) => plan,
+            generatePaymentLinkSuccess: () => null,
+            generatePaymentLinkFailure: () => null
         }
+    })),
+    loaders(({values}) => ({
+        paymentLink: {
+            generatePaymentLink: async ({plan}, breakpoint) => {
+                if (!values.user) {
+                    return values.paymentLink
+                }
+                await breakpoint(1)
+                const link = await _generatePaymentLink(plan, values.user)
+                breakpoint()
+                return {
+                    ...values.paymentLink,
+                    [plan]: link
+                }
+            }
+        },
+    })),
+    listeners(() => ({
+       generatePaymentLinkSuccess: ({paymentLink, payload}) => {
+           if (!payload || !paymentLink?.[payload.plan]) {
+               return
+           }
+           window.location.href = paymentLink[payload.plan] as string
+       }
     }))
 ])
+
+export async function _generatePaymentLink(plan: PricingTier, session: Session): Promise<string> {
+    const {data, error} = await supabase.functions.invoke("create-payment-link", {
+        body: {
+            plan,
+            user: session.user.id,
+            redirectUrl: window.location.href
+        }
+    })
+    if (error) {
+        throw new Error(error.message)
+    }
+    return combineUrl(data.paymentLink.url, {
+        prefilled_email: session.user.email
+    }).url
+}
+
+export async function _generateBillingPortalLink(session: Session): Promise<string> {
+    if (!session.user.user_metadata.stripe_customer) {
+        return ""
+    }
+    const {data, error} = await supabase.functions.invoke("create-billing-portal-link", {
+        body: {
+            customer: session.user.user_metadata.stripe_customer,
+            redirectUrl: window.location.href
+        }
+    })
+    if (error) {
+        throw new Error(error.message)
+    }
+    return data.billingLink.url
+}

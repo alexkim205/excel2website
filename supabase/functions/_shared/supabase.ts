@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 export function createSupabaseClient(): SupabaseClient {
     const supabaseClient = createClient(
