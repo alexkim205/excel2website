@@ -5,7 +5,6 @@ import {Grid} from "../components/Grid/Grid";
 import {StaticDashboardItem} from "../components/DashboardItem";
 import {BsFillFileEarmarkSpreadsheetFill} from "react-icons/bs";
 import {RxHeartFilled} from "react-icons/rx";
-import {dashboardLogic} from "../logics/dashboardLogic";
 
 export interface PublicDashboardProps {
     subdomain: string | null
