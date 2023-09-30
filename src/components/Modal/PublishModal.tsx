@@ -1,9 +1,11 @@
 import {
+    Accordion,
+    AccordionItem,
     Button,
     Card,
     CardBody,
     CardFooter,
-    CardHeader,
+    CardHeader, Code,
     Divider,
     Input,
     Link,
@@ -19,7 +21,11 @@ import {TbLayoutGrid, TbMessageQuestion, TbWorldWww} from "react-icons/tb";
 import {capitalizeFirstLetter} from "kea-forms/lib/utils";
 import {userLogic} from "../../logics/userLogic";
 import {TierPerks} from "../TierPerks";
-import {DashboardLogicProps} from "../../logics/dashboardLogic";
+import {dashboardLogic, DashboardLogicProps} from "../../logics/dashboardLogic";
+import {RxClipboard} from "react-icons/rx";
+import useCopy from "@react-hook/copy";
+import {toast} from "react-toastify";
+import {useState} from "react";
 
 export interface PublishModalProps {
     props: DashboardLogicProps
@@ -87,13 +93,12 @@ export const TIERS = [
 export function PublishModal({props}: PublishModalProps) {
     const logic = publishModalLogic(props)
     const {plan} = useValues(userLogic)
-    const {open, loadingPaymentLinkPricingTier, dashboard} = useValues(logic)
+    const {open, loadingPaymentLinkPricingTier} = useValues(logic)
     const {setOpen, generatePaymentLink} = useActions(logic)
 
-    console.log("dashboard", dashboard)
-
     return (
-        <Modal size={plan === PricingTier.Free ? "3xl" : "lg"} isOpen={open} onClose={() => setOpen(false)} scrollBehavior="inside">
+        <Modal size={plan === PricingTier.Free ? "3xl" : "md"} isOpen={open} onClose={() => setOpen(false)}
+               scrollBehavior="inside">
             <ModalContent>
                 {() => plan === PricingTier.Free ? (
                     <>
@@ -148,7 +153,8 @@ export function PublishModal({props}: PublishModalProps) {
                                                 </Button>
                                             ) : (
                                                 <Button
-                                                    variant="flat" radius="md" className="text-base font-medium disabled:opacity-50"
+                                                    variant="flat" radius="md"
+                                                    className="text-base font-medium disabled:opacity-50"
                                                     color="primary"
                                                     fullWidth size="lg"
                                                     disabled={value === loadingPaymentLinkPricingTier}
@@ -167,42 +173,105 @@ export function PublishModal({props}: PublishModalProps) {
                         </ModalBody>
                     </>
                 ) : (
-                    <>
-                        <ModalHeader className="flex-col items-center justify-center">
-                            <h3 className="text-2xl font-bold">Publish Dashboard</h3>
-                        </ModalHeader>
-                        <Divider className="my-2"/>
-                        <ModalBody className="flex flex-col">
-                            <h2 className="text-lg font-bold mb-6">Domains</h2>
-                            <Input value={`${dashboard?.subdomain}.sheetstodashboard.com`}
-                                   isDisabled
-                                   label="Default Domain"
-                                   labelPlacement="outside"
-                                   size="md"
-                                   radius="sm" type="text"
-                                   classNames={{
-                                       inputWrapper: "shadow-none"
-                                   }}
-                                   description="Cannot be changed"
-                            />
-                            <Input value={`${dashboard?.subdomain}.sheetstodashboard.com`}
-                                   isDisabled
-                                   label="Default Domain"
-                                   labelPlacement="outside"
-                                   size="md"
-                                   radius="sm" type="text"
-                                   classNames={{
-                                       inputWrapper: "shadow-none"
-                                   }}
-                                   description="Cannot be changed"
-                            />
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button color="primary">Publish</Button>
-                        </ModalFooter>
-                    </>
+                    <PublishModalSettings props={props}/>
                 )}
             </ModalContent>
         </Modal>
+    )
+}
+
+export function PublishModalSettings({props}: PublishModalProps) {
+    const publishLogic = publishModalLogic(props)
+    const logic = dashboardLogic(props)
+    const {addDomainToProject} = useActions(publishLogic)
+    const {dashboard} = useValues(logic)
+    const {setDashboard} = useActions(logic)
+    const [showInstructions, setShowInstructions] = useState(false)
+    const formattedDefaultDomain = dashboard?.subdomain ? `${dashboard.subdomain}.sheetstodashboard.com` : ""
+
+    const {copy: defaultCopy} = useCopy(
+        formattedDefaultDomain
+    )
+    const {copy: customCopy} = useCopy(
+        dashboard?.custom_domain ?? ""
+    )
+
+    return (
+        <>
+            <ModalHeader className="flex-col items-center justify-center">
+                <h3 className="text-2xl font-bold">Publish Dashboard</h3>
+            </ModalHeader>
+            <Divider className="mb-2"/>
+            <ModalBody className="flex flex-col">
+                <h2 className="text-lg font-bold">Domains</h2>
+                <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-1.5">
+                        <label className="font-medium text-sm">Custom domain</label>
+                        <Input value={dashboard?.custom_domain ?? ""}
+                               onValueChange={(nextDomain) => setDashboard({custom_domain: nextDomain})}
+                               size="md"
+                               radius="sm" type="text"
+                               placeholder="yourdomain.com"
+                               classNames={{
+                                   inputWrapper: "shadow-none overflow-hidden pl-unit-4 pr-0"
+                               }}
+                               endContent={<Button variant="flat" radius="none"
+                                                   className="bg-default-200 rounded-r-sm w-[56px] border-default-200"
+                                                   isIconOnly onPress={async () => {
+                                   await customCopy()
+                                   toast.success("Copied to clipboard.")
+                               }}>
+                                   <RxClipboard className="text-lg shrink-0"/>
+                               </Button>}
+                        />
+                        <Accordion className="p-0" variant="light" isCompact selectedKeys={new Set(showInstructions ? ["1"] : [])}
+                                   onSelectionChange={(newSet) => Array.from(newSet).includes("1") ? setShowInstructions(true) : setShowInstructions(false)}>
+                            <AccordionItem key="1" aria-label="Custom domain instructions"
+                                           title={showInstructions ? "Hide instructions" : "Show instructions"}
+                                           classNames={{title: "text-xs text-default-400", trigger: "p-0"}}
+                                           className="text-sm flex flex-col gap-2">
+                                <div className="flex flex-col gap-2">
+                                    <p>Add the following DNS records to connect your custom domain to your
+                                        SheetsToDashboard
+                                        site.</p>
+                                    <p>To have your site on a root domain (like <Code>yoursite.com</Code>):</p>
+                                    <ul className="list-disc list-outside pl-4">
+                                        <li>Add a <Code>A</Code> record pointing to <Code>76.76.21.21</Code>.
+                                        </li>
+                                        <li>Add a <Code>CNAME</Code> record for www pointing to <Code>sheetstodashboard.com</Code>.</li>
+                                    </ul>
+                                    <p> To have your site on a subdomain (like <Code>subdomain.yoursite.com</Code> ):</p>
+                                    <ul className="list-disc list-outside pl-4">
+                                        <li>
+                                            Add a <Code>CNAME</Code> record for subdomain (or whatever you wish) pointing to <Code>sheetstodashboard.com</Code>.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                        <label className="font-medium text-sm">Default domain</label>
+                        <Button onPress={async () => {
+                            if (!dashboard?.subdomain) {
+                                return
+                            }
+                            await defaultCopy()
+                            toast.success("Copied to clipboard.")
+                        }} color="default" variant="flat" radius="sm" size="md"
+                                className="justify-between"
+                                endContent={dashboard?.subdomain && <RxClipboard className="text-lg"/>}>
+                            {dashboard?.subdomain ? (`${dashboard.subdomain}.sheetstodashboard.com`) : ("")}
+                        </Button>
+                        <p className="text-default-400 text-xs">This dashboard will always be available on this
+                            secondary subdomain provided by us.</p>
+                    </div>
+                </div>
+            </ModalBody>
+            <Divider className="mt-2"/>
+            <ModalFooter>
+                <Button color="primary" onPress={() => addDomainToProject(dashboard?.custom_domain ?? null)}>Publish</Button>
+            </ModalFooter>
+        </>
     )
 }

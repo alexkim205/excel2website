@@ -49,6 +49,7 @@ export interface Database {
       dashboards: {
         Row: {
           created_at: string | null
+          custom_domain: string | null
           data: Json
           id: string
           subdomain: string | null
@@ -56,6 +57,7 @@ export interface Database {
         }
         Insert: {
           created_at?: string | null
+          custom_domain?: string | null
           data?: Json
           id?: string
           subdomain?: string | null
@@ -63,6 +65,7 @@ export interface Database {
         }
         Update: {
           created_at?: string | null
+          custom_domain?: string | null
           data?: Json
           id?: string
           subdomain?: string | null

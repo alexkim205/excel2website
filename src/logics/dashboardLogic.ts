@@ -102,6 +102,7 @@ export const dashboardLogic = kea<dashboardLogicType>([
                 return insertData
             },
             setDashboard: ({dashboard}) => {
+                console.log("NEW DASHBOARD", dashboard, merge({}, values.dashboard, dashboard))
                 return merge({}, values.dashboard, dashboard)
             },
             saveDashboard: async (_, breakpoint) => {
@@ -109,9 +110,11 @@ export const dashboardLogic = kea<dashboardLogicType>([
                 const {data, error} = await supabase
                     .from(SupabaseTable.Dashboards)
                     .update({
+                        custom_domain: values.dashboard?.custom_domain,
                         data: values.dashboard?.data
                     })
                     .eq("id", props.id)
+                    .select()
                     .maybeSingle()
                 breakpoint()
                 if (error) {

@@ -13,7 +13,6 @@ function App() {
     useMountedLogic(homeLogic)
     const {scene, params, subdomain} = useValues(sceneLogic)
 
-    console.log("SUBDOMAIN", scene, params, subdomain)
     if (subdomain) {
         return <PublicDashboard subdomain={subdomain}/>
     }

@@ -2,34 +2,36 @@ import {kea, key, props, path, reducers, defaults, actions, connect, listeners} 
 import {combineUrl} from "kea-router";
 import {loaders} from "kea-loaders";
 import {PricingTier} from "../utils/types";
-import type { publishModalLogicType } from "./publishModalLogicType";
+import type {publishModalLogicType} from "./publishModalLogicType";
 import supabase from "../utils/supabase";
 import {Session} from "@supabase/gotrue-js/dist/module/lib/types";
 import {userLogic} from "./userLogic";
-import {dashboardLogic, DashboardLogicProps} from "./dashboardLogic";
+import {DashboardLogicProps} from "./dashboardLogic";
 
 export const publishModalLogic = kea<publishModalLogicType>([
     props({} as DashboardLogicProps),
     path((key) => ["src", "logics", "publishModalLogic", key]),
     key((props) => props.id),
-    connect((props: DashboardLogicProps) => ({
-        values: [userLogic, ["user"], dashboardLogic(props), ["dashboard"]]
+    connect(() => ({
+        values: [userLogic, ["user"]]
     })),
     defaults({
         open: false as boolean,
         paymentLink: {} as Partial<Record<PricingTier, string>>,
-        loadingPaymentLinkPricingTier: null as PricingTier | null
+        loadingPaymentLinkPricingTier: null as PricingTier | null,
+        publishDomain: null as Record<string, any> | null
     }),
     actions(() => ({
         setOpen: (open: boolean) => ({open}),
-        generatePaymentLink: (plan: PricingTier) => ({plan})
+        generatePaymentLink: (plan: PricingTier) => ({plan}),
+        addDomainToProject: (domain: string | null) => ({domain})
     })),
     reducers(() => ({
         open: {
             setOpen: (_, {open}) => open
         },
         loadingPaymentLinkPricingTier: {
-            generatePaymentLink: (_,{plan}) => plan,
+            generatePaymentLink: (_, {plan}) => plan,
             generatePaymentLinkSuccess: () => null,
             generatePaymentLinkFailure: () => null
         }
@@ -49,14 +51,33 @@ export const publishModalLogic = kea<publishModalLogicType>([
                 }
             }
         },
+        publishDomain: {
+            addDomainToProject: async ({domain}, breakpoint) => {
+                if (!values.user || !domain) {
+                    return values.publishDomain
+                }
+                await breakpoint(1)
+                const {data, error} = await supabase.functions.invoke("domains", {
+                    body: {
+                        operation: "add",
+                        domain
+                    }
+                })
+                breakpoint()
+                if (error) {
+                    throw new Error(error.message)
+                }
+                return data
+            },
+        }
     })),
     listeners(() => ({
-       generatePaymentLinkSuccess: ({paymentLink, payload}) => {
-           if (!payload || !paymentLink?.[payload.plan]) {
-               return
-           }
-           window.location.href = paymentLink[payload.plan] as string
-       }
+        generatePaymentLinkSuccess: ({paymentLink, payload}) => {
+            if (!payload || !paymentLink?.[payload.plan]) {
+                return
+            }
+            window.location.href = paymentLink[payload.plan] as string
+        }
     }))
 ])
 
