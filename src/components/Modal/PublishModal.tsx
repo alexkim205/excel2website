@@ -183,6 +183,7 @@ export function PublishModal({props}: PublishModalProps) {
 export function PublishModalSettings({props}: PublishModalProps) {
     const publishLogic = publishModalLogic(props)
     const logic = dashboardLogic(props)
+    const {publishDomainLoading} = useValues(publishLogic)
     const {addDomainToProject} = useActions(publishLogic)
     const {dashboard} = useValues(logic)
     const {setDashboard} = useActions(logic)
@@ -224,7 +225,8 @@ export function PublishModalSettings({props}: PublishModalProps) {
                                    <RxClipboard className="text-lg shrink-0"/>
                                </Button>}
                         />
-                        <Accordion className="p-0" variant="light" isCompact selectedKeys={new Set(showInstructions ? ["1"] : [])}
+                        <Accordion className="p-0" variant="light" isCompact
+                                   selectedKeys={new Set(showInstructions ? ["1"] : [])}
                                    onSelectionChange={(newSet) => Array.from(newSet).includes("1") ? setShowInstructions(true) : setShowInstructions(false)}>
                             <AccordionItem key="1" aria-label="Custom domain instructions"
                                            title={showInstructions ? "Hide instructions" : "Show instructions"}
@@ -238,12 +240,16 @@ export function PublishModalSettings({props}: PublishModalProps) {
                                     <ul className="list-disc list-outside pl-4">
                                         <li>Add a <Code>A</Code> record pointing to <Code>76.76.21.21</Code>.
                                         </li>
-                                        <li>Add a <Code>CNAME</Code> record for www pointing to <Code>sheetstodashboard.com</Code>.</li>
+                                        <li>Add a <Code>CNAME</Code> record for www pointing
+                                            to <Code>sheetstodashboard.com</Code>.
+                                        </li>
                                     </ul>
-                                    <p> To have your site on a subdomain (like <Code>subdomain.yoursite.com</Code> ):</p>
+                                    <p> To have your site on a subdomain (like <Code>subdomain.yoursite.com</Code> ):
+                                    </p>
                                     <ul className="list-disc list-outside pl-4">
                                         <li>
-                                            Add a <Code>CNAME</Code> record for subdomain (or whatever you wish) pointing to <Code>sheetstodashboard.com</Code>.
+                                            Add a <Code>CNAME</Code> record for subdomain (or whatever you wish)
+                                            pointing to <Code>sheetstodashboard.com</Code>.
                                         </li>
                                     </ul>
                                 </div>
@@ -270,7 +276,9 @@ export function PublishModalSettings({props}: PublishModalProps) {
             </ModalBody>
             <Divider className="mt-2"/>
             <ModalFooter>
-                <Button color="primary" onPress={() => addDomainToProject(dashboard?.custom_domain ?? null)}>Publish</Button>
+                <Button isLoading={publishDomainLoading} isDisabled={publishDomainLoading}
+                        className="disabled:opacity-50" color="primary"
+                        onPress={() => addDomainToProject(dashboard?.custom_domain ?? null)}>Publish</Button>
             </ModalFooter>
         </>
     )
