@@ -1,0 +1,7 @@
+{
+  "name": "sheetstodashboard",
+  "type": "commonjs",
+  "engines": {
+    "node": ">= 18"
+  }
+}

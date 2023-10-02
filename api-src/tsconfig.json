@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "es6",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "inlineSourceMap": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "lib": ["esnext", "dom"]
+  },
+  "exclude": ["../node_modules"]
+}
