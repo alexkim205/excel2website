@@ -1,7 +1,7 @@
 import {actions, afterMount, connect, defaults, kea, key, listeners, path, props, reducers, selectors} from "kea";
 import {loaders} from "kea-loaders";
 import {userLogic} from "./userLogic";
-import {DashboardItemType, DashboardType, SupabaseTable, WorkbookType} from "../utils/types";
+import {DashboardItemType, DashboardType, PublishStatus, SupabaseTable, WorkbookType} from "../utils/types";
 import merge from "lodash.merge"
 import type {DeepPartial} from "kea-forms/lib/types";
 import type {dashboardLogicType} from "./dashboardLogicType";
@@ -49,7 +49,8 @@ export const dashboardLogic = kea<dashboardLogicType>([
             created_at: null
         }] as DashboardItemType[],
         workbooks: [] as WorkbookType[],
-        childChartsLoading: {} as Record<DashboardItemType["id"], boolean>
+        childChartsLoading: {} as Record<DashboardItemType["id"], boolean>,
+        publishStatus: PublishStatus.Online as PublishStatus,
     })),
     actions(() => ({
         setChart: (chart: DeepPartial<DashboardItemType>) => ({chart}),
@@ -161,6 +162,29 @@ export const dashboardLogic = kea<dashboardLogicType>([
                 }
                 return data.value.filter(({name}: { name: string }) => name.endsWith(".xlsx")) ?? []
             }
+        },
+        publishStatus: {
+            verifyPublishStatus: async (_, breakpoint) => {
+                if (!values.providerToken || !values.dashboard?.custom_domain) {
+                    return values.publishStatus
+                }
+                await breakpoint(1)
+                const {data, error} = await supabase.functions.invoke("domains", {
+                    body: {
+                        operation: "verify",
+                        domain: values.dashboard.custom_domain,
+                        dashboard_id: props.id
+                    }
+                })
+                breakpoint()
+                if (error) {
+                    throw new Error(error.message)
+                }
+                if (data.code === "domain_misconfigured") {
+                    return PublishStatus.Misconfigured
+                }
+                return PublishStatus.Online
+            }
         }
     })),
     listeners(({actions, values}) => ({
@@ -173,6 +197,7 @@ export const dashboardLogic = kea<dashboardLogicType>([
         },
         loadDashboardSuccess: () => {
             actions.loadCharts({})
+            actions.verifyPublishStatus({})
         },
         onLayoutChange: async ({layouts}) => {
             const keys = layouts.sm.map(({i}) => i)

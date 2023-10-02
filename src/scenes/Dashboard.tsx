@@ -3,12 +3,13 @@ import {Grid} from "../components/Grid/Grid";
 import {useActions, useValues} from "kea";
 import {dashboardLogic, DashboardLogicProps} from "../logics/dashboardLogic";
 import AutosizeInput from 'react-input-autosize';
-import {Button, Skeleton} from "@nextui-org/react";
+import {Badge, Button, Skeleton, Tooltip} from "@nextui-org/react";
 import {RxGlobe} from "react-icons/rx";
 import {publishModalLogic} from "../logics/publishModalLogic";
 import {PublishModal} from "../components/Modal/PublishModal";
 import {RiShareBoxLine} from "react-icons/ri";
 import {A} from "kea-router";
+import {PublishStatus} from "../utils/types";
 
 export function Dashboard({props}: { props: DashboardLogicProps }) {
     const newUUID = `${props.id}-new-item`
@@ -16,11 +17,9 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
     const publishModalProps = {id: props.id}
     const logic = dashboardLogic(dashboardProps)
     const publishLogic = publishModalLogic(publishModalProps)
-    const {dashboard, charts, layouts, saving, dashboardLoading} = useValues(logic)
+    const {dashboard, charts, layouts, saving, dashboardLoading, publishStatus, publishStatusLoading} = useValues(logic)
     const {setDashboard, onLayoutChange} = useActions(logic)
     const {setOpen} = useActions(publishLogic)
-
-    console.log("SUBDOMAIN", dashboard?.subdomain ? import.meta.env.DEV ? `http://${dashboard.subdomain}.localhost:5173` : `${dashboard.subdomain}.sheetstodashboard.com` : undefined)
 
     return (
         <>
@@ -82,17 +81,32 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                                 >
                                     Preview
                                 </Button>
-                                <Button
-                                    color="primary"
-                                    className="font-medium text-base"
-                                    size="md"
-                                    endContent={<RxGlobe className="text-lg"/>}
-                                    onPress={() => {
-                                        setOpen(true)
-                                    }}
-                                >
-                                    Publish
-                                </Button>
+                                <Tooltip
+                                    placement="top-end"
+                                    offset={2}
+                                    color={publishStatusLoading ? "default" : publishStatus === PublishStatus.Online ? "success" : "danger"}
+                                    content={publishStatusLoading ? "Loading publish status..." : publishStatus === PublishStatus.Online ? "Dashboard is online" : "Custom domain is misconfigured"}>
+                                    <Badge
+                                        isOneChar
+                                        shape="circle"
+                                        size="md"
+                                        color={publishStatusLoading ? "default" : publishStatus === PublishStatus.Online ? "success" : "danger"}
+                                        placement="top-right"
+                                        classNames={{badge: "top-1 right-1"}}
+                                    >
+                                        <Button
+                                            color="primary"
+                                            className="font-medium text-base"
+                                            size="md"
+                                            endContent={<RxGlobe className="text-lg"/>}
+                                            onPress={() => {
+                                                setOpen(true)
+                                            }}
+                                        >
+                                            Publish
+                                        </Button>
+                                    </Badge>
+                                </Tooltip>
                             </>
                         )}
                     </div>

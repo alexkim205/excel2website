@@ -96,3 +96,8 @@ export enum PricingTier {
     Small = "small",
     Mega = "mega"
 }
+
+export enum PublishStatus {
+    Misconfigured = "misconfigured",
+    Online = 'online'
+}

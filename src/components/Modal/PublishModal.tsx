@@ -5,7 +5,7 @@ import {
     Card,
     CardBody,
     CardFooter,
-    CardHeader, Code,
+    CardHeader, Chip, Code,
     Divider,
     Input,
     Link,
@@ -195,7 +195,7 @@ export function PublishModalSettings({props}: PublishModalProps) {
     const logic = dashboardLogic(props)
     const {publishDomainLoading, publishDomain, publishable} = useValues(publishLogic)
     const {addDomainToProject, setPublishDomain} = useActions(publishLogic)
-    const {dashboard} = useValues(logic)
+    const {dashboard, publishStatus} = useValues(logic)
     const [showInstructions, setShowInstructions] = useState(false)
     const formattedDefaultDomain = dashboard?.subdomain ? `${dashboard.subdomain}.sheetstodashboard.com` : ""
 
@@ -216,8 +216,12 @@ export function PublishModalSettings({props}: PublishModalProps) {
                 <h2 className="text-lg font-bold">Domains</h2>
                 <div className="flex flex-col gap-3">
                     <div className="flex flex-col gap-1.5">
-                        <label className="font-medium text-sm">Custom domain</label>
-                        <Input value={publishDomain || dashboard?.custom_domain || ""}
+                        <div className="flex flex-row justify-between items-end">
+                            <label className="font-medium text-sm">Custom domain</label>
+                            <Chip color="success" classNames={{content: "font-semibold text-white"}} size="sm"
+                                  variant="solid">{capitalizeFirstLetter(publishStatus)}</Chip>
+                        </div>
+                        <Input value={publishDomain}
                                onValueChange={(nextDomain) => setPublishDomain(nextDomain)}
                                size="md"
                                radius="sm" type="text"
@@ -292,7 +296,7 @@ export function PublishModalSettings({props}: PublishModalProps) {
                     color="primary"
                     onPress={() => addDomainToProject()}
                 >
-                    {publishable ? "Publish" : "Published"}
+                    {publishable ? "Save and publish" : "Published"}
                 </Button>
             </ModalFooter>
         </>

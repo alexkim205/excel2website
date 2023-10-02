@@ -49,12 +49,9 @@ export async function addDomain({domain, dashboard_id}: AddDomainPayload) {
                 {headers: corsHeaders},
             )
         }
-        console.log("BLAH1", domain)
         if (!response.ok) {
             throw new Error(data.message || data.error.message)
         }
-
-        console.log("BLAH", domain)
 
         // If response is ok, update custom_domain in supabase table
         const {error: updateError} = await supabase

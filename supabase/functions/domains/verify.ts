@@ -11,25 +11,35 @@ interface VerifyDomainPayload {
 
 export async function verifyDomain({domain}: VerifyDomainPayload) {
     try {
-        const response = await fetch(`https://api.vercel.com/v9/projects/${ENVS.project}/domains/${domain}/verify`, {
+        const response = await fetch(`https://api.vercel.com/v6/domains/${domain}/config`, {
             headers: {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
                 Authorization: `Bearer ${ENVS.token}`
             },
-            method: "POST"
+            method: "GET"
         })
         const data = await response.json()
         if (response.ok) {
-            return new Response(
-                JSON.stringify({
-                    success: true,
-                    message: "Domain verified.",
-                    code: "domain_verified",
-                    domain
-                }),
-                {headers: corsHeaders},
-            )
+            if (data.misconfigured) {
+                return new Response(
+                    JSON.stringify({
+                        success: true,
+                        message: "Domain misconfigured.",
+                        code: "domain_misconfigured",
+                        domain
+                    }),
+                    {headers: corsHeaders},
+                )
+            } else {
+                return new Response(
+                    JSON.stringify({
+                        success: true,
+                        message: "Domain online.",
+                        code: "domain_online",
+                        domain
+                    }),
+                    {headers: corsHeaders},
+                )
+            }
         }
         throw new Error(data.message || data.error.message)
     } catch (e: any) {
