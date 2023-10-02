@@ -193,7 +193,7 @@ export const dashboardLogic = kea<dashboardLogicType>([
                 return
             }
             actions.loadDashboard({})
-            actions.loadWorkbooks({})
+            // actions.loadWorkbooks({})
         },
         loadDashboardSuccess: () => {
             actions.loadCharts({})
@@ -223,7 +223,7 @@ export const dashboardLogic = kea<dashboardLogicType>([
     afterMount(({actions, values}) => {
         if (values.providerToken) {
             actions.loadDashboard({})
-            actions.loadWorkbooks({})
+            // actions.loadWorkbooks({})
         }
     }),
     selectors(() => ({

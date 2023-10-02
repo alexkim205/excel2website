@@ -23,7 +23,7 @@ export function generateEmptyDashboardItem(id: DashboardItemDataType["id"]): Das
     return {
         id,
         type: ChartPresetType.BasicBar,
-        dataSourceId: "",
+        srcUrl: "",
         dataRange: "'Sheet1'!A1:B17",
         coordinates: {
             sm: {x: 0, y: 0, w: 3, h: 3, static: true},

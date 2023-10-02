@@ -13,6 +13,7 @@ import {toast} from "react-toastify";
 import {v4 as uuidv4} from "uuid";
 import {generateEmptyDashboardItem} from "../utils/utils";
 import merge from "lodash.merge";
+import {combineUrl} from "kea-router";
 
 export interface DashboardItemLogicProps {
     id: DashboardItemType["id"],
@@ -44,12 +45,12 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
         data: {
             fetchData: async (_, breakpoint) => {
                 // Make api call
-                if (!values.syncable || !values.user) {
+                if (!values.syncable || !values.user || !values.parsedWorkbookId) {
                     return
                 }
                 await breakpoint(100)
                 const response = await graphFetch({
-                    url: `items/${values.localMergedChart.data.dataSourceId}/workbook/worksheets/${values.parsedRange.sheet}/range(address='${values.parsedRange.range}')`,
+                    url: `items/${values.parsedWorkbookId}/workbook/worksheets/${values.parsedRange.sheet}/range(address='${values.parsedRange.range}')`,
                     method: "GET",
                     providerToken: values.providerToken,
                 })
@@ -190,7 +191,14 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
         ],
         localMergedChart: [
             (s) => [s.thisChart, s.localChart],
-            (thisChart, localChart): DashboardItemType => merge({},thisChart, localChart)
+            (thisChart, localChart): DashboardItemType => merge({}, thisChart, localChart)
+        ],
+        parsedWorkbookId: [
+            (s) => [s.localMergedChart],
+            (localMergedChart) => {
+                const url = localMergedChart?.data?.srcUrl ?? ""
+                return combineUrl(url).searchParams?.resid ?? ""
+            }
         ],
         parsedRange: [
             (s) => [s.localMergedChart],
@@ -214,14 +222,14 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
             }
         ],
         syncable: [
-            (s) => [s.providerToken, s.parsedRange, s.localMergedChart],
-            (providerToken, parsedRange, localMergedChart) => {
-                return providerToken && parsedRange.sheet && parsedRange.range && (localMergedChart?.data?.dataSourceId && localMergedChart.data.dataSourceId !== "null" && localMergedChart.data.dataSourceId != "undefined")
+            (s) => [s.providerToken, s.parsedRange, s.parsedWorkbookId],
+            (providerToken, parsedRange, parsedWorkbookId) => {
+                return providerToken && parsedRange.sheet && parsedRange.range && parsedWorkbookId
             }
         ],
         synced: [
             (s) => [s.lastSyncedChart, s.localMergedChart],
-            (lastSyncedChart, localMergedChart) => equal(pick(lastSyncedChart?.data, ["dataSourceId", "dataRange"]), pick(localMergedChart?.data, ["dataSourceId", "dataRange"]))
+            (lastSyncedChart, localMergedChart) => equal(pick(lastSyncedChart?.data, ["srcUrl", "dataRange"]), pick(localMergedChart?.data, ["srcUrl", "dataRange"]))
         ],
     })),
     afterMount(({props, actions}) => {

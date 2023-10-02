@@ -21,7 +21,7 @@ import {
 } from "@nextui-org/react";
 import {useActions, useValues} from "kea";
 import {dashboardItemLogic, DashboardItemLogicProps} from "../../logics/dashboardItemLogic";
-import {dashboardLogic, DashboardLogicProps} from "../../logics/dashboardLogic";
+import {DashboardLogicProps} from "../../logics/dashboardLogic";
 import {FormEvent, useState} from "react";
 import {MdOutlineSync} from "react-icons/md";
 import {Chart} from "./Chart";
@@ -29,13 +29,11 @@ import {graphTypeTabs} from "./graph";
 import {ChartPresetType, PanelTab} from "../../utils/types";
 import {RxTrash} from "react-icons/rx";
 
-export function DataSelectModal({dashboardProps, props}: {
+export function DataSelectModal({props}: {
     dashboardProps: DashboardLogicProps,
     props: DashboardItemLogicProps
 }) {
-    const dashLogic = dashboardLogic(dashboardProps)
     const logic = dashboardItemLogic(props)
-    const {workbooks} = useValues(dashLogic)
     const {
         open,
         localMergedChart,
@@ -45,7 +43,8 @@ export function DataSelectModal({dashboardProps, props}: {
         syncable,
         synced,
         data,
-        chartLoading
+        chartLoading,
+        parsedWorkbookId
     } = useValues(logic)
     const {setOpen, setLocalChart, fetchData, saveThisChart, deleteThisChart} = useActions(logic)
     const [dataTableTab, setDataTableTab] = useState<PanelTab>(PanelTab.Chart)
@@ -120,19 +119,19 @@ export function DataSelectModal({dashboardProps, props}: {
                                 <div className="flex flex-col justify-between sm:flex-row gap-3 w-full sm:gap-6">
                                     <div className="flex flex-col w-full sm:w-[calc(33%-0.75rem)] gap-3">
                                         <h2 className="text-lg font-bold">Data</h2>
-                                        <Select placeholder="Select workbook" aria-label="Workbook"
-                                                labelPlacement="outside" label="Workbook"
-                                                selectedKeys={new Set(localMergedChart?.data?.dataSourceId ? [String(localMergedChart.data.dataSourceId)] : [])}
-                                                onSelectionChange={(keys) => {
-                                                    setLocalChart({data: {dataSourceId: Array.from(keys)?.[0] ? String(Array.from(keys)[0]) : null}})
-                                                }}
-                                        >
-                                            {workbooks.map((workbook) => (
-                                                <SelectItem key={workbook.id} value={workbook.id}>
-                                                    {workbook.name}
-                                                </SelectItem>
-                                            ))}
-                                        </Select>
+                                        <Input value={localMergedChart?.data?.srcUrl ?? ""}
+                                               onValueChange={(value) => setLocalChart({data: {srcUrl: value}})}
+                                               isClearable
+                                               label="Workbook URL"
+                                               labelPlacement="outside"
+                                               size="md"
+                                               radius="sm" type="text"
+                                               classNames={{
+                                                   inputWrapper: "shadow-none"
+                                               }}
+                                               placeholder="i.e., 'https://onedrive.live.com/edit.aspx?resid={RES_ID}&cid={C_ID}&CT={CT}"
+                                               description={`ID: ${parsedWorkbookId || '<empty>'}`}
+                                        />
                                         <Input value={localMergedChart?.data?.dataRange}
                                                onValueChange={(value) => setLocalChart({data: {dataRange: value}})}
                                                isClearable

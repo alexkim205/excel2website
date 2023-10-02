@@ -31,7 +31,7 @@ export type DashboardItemType = Omit<Database["public"]["Tables"]["dashboard_ite
 export interface DashboardItemDataType {
     id: string
     type: ChartPresetType
-    dataSourceId: string | undefined | null // data file id related to Microsoft Graph API
+    srcUrl: string | undefined | null
     dataRange: string | undefined // Sheet and range in this format, i.e. 'Sheet1'!A3:B9
     coordinates: {
         sm: { x: number, y: number, w: number, h: number, static?: boolean },

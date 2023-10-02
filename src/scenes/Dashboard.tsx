@@ -4,12 +4,14 @@ import {useActions, useValues} from "kea";
 import {dashboardLogic, DashboardLogicProps} from "../logics/dashboardLogic";
 import AutosizeInput from 'react-input-autosize';
 import {Badge, Button, Skeleton, Tooltip} from "@nextui-org/react";
-import {RxGlobe} from "react-icons/rx";
+import {RxLink2} from "react-icons/rx";
 import {publishModalLogic} from "../logics/publishModalLogic";
 import {PublishModal} from "../components/Modal/PublishModal";
 import {RiShareBoxLine} from "react-icons/ri";
 import {A} from "kea-router";
 import {PublishStatus} from "../utils/types";
+import useCopy from "@react-hook/copy";
+import {toast} from "react-toastify";
 
 export function Dashboard({props}: { props: DashboardLogicProps }) {
     const newUUID = `${props.id}-new-item`
@@ -20,6 +22,12 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
     const {dashboard, charts, layouts, saving, dashboardLoading, publishStatus, publishStatusLoading} = useValues(logic)
     const {setDashboard, onLayoutChange} = useActions(logic)
     const {setOpen} = useActions(publishLogic)
+
+    const linkToCopy = dashboard?.custom_domain ? `https://${dashboard.custom_domain}` : dashboard?.subdomain ? `${dashboard.subdomain}.sheetstodashboard.com` : ""
+
+    const {copy} = useCopy(
+        linkToCopy
+    )
 
     return (
         <>
@@ -81,6 +89,20 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                                 >
                                     Preview
                                 </Button>
+                                {linkToCopy && (
+                                    <Button
+                                        isIconOnly
+                                        color="default"
+                                        variant="flat"
+                                        size="md"
+                                        onPress={async () => {
+                                            await copy()
+                                            toast.success("Copied to clipboard.")
+                                        }}
+                                    >
+                                        <RxLink2 className="text-lg font-medium"/>
+                                    </Button>
+                                )}
                                 <Tooltip
                                     placement="top-end"
                                     offset={2}
@@ -98,7 +120,6 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                                             color="primary"
                                             className="font-medium text-base"
                                             size="md"
-                                            endContent={<RxGlobe className="text-lg"/>}
                                             onPress={() => {
                                                 setOpen(true)
                                             }}
