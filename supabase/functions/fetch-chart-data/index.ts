@@ -7,6 +7,9 @@ import {corsHeaders} from "../_shared/cors.ts";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import {createSupabaseClient} from "../_shared/supabase.ts";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import {combineUrl} from "kea-router";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -54,9 +57,19 @@ serve(async (req) => {
     })
   }
 
+  const workbookId = combineUrl(chart.data.srcUrl).searchParams?.resid ?? ""
+
+  if (!workbookId) {
+    return new Response(JSON.stringify({error: "Data source is invalid."}), {
+      headers: corsHeaders,
+      status: 400,
+    })
+  }
+
   let graphData
+
   try {
-    const graphDataResponse = await fetch(`https://graph.microsoft.com/v1.0/me/drive/items/${chart.data.dataSourceId}/workbook/worksheets/${sheet}/range(address='${parsedRange}')`, {
+    const graphDataResponse = await fetch(`https://graph.microsoft.com/v1.0/me/drive/items/${workbookId}/workbook/worksheets/${sheet}/range(address='${parsedRange}')`, {
       method: "GET",
       headers: new Headers({
         Authorization: `Bearer ${refreshTokenData.access_token}`,

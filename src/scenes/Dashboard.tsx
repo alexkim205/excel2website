@@ -9,9 +9,10 @@ import {publishModalLogic} from "../logics/publishModalLogic";
 import {PublishModal} from "../components/Modal/PublishModal";
 import {RiShareBoxLine} from "react-icons/ri";
 import {A} from "kea-router";
-import {PublishStatus} from "../utils/types";
+import {PricingTier, PublishStatus} from "../utils/types";
 import useCopy from "@react-hook/copy";
 import {toast} from "react-toastify";
+import {userLogic} from "../logics/userLogic";
 
 export function Dashboard({props}: { props: DashboardLogicProps }) {
     const newUUID = `${props.id}-new-item`
@@ -19,6 +20,7 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
     const publishModalProps = {id: props.id}
     const logic = dashboardLogic(dashboardProps)
     const publishLogic = publishModalLogic(publishModalProps)
+    const {plan} = useValues(userLogic)
     const {dashboard, charts, layouts, saving, dashboardLoading, publishStatus, publishStatusLoading} = useValues(logic)
     const {setDashboard, onLayoutChange} = useActions(logic)
     const {setOpen} = useActions(publishLogic)
@@ -73,35 +75,39 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                             </>
                         )}
                     </div>
-                    <div className="flex flex-row gap-4 self-start items-center">
+                    <div className="flex flex-row gap-3 self-start items-center">
                         {dashboardLoading && !dashboard ? (<></>) : (
                             <>
                                 <div className="text-base text-default-400">{saving ? "Saving..." : "Saved"}</div>
-                                <Button
-                                    color="default"
-                                    variant="flat"
-                                    className="text-base"
-                                    size="md"
-                                    as={A}
-                                    target="_blank"
-                                    href={dashboard?.subdomain ? import.meta.env.DEV ? `http://${dashboard.subdomain}.localhost:5173` : `https://${dashboard.subdomain}.sheetstodashboard.com` : undefined}
-                                    endContent={<RiShareBoxLine className="text-lg"/>}
-                                >
-                                    Preview
-                                </Button>
-                                {linkToCopy && (
-                                    <Button
-                                        isIconOnly
-                                        color="default"
-                                        variant="flat"
-                                        size="md"
-                                        onPress={async () => {
-                                            await copy()
-                                            toast.success("Copied to clipboard.")
-                                        }}
-                                    >
-                                        <RxLink2 className="text-lg font-medium"/>
-                                    </Button>
+                                {plan !== PricingTier.Free && (
+                                    <>
+                                        <Button
+                                            color="default"
+                                            variant="flat"
+                                            className="text-base"
+                                            size="md"
+                                            as={A}
+                                            target="_blank"
+                                            href={dashboard?.subdomain ? import.meta.env.DEV ? `http://${dashboard.subdomain}.localhost:5173` : `https://${dashboard.subdomain}.sheetstodashboard.com` : undefined}
+                                            endContent={<RiShareBoxLine className="text-lg"/>}
+                                        >
+                                            Preview
+                                        </Button>
+                                        {linkToCopy && (
+                                            <Button
+                                                isIconOnly
+                                                color="default"
+                                                variant="flat"
+                                                size="md"
+                                                onPress={async () => {
+                                                    await copy()
+                                                    toast.success("Copied to clipboard.")
+                                                }}
+                                            >
+                                                <RxLink2 className="text-lg font-medium"/>
+                                            </Button>
+                                        )}
+                                    </>
                                 )}
                                 <Tooltip
                                     placement="top-end"
