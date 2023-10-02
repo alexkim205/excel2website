@@ -160,7 +160,6 @@ export const dashboardLogic = kea<dashboardLogicType>([
                     actions.refreshToken()
                     return
                 }
-                console.log("WORKBOOKS", data)
                 return data.value.filter(({name}: { name: string }) => name.endsWith(".xlsx")) ?? []
             }
         },

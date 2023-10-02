@@ -195,7 +195,7 @@ export function PublishModalSettings({props}: PublishModalProps) {
     const logic = dashboardLogic(props)
     const {publishDomainLoading, publishDomain, publishable} = useValues(publishLogic)
     const {addDomainToProject, setPublishDomain} = useActions(publishLogic)
-    const {dashboard, publishStatus} = useValues(logic)
+    const {dashboard, publishStatus, publishStatusLoading} = useValues(logic)
     const [showInstructions, setShowInstructions] = useState(false)
     const formattedDefaultDomain = dashboard?.subdomain ? `${dashboard.subdomain}.sheetstodashboard.com` : ""
 
@@ -218,7 +218,7 @@ export function PublishModalSettings({props}: PublishModalProps) {
                     <div className="flex flex-col gap-1.5">
                         <div className="flex flex-row justify-between items-end">
                             <label className="font-medium text-sm">Custom domain</label>
-                            <Chip color="success" classNames={{content: "font-semibold text-white"}} size="sm"
+                            <Chip color={publishStatusLoading ? "default" : publishStatus === PublishStatus.Online ? "success" : "danger"} classNames={{content: "font-semibold text-white"}} size="sm"
                                   variant="solid">{capitalizeFirstLetter(publishStatus)}</Chip>
                         </div>
                         <Input value={publishDomain}

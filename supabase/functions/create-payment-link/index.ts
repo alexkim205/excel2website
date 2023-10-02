@@ -65,7 +65,6 @@ serve(async (req) => {
     });
   } catch (e) {
     const error = e as unknown as Error
-    console.log("ERROR", error)
     return new Response(JSON.stringify({error: error.message}), {
       headers: corsHeaders,
       status: 400,

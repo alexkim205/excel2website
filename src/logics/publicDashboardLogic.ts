@@ -24,7 +24,6 @@ export const publicDashboardLogic = kea<publicDashboardLogicType>([
                 await breakpoint(100)
 
                 const isCustomDomain = import.meta.env.DEV ? false : props.domain.includes(".")
-                console.log("CUSTOM", isCustomDomain)
 
                 const {data, error} = await supabase
                     .from(SupabaseTable.Dashboards)
