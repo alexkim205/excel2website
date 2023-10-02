@@ -50,6 +50,7 @@ export const userLogic = kea<userLogicType>([
                     scopes: 'offline_access email Files.Read Files.Read.All',
                 },
             })
+
             if (error) {
                 throw new Error(error.message)
             }
@@ -116,6 +117,7 @@ export const userLogic = kea<userLogicType>([
 
         await supabase.auth.updateUser({
             data: {
+                plan: PricingTier.Life,
                 provider_token: currentSession.provider_token,
                 provider_refresh_token: currentSession.provider_refresh_token
             }
