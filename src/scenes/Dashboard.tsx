@@ -34,7 +34,7 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
     return (
         <>
             <div id={`${dashboardProps.id}-dashboard-wrapper`} className="flex flex-col w-full px-3 sm:gap-6 gap-4">
-                <div className="max-w-[1024px] mx-auto px-6 flex flex-row justify-between gap-4 w-full">
+                <div className="max-w-[1024px] mx-auto px-6 flex flex-col sm:flex-row justify-between gap-4 w-full">
                     <div className="flex flex-col gap-1 w-full">
                         {dashboardLoading && !dashboard ? (
                             <>
@@ -75,7 +75,7 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                             </>
                         )}
                     </div>
-                    <div className="flex flex-row gap-3 self-start items-center">
+                    <div className="flex flex-row gap-3 self-end sm:flex-nowrap flex-wrap sm:self-start items-center">
                         {dashboardLoading && !dashboard ? (<></>) : (
                             <>
                                 <div className="text-base text-default-400">{saving ? "Saving..." : "Saved"}</div>

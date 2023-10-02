@@ -16,7 +16,7 @@ export function Nav() {
             <Navbar position="static" className="bg-gray-950 text-gray-100">
                 <NavbarBrand className="flex gap-3 items-center cursor-pointer" onClick={() => router.actions.push(urls.home())}>
                     <BsFillFileEarmarkSpreadsheetFill className="text-3xl"/>
-                    <Badge content="Beta" disableOutline size="lg" color="primary" placement="top-right" classNames={{badge: "top-1 -right-6"}}>
+                    <Badge content="Beta" disableOutline size="lg" color="primary" placement="top-right" classNames={{base: "sm:block hidden", badge: "top-1 -right-6"}}>
                         <p className="sm:block hidden font-bold text-3xl text-inherit">Sheets to Dashboard</p>
                     </Badge>
                 </NavbarBrand>
