@@ -4,7 +4,7 @@ import {Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow} f
 import {capitalizeFirstLetter} from "kea-forms/lib/utils";
 import {PricingTier} from "../utils/types";
 
-export function Admin() {
+export function AdminDashboard() {
     const {users} = useValues(adminLogic)
     const {changeUserPlan} = useActions(adminLogic)
 

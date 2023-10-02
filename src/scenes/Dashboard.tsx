@@ -76,7 +76,7 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                                     size="md"
                                     as={A}
                                     target="_blank"
-                                    href={dashboard?.subdomain ? import.meta.env.DEV ? `http://${dashboard.subdomain}.localhost:5173` : `${dashboard.subdomain}.sheetstodashboard.com` : undefined}
+                                    href={dashboard?.subdomain ? import.meta.env.DEV ? `http://${dashboard.subdomain}.localhost:5173` : `https://${dashboard.subdomain}.sheetstodashboard.com` : undefined}
                                     endContent={<RiShareBoxLine className="text-lg"/>}
                                 >
                                     Preview

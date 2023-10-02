@@ -6,7 +6,7 @@ import {Home} from "./scenes/Home";
 import {Dashboard} from "./scenes/Dashboard";
 import {homeLogic} from "./logics/homeLogic";
 import {lazy} from "react";
-import {Admin} from "./scenes/Admin";
+import {AdminDashboard} from "./scenes/AdminDashboard";
 
 const PublicDashboard = lazy(() => import('./scenes/PublicDashboard'))
 
@@ -24,7 +24,7 @@ function App() {
             {{
                 [SceneKey.Home]: <Home/>,
                 [SceneKey.Dashboard]: <Dashboard props={{id: params.id}}/>,
-                [SceneKey.Admin]: <Admin/>,
+                [SceneKey.Admin]: <AdminDashboard/>,
             }[scene as SceneKey.Home | SceneKey.Dashboard]}
 
         </div>
