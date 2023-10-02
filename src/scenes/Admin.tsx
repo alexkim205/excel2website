@@ -12,7 +12,7 @@ export function Admin() {
         key: user.id,
         email: user.user_metadata.email,
         plan: <Chip classNames={{content: "font-semibold text-white"}} size="sm"
-                    color="success">{capitalizeFirstLetter(user.user_metadata.plan)}</Chip>,
+                    color="success">{capitalizeFirstLetter(user.user_metadata.plan ?? PricingTier.Free)}</Chip>,
         change_plan: (
             <div className="flex flex-wrap flex-row gap-1.5">
                 {[PricingTier.Free, PricingTier.Tiny, PricingTier.Small, PricingTier.Mega].map((tier) => (
