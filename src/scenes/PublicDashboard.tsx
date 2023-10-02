@@ -24,7 +24,7 @@ function PublicDashboard({subdomain}: PublicDashboardProps) {
         )
     }
 
-    console.log("dashboard", dashboard, dashboardLoading)
+    console.log("dashboard", subdomain, dashboard, dashboardLoading)
     if (!dashboardLoading && !dashboard) {
         return (
             <div className="flex flex-col gap-6 w-screen h-screen text-default-600 justify-center items-center">
