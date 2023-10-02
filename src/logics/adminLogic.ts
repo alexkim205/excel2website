@@ -1,4 +1,4 @@
-import {actions, afterMount, connect, defaults, kea, path} from "kea";
+import {actions, connect, defaults, kea, listeners, path} from "kea";
 import {userLogic} from "./userLogic";
 import type {adminLogicType} from "./adminLogicType";
 import {loaders} from "kea-loaders";
@@ -13,7 +13,8 @@ const PROD_SUPER_USER_ID = '5aadc53d-cc8f-4273-a039-31d558df19f0'
 export const adminLogic = kea<adminLogicType>([
     path(["src", "logics", "adminLogic"]),
     connect(() => ({
-        values: [userLogic, ["user"]]
+        values: [userLogic, ["user"]],
+        actions: [userLogic, ["setUser"]]
     })),
     defaults({
         users: [] as User[],
@@ -44,12 +45,14 @@ export const adminLogic = kea<adminLogicType>([
                 }
                 return values.users.map((user) => user.id === userId ? merge({}, user, {user_metadata: {plan}}) : user)
             }
-            }
-        })),
-    afterMount(({values, actions}) => {
-        if (import.meta.env.PROD && values.user?.user?.id !== PROD_SUPER_USER_ID) {
-            router.actions.push(urls.home())
         }
-        actions.loadUsers({})
-    })
+    })),
+    listeners(({actions}) => ({
+        setUser: ({user}) => {
+            if (import.meta.env.PROD && user?.user?.id !== PROD_SUPER_USER_ID) {
+                router.actions.push(urls.home())
+            }
+            actions.loadUsers({})
+        }
+    })),
 ])
