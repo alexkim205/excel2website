@@ -48,7 +48,6 @@ export const sceneLogic = kea<sceneLogicType>([
                 actions.setDomain(host)
             } else {
                 actions.setDomain(arr[0])
-                console.log("DOMAIn", isCustomDomain, isDefaultDomain, arr[0])
             }
             actions.setScene(SceneKey.PublicDashboard, {})
         }

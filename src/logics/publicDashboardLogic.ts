@@ -5,12 +5,12 @@ import {loaders} from "kea-loaders";
 import supabase from "../utils/supabase";
 
 export interface PublicDashboardLogicProps {
-    subdomain: DashboardType["subdomain"] | null
+    domain: DashboardType["subdomain"] | DashboardType["custom_domain"] | null
 }
 
 export const publicDashboardLogic = kea<publicDashboardLogicType>([
     props({} as PublicDashboardLogicProps),
-    key((props) => props.subdomain ?? "global"),
+    key((props) => props.domain ?? "global"),
     path((key) => ["src", "logics", "publicDashboardLogic", key]),
     defaults({
         dashboard: null as DashboardType | null
@@ -18,11 +18,18 @@ export const publicDashboardLogic = kea<publicDashboardLogicType>([
     loaders(({props}) => ({
         dashboard: {
             loadDashboard: async (_, breakpoint) => {
+                if (!props.domain) {
+                    return null
+                }
                 await breakpoint(100)
+
+                const isCustomDomain = import.meta.env.DEV ? false : props.domain.includes(".")
+                console.log("CUSTOM", isCustomDomain)
+
                 const {data, error} = await supabase
                     .from(SupabaseTable.Dashboards)
                     .select(`*, dashboard_items(*)`)
-                    .eq("subdomain", props.subdomain)
+                    .eq(isCustomDomain ? "custom_domain" : "subdomain", props.domain)
                     .maybeSingle()
                 breakpoint()
                 if (error) {
