@@ -17,7 +17,7 @@ import {
 import {useActions, useValues} from "kea";
 import {publishModalLogic} from "../../logics/publishModalLogic";
 import {PricingTier, PublishStatus} from "../../utils/types";
-import {TbLayoutGrid, TbMessageQuestion, TbWorldWww} from "react-icons/tb";
+import {TbLayoutGrid, TbMessageQuestion, TbStar, TbWorldWww} from "react-icons/tb";
 import {capitalizeFirstLetter} from "kea-forms/lib/utils";
 import {userLogic} from "../../logics/userLogic";
 import {TierPerks} from "../TierPerks";
@@ -90,6 +90,29 @@ export const TIERS = [
         ]
     }
 ]
+
+export const TIERS_WITH_LIFE = [...TIERS, {
+    value: PricingTier.Life,
+    price: 0,
+    perks: [
+        {
+            Icon: TbStar,
+            label: "Thank you for being one of the first 50 users! Enjoy a lifetime license for free as a token of gratitude."
+        },
+        {
+            Icon: TbLayoutGrid,
+            label: "Unlimited shareable dashboards"
+        },
+        {
+            Icon: TbWorldWww,
+            label: "Custom domain"
+        },
+        {
+            Icon: TbMessageQuestion,
+            label: "Priority support"
+        },
+    ]
+},]
 
 export function PublishModal({props}: PublishModalProps) {
     const logic = publishModalLogic(props)
@@ -218,8 +241,10 @@ export function PublishModalSettings({props}: PublishModalProps) {
                     <div className="flex flex-col gap-1.5">
                         <div className="flex flex-row justify-between items-end">
                             <label className="font-medium text-sm">Custom domain</label>
-                            <Chip color={publishStatusLoading ? "default" : publishStatus === PublishStatus.Online ? "success" : "danger"} classNames={{content: "font-semibold text-white"}} size="sm"
-                                  variant="solid">{capitalizeFirstLetter(publishStatus)}</Chip>
+                            <Chip
+                                color={publishStatusLoading ? "default" : publishStatus === PublishStatus.Online ? "success" : "danger"}
+                                classNames={{content: "font-semibold text-white"}} size="sm"
+                                variant="solid">{capitalizeFirstLetter(publishStatus)}</Chip>
                         </div>
                         <Input value={publishDomain}
                                onValueChange={(nextDomain) => setPublishDomain(nextDomain)}

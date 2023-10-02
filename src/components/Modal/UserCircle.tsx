@@ -9,7 +9,7 @@ import {useValues} from "kea";
 import {userLogic} from "../../logics/userLogic";
 import {capitalizeFirstLetter} from "kea-forms/lib/utils";
 import {PricingTier} from "../../utils/types";
-import {TIERS} from "./PublishModal";
+import {TIERS_WITH_LIFE} from "./PublishModal";
 import {TierPerks} from "../TierPerks";
 import {PaywallModal} from "./PaywallModal";
 
@@ -18,7 +18,7 @@ export function UserCircle() {
     const {isOpen: isPublishModalOpen, onClose: closePublishModal, onOpen: openPublishModal} = useDisclosure()
     const {user, gravatarLink, billingPortalLinkLoading, billingPortalLink, plan} = useValues(userLogic)
 
-    const currentTier = TIERS.find(({value}) => value === plan)
+    const currentTier = TIERS_WITH_LIFE.find(({value}) => value === plan)
 
     return (
         <>
@@ -43,21 +43,23 @@ export function UserCircle() {
                                         <TierPerks perks={currentTier.perks}/>
                                     </div>
                                 )}
-                                <Button
-                                    color="primary" size="lg" className="font-semibold disabled:opacity-50"
-                                    isLoading={billingPortalLinkLoading} isDisabled={billingPortalLinkLoading}
-                                    onPress={() => {
-                                        if (plan === PricingTier.Free) {
-                                            openPublishModal()
-                                            return
-                                        }
-                                        if (billingPortalLink) {
-                                            window.location.href = billingPortalLink
-                                        }
-                                    }}
-                                >
-                                    {plan === PricingTier.Free ? "Upgrade subscription" : "Manage subscription"}
-                                </Button>
+                                {plan !== PricingTier.Life && (
+                                    <Button
+                                        color="primary" size="lg" className="font-semibold disabled:opacity-50"
+                                        isLoading={billingPortalLinkLoading} isDisabled={billingPortalLinkLoading}
+                                        onPress={() => {
+                                            if (plan === PricingTier.Free) {
+                                                openPublishModal()
+                                                return
+                                            }
+                                            if (billingPortalLink) {
+                                                window.location.href = billingPortalLink
+                                            }
+                                        }}
+                                    >
+                                        {plan === PricingTier.Free ? "Upgrade subscription" : "Manage subscription"}
+                                    </Button>
+                                )}
                             </ModalBody>
                         </>
                     )}

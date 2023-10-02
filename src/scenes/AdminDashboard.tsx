@@ -15,7 +15,7 @@ export function AdminDashboard() {
                     color="success">{capitalizeFirstLetter(user.user_metadata.plan ?? PricingTier.Free)}</Chip>,
         change_plan: (
             <div className="flex flex-wrap flex-row gap-1.5">
-                {[PricingTier.Free, PricingTier.Tiny, PricingTier.Small, PricingTier.Mega].map((tier) => (
+                {[PricingTier.Free, PricingTier.Tiny, PricingTier.Small, PricingTier.Mega, PricingTier.Life].map((tier) => (
                     <Chip classNames={{content: "font-semibold text-white cursor-pointer", base: "hover:scale-105 transition-transform duration-500"}} size="sm" color="success" key={tier}
                           onClick={() => changeUserPlan(user.id, tier)}>
                         {capitalizeFirstLetter(tier)}

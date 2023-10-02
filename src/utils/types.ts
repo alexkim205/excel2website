@@ -94,7 +94,8 @@ export enum PricingTier {
     Free = "free",
     Tiny = "tiny",
     Small = "small",
-    Mega = "mega"
+    Mega = "mega",
+    Life = 'life'
 }
 
 export enum PublishStatus {
