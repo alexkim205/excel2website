@@ -102,7 +102,6 @@ export const dashboardLogic = kea<dashboardLogicType>([
                 return insertData
             },
             setDashboard: ({dashboard}) => {
-                console.log("NEW DASHBOARD", dashboard, merge({}, values.dashboard, dashboard))
                 return merge({}, values.dashboard, dashboard)
             },
             saveDashboard: async (_, breakpoint) => {

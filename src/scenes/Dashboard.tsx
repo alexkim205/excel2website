@@ -7,6 +7,8 @@ import {Button, Skeleton} from "@nextui-org/react";
 import {RxGlobe} from "react-icons/rx";
 import {publishModalLogic} from "../logics/publishModalLogic";
 import {PublishModal} from "../components/Modal/PublishModal";
+import {RiShareBoxLine} from "react-icons/ri";
+import {A} from "kea-router";
 
 export function Dashboard({props}: { props: DashboardLogicProps }) {
     const newUUID = `${props.id}-new-item`
@@ -17,6 +19,8 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
     const {dashboard, charts, layouts, saving, dashboardLoading} = useValues(logic)
     const {setDashboard, onLayoutChange} = useActions(logic)
     const {setOpen} = useActions(publishLogic)
+
+    console.log("SUBDOMAIN", dashboard?.subdomain ? import.meta.env.DEV ? `http://${dashboard.subdomain}.localhost:5173` : `${dashboard.subdomain}.sheetstodashboard.com` : undefined)
 
     return (
         <>
@@ -67,10 +71,22 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
                             <>
                                 <div className="text-base text-default-400">{saving ? "Saving..." : "Saved"}</div>
                                 <Button
+                                    color="default"
+                                    variant="flat"
+                                    className="text-base"
+                                    size="md"
+                                    as={A}
+                                    target="_blank"
+                                    href={dashboard?.subdomain ? import.meta.env.DEV ? `http://${dashboard.subdomain}.localhost:5173` : `${dashboard.subdomain}.sheetstodashboard.com` : undefined}
+                                    endContent={<RiShareBoxLine className="text-lg"/>}
+                                >
+                                    Preview
+                                </Button>
+                                <Button
                                     color="primary"
                                     className="font-medium text-base"
                                     size="md"
-                                    startContent={<RxGlobe className="text-lg"/>}
+                                    endContent={<RxGlobe className="text-lg"/>}
                                     onPress={() => {
                                         setOpen(true)
                                     }}

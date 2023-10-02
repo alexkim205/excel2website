@@ -5,18 +5,17 @@ import {
     ModalContent,
     ModalHeader, useDisclosure,
 } from "@nextui-org/react";
-import {useActions, useValues} from "kea";
+import {useValues} from "kea";
 import {userLogic} from "../../logics/userLogic";
 import {capitalizeFirstLetter} from "kea-forms/lib/utils";
 import {PricingTier} from "../../utils/types";
-import {publishModalLogic} from "../../logics/publishModalLogic";
-import {PublishModal, TIERS} from "./PublishModal";
+import {TIERS} from "./PublishModal";
 import {TierPerks} from "../TierPerks";
+import {PaywallModal} from "./PaywallModal";
 
 export function UserCircle() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
-    const publishLogicProps = {id: "global"}
-    const {setOpen: setPublishModalOpen} = useActions(publishModalLogic(publishLogicProps))
+    const {isOpen: isPublishModalOpen, onClose: closePublishModal, onOpen: openPublishModal} = useDisclosure()
     const {user, gravatarLink, billingPortalLinkLoading, billingPortalLink, plan} = useValues(userLogic)
 
     const currentTier = TIERS.find(({value}) => value === plan)
@@ -49,7 +48,7 @@ export function UserCircle() {
                                     isLoading={billingPortalLinkLoading} isDisabled={billingPortalLinkLoading}
                                     onPress={() => {
                                         if (plan === PricingTier.Free) {
-                                            setPublishModalOpen(true)
+                                            openPublishModal()
                                             return
                                         }
                                         if (billingPortalLink) {
@@ -64,7 +63,13 @@ export function UserCircle() {
                     )}
                 </ModalContent>
             </Modal>
-            <PublishModal props={publishLogicProps}/>
+            <PaywallModal open={isPublishModalOpen} setOpen={(open) => {
+                if (open) {
+                    openPublishModal()
+                } else {
+                    closePublishModal()
+                }
+            }}/>
         </>
     )
 }

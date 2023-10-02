@@ -5,12 +5,12 @@ import {loaders} from "kea-loaders";
 import supabase from "../utils/supabase";
 
 export interface PublicDashboardLogicProps {
-    id: DashboardType["id"] | null
+    subdomain: DashboardType["subdomain"] | null
 }
 
 export const publicDashboardLogic = kea<publicDashboardLogicType>([
     props({} as PublicDashboardLogicProps),
-    key((props) => props.id ?? "global"),
+    key((props) => props.subdomain ?? "global"),
     path((key) => ["src", "logics", "publicDashboardLogic", key]),
     defaults({
         dashboard: null as DashboardType | null
@@ -22,7 +22,7 @@ export const publicDashboardLogic = kea<publicDashboardLogicType>([
                 const {data, error} = await supabase
                     .from(SupabaseTable.Dashboards)
                     .select(`*, dashboard_items(*)`)
-                    .eq("subdomain", props.id)
+                    .eq("subdomain", props.subdomain)
                     .maybeSingle()
                 breakpoint()
                 if (error) {

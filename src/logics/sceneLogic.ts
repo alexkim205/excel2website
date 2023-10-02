@@ -9,7 +9,7 @@ export const sceneLogic = kea<sceneLogicType>([
         setScene: (scene: SceneKey, params: Record<string, string>) => ({
             scene,params
         }),
-        setSubdomain: (subdomain: string | null) => ({subdomain})
+        setDomain: (domain: string | null) => ({domain})
     }),
     reducers({
         scene: [
@@ -24,10 +24,10 @@ export const sceneLogic = kea<sceneLogicType>([
                 setScene: (_, payload) => payload.params
             }
         ],
-        subdomain: [
+        domain: [
             null as string | null,
             {
-                setSubdomain: (_, {subdomain}) => subdomain
+                setDomain: (_, {domain}) => domain
             }
         ]
     }),
@@ -41,8 +41,15 @@ export const sceneLogic = kea<sceneLogicType>([
     afterMount(({actions}) => {
         const host = window.location.host
         const arr = host.split(".").slice(0, host.includes("localhost") ? -1 : -2);
-        if (arr.length > 0 && arr[0] !== "www") {
-            actions.setSubdomain(arr[0])
+        const isCustomDomain = import.meta.env.DEV ? false : !host.endsWith("sheetstodashboard.com")
+        const isDefaultDomain = arr.length > 0 && arr[0] !== "www"
+        if (isCustomDomain || isDefaultDomain) {
+            if (isCustomDomain) {
+                actions.setDomain(host)
+            } else {
+                actions.setDomain(arr[0])
+                console.log("DOMAIn", isCustomDomain, isDefaultDomain, arr[0])
+            }
             actions.setScene(SceneKey.PublicDashboard, {})
         }
     })

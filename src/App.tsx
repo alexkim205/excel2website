@@ -11,10 +11,10 @@ const PublicDashboard = lazy(() => import('./scenes/PublicDashboard'))
 
 function App() {
     useMountedLogic(homeLogic)
-    const {scene, params, subdomain} = useValues(sceneLogic)
+    const {scene, params, domain} = useValues(sceneLogic)
 
-    if (subdomain) {
-        return <PublicDashboard subdomain={subdomain}/>
+    if (domain) {
+        return <PublicDashboard subdomain={domain}/>
     }
 
     return (

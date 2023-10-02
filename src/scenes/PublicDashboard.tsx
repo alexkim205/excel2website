@@ -12,7 +12,7 @@ export interface PublicDashboardProps {
 
 function PublicDashboard({subdomain}: PublicDashboardProps) {
     const logicProps = {
-        id: subdomain
+        subdomain
     }
     const {dashboard, dashboardLoading, layouts} = useValues(publicDashboardLogic(logicProps))
 

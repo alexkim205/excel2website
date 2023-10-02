@@ -7,8 +7,8 @@ import {urls} from "../utils/routes";
 import md5 from "md5"
 import merge from "lodash.merge";
 import {loaders} from "kea-loaders";
-import {_generateBillingPortalLink} from "./publishModalLogic";
 import {PricingTier} from "../utils/types";
+import {_generateBillingPortalLink} from "./pricingLogic";
 
 export const userLogic = kea<userLogicType>([
     path(["src", "logics", "userLogic"]),
