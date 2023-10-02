@@ -118,7 +118,6 @@ export const userLogic = kea<userLogicType>([
         // TODO temporarily give everyone life
         await supabase.auth.updateUser({
             data: {
-                plan: PricingTier.Life,
                 provider_token: currentSession.provider_token,
                 provider_refresh_token: currentSession.provider_refresh_token
             }
