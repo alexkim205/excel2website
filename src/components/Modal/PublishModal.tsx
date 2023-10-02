@@ -16,7 +16,7 @@ import {
 } from "@nextui-org/react";
 import {useActions, useValues} from "kea";
 import {publishModalLogic} from "../../logics/publishModalLogic";
-import {PricingTier} from "../../utils/types";
+import {PricingTier, PublishStatus} from "../../utils/types";
 import {TbLayoutGrid, TbMessageQuestion, TbWorldWww} from "react-icons/tb";
 import {capitalizeFirstLetter} from "kea-forms/lib/utils";
 import {userLogic} from "../../logics/userLogic";
@@ -270,7 +270,11 @@ export function PublishModalSettings({props}: PublishModalProps) {
                         </Accordion>
                     </div>
                     <div className="flex flex-col gap-1.5">
-                        <label className="font-medium text-sm">Default domain</label>
+                        <div className="flex flex-row justify-between items-end">
+                            <label className="font-medium text-sm">Default domain</label>
+                            <Chip color="success" classNames={{content: "font-semibold text-white"}} size="sm"
+                                  variant="solid">{capitalizeFirstLetter(PublishStatus.Online)}</Chip>
+                        </div>
                         <Button onPress={async () => {
                             if (!dashboard?.subdomain) {
                                 return
