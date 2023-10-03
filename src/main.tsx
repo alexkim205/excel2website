@@ -6,10 +6,13 @@ import {Slide, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
 import {resetContext} from 'kea'
 import {subscriptionsPlugin} from 'kea-subscriptions'
+import {createPostHogClient} from "./utils/analytics";
 
 resetContext({
     plugins: [subscriptionsPlugin],
 })
+
+createPostHogClient()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <NextUIProvider>

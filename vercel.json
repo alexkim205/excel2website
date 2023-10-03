@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/ingest/(.*)",
+      "source": "/api/ingest/(.*)",
       "destination": "/api/ingest"
     },
     {
