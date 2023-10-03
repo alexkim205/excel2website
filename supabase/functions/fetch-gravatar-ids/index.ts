@@ -23,7 +23,7 @@ serve(async (req) => {
   // Fetch user's refresh
   const {data, error} = await supabase.auth.admin.listUsers({
     page: 1,
-    perPage: 50
+    perPage: 23
   })
   if (error) {
     return new Response(JSON.stringify({error: error.message}), {
