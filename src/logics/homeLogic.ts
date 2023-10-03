@@ -6,7 +6,7 @@ import type {homeLogicType} from "./homeLogicType";
 export const homeLogic = kea<homeLogicType>([
     path(["src", "logics", "homeLogic"]),
     defaults({
-       gravatarIds: Array.from(Array(23).fill({initials: "", hash: ""})) as {initials: string, hash: string}[]
+       gravatarIds: [] as {initials: string, hash: string}[]
     }),
     loaders(() => ({
         gravatarIds: {
