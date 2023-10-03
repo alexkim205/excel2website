@@ -58,7 +58,7 @@ export function Home() {
                     )}
                 >
                     {gravatarIds.map(({hash, initials}) => (
-                        <Avatar color="primary" classNames={{base: "shrink-0", name: "font-medium text-xl"}} src={hash ? `https://www.gravatar.com/avatar/${hash}` : undefined} name={initials.toUpperCase()} key={hash} size="lg" />
+                        <Avatar color="primary" classNames={{base: "shrink-0", name: "font-medium text-xl"}} src={`https://www.gravatar.com/avatar/${hash}?d=identicon`} name={initials.toUpperCase()} key={hash} size="lg" />
                     ))}
                 </AvatarGroup>
             </Section>
