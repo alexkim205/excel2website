@@ -13,6 +13,7 @@ import HeroImage from '../assets/hero.png?h=1200&w=1600&position=top&webp&imaget
 import {Features} from "../components/Home/Features";
 import {Section} from "../components/Home/Section";
 import {homeLogic} from "../logics/homeLogic";
+import {Footer} from "../components/Footer";
 
 export function Home() {
     const {gravatarIds} = useValues(homeLogic)
@@ -45,24 +46,29 @@ export function Home() {
                     <img srcSet={HeroImage} alt="Hero image"/>
                 </CardBody>
             </Card>
-            <Section title={<>Join the <span className="underline underline-offset-4">100+ and counting</span> people using
-                Sheets to Dashboard today.</>}
-                     subtitle="Powering business owners, students, developers, product managers, and everything in between.">
+            <Section
+                title={<>Join the <span className="underline underline-offset-4">100+ and counting</span> people using
+                    Sheets to Dashboard today.</>}
+                subtitle="Powering business owners, students, developers, product managers, and everything in between.">
                 <AvatarGroup
                     isBordered
                     max={23}
                     total={100}
                     className="flex flex-wrap max-w-2xl mx-auto"
                     renderCount={() => (
-                        <div className="flex flex-row items-center gap-2 ml-3 text-2xl"> + <span className="text-3xl">🫵</span></div>
+                        <div className="flex flex-row items-center gap-2 ml-3 text-2xl"> + <span
+                            className="text-3xl">🫵</span></div>
                     )}
                 >
-                    {gravatarIds.map(({hash, initials}) => (
-                        <Avatar color="primary" classNames={{base: "shrink-0", name: "font-medium text-xl"}} src={`https://www.gravatar.com/avatar/${hash}?d=identicon`} name={initials.toUpperCase()} key={hash} size="lg" />
+                    {gravatarIds.map(({hash, initials}, index) => (
+                        <Avatar color="primary" classNames={{base: "shrink-0", name: "font-medium text-xl"}}
+                                src={`https://www.gravatar.com/avatar/${hash}?d=identicon`}
+                                name={initials.toUpperCase()} key={index} size="lg"/>
                     ))}
                 </AvatarGroup>
             </Section>
             <Features/>
+            <Footer/>
         </div>
     )
 }

@@ -21,7 +21,7 @@ function App() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen items-center gap-12">
+        <div className="flex flex-col min-h-screen items-center gap-12 overflow-hidden">
             <Nav/>
             {{
                 [SceneKey.Home]: <Home/>,
