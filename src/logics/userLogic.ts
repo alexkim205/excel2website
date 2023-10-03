@@ -9,6 +9,7 @@ import merge from "lodash.merge";
 import {loaders} from "kea-loaders";
 import {PricingTier} from "../utils/types";
 import {_generateBillingPortalLink} from "./pricingLogic";
+import posthog from "posthog-js";
 
 export const userLogic = kea<userLogicType>([
     path(["src", "logics", "userLogic"]),
@@ -101,6 +102,7 @@ export const userLogic = kea<userLogicType>([
         cache.unsubscribeOnAuthStateChange = supabase.auth.onAuthStateChange(
             (authState: any, session: Session | null) => {
                 if (authState === "SIGNED_OUT") {
+                    posthog.reset()
                     return
                 }
                 if (authState === "USER_UPDATED") {
@@ -115,7 +117,9 @@ export const userLogic = kea<userLogicType>([
             return
         }
 
-        // TODO temporarily give everyone life
+        posthog.identify(currentSession.user.id, {
+            email: currentSession.user.email,
+        })
         await supabase.auth.updateUser({
             data: {
                 provider_token: currentSession.provider_token,
