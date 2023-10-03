@@ -19,8 +19,6 @@ export function Home() {
     const {user, gravatarLink} = useValues(userLogic)
     const {signInWithMicrosoft} = useActions(userLogic)
 
-    console.log("GRAVATAR IDS", gravatarIds, gravatarLink.includes("154ede21f372bfb272f5466a74d29319"))
-
     return (
         <div className="flex flex-col w-full max-w-[1024px] px-6 sm:gap-12 gap-8">
             <div className="flex flex-col justify-center items-center gap-5 my-8">
@@ -59,7 +57,7 @@ export function Home() {
                     )}
                 >
                     {gravatarIds.map((id) => (
-                        <Avatar src={`https://www.gravatar.com/avatar/${id}`} key={id} size="lg" />
+                        <Avatar classNames={{base: "shrink-0"}} src={`https://www.gravatar.com/avatar/${id}`} key={id} size="lg" />
                     ))}
                 </AvatarGroup>
             </Section>
