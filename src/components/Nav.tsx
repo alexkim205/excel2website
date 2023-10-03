@@ -1,5 +1,4 @@
 import {Badge, Button, Link, Navbar, NavbarBrand, NavbarContent, NavbarItem} from "@nextui-org/react";
-import {ImOnedrive} from "react-icons/im";
 import {useActions, useValues} from "kea";
 import {userLogic} from "../logics/userLogic";
 import {A, router} from "kea-router";
@@ -7,6 +6,7 @@ import {SceneKey, urls} from "../utils/routes";
 import {BsFillFileEarmarkSpreadsheetFill} from "react-icons/bs";
 import {UserCircle} from "./Modal/UserCircle";
 import {sceneLogic} from "../logics/sceneLogic";
+import {FiPlus} from "react-icons/fi";
 
 export function Nav() {
     const {scene} = useValues(sceneLogic)
@@ -20,17 +20,26 @@ export function Nav() {
                              onClick={() => router.actions.push(urls.home())}>
                     <BsFillFileEarmarkSpreadsheetFill className="text-3xl"/>
                     <Badge content="Beta!" disableOutline size="lg" color="primary" placement="top-right"
-                           classNames={{badge: "sm:block hidden top-1.5 -right-3 rotate-[20deg]"}}>
+                           classNames={{badge: "sm:block hidden top-2 px-2 py-1 tracking-wider font-semibold text-xs -right-3 rotate-[20deg]"}}>
                         <p className="sm:block hidden font-bold text-3xl text-inherit">Sheets to Dashboard</p>
                         <p className="sm:hidden block font-bold text-3xl text-inherit">S2D</p>
                     </Badge>
                 </NavbarBrand>
                 <NavbarContent justify="end">
+                    {(scene === SceneKey.Home || scene === SceneKey.Pricing) && (
+                        <NavbarItem className="flex">
+                            <Button as={A} href={urls.pricing()} color="default"
+                                    className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent px-2 min-w-fit"
+                                    variant="flat" size="lg">
+                                Pricing
+                            </Button>
+                        </NavbarItem>
+                    )}
                     {user ? (
                         <>
                             <NavbarItem className="flex">
                                 <Button as={Link} color="default"
-                                        className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent"
+                                        className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent px-2 min-w-fit"
                                         variant="flat" size="lg"
                                         onClick={() => signOut()}>
                                     Logout
@@ -40,13 +49,13 @@ export function Nav() {
                                 <>
                                     <NavbarItem className="hidden sm:flex">
                                         <Button as={A} href={urls.dashboards()} color="primary" size="lg" radius="sm"
-                                                className="h-10 px-4 font-medium">
+                                                className="h-10 px-4 font-medium min-w-fit">
                                             Go to Dashboard
                                         </Button>
                                     </NavbarItem>
                                     <NavbarItem className="flex sm:hidden">
                                         <Button as={A} href={urls.dashboards()} color="primary" size="lg" radius="sm"
-                                                className="h-10 px-4 font-medium">
+                                                className="h-10 px-4 font-medium min-w-fit">
                                             Dashboard
                                         </Button>
                                     </NavbarItem>
@@ -59,26 +68,19 @@ export function Nav() {
                         </>
                     ) : (
                         <>
-                            <NavbarItem className="flex">
-                                <Button as={A} href={urls.pricing()} color="default"
-                                        className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent"
-                                        variant="flat" size="lg">
-                                    Pricing
-                                </Button>
-                            </NavbarItem>
                             <NavbarItem className="hidden sm:flex">
                                 <Button as={Link} color="primary" size="lg" radius="sm"
                                         className="font-medium h-10 px-4"
-                                        startContent={<ImOnedrive className="text-2xl"/>}
+                                        endContent={<FiPlus className="text-xl"/>}
                                         onPress={() => signInWithMicrosoft()}
                                 >
-                                    Continue with Microsoft
+                                    Make a dashboard
                                 </Button>
                             </NavbarItem>
                             <NavbarItem className="flex sm:hidden">
                                 <Button color="primary" size="lg" radius="sm" onPress={() => signInWithMicrosoft()}
-                                        startContent={<ImOnedrive className="text-2xl"/>} className="h-10 px-4">
-                                    Sign in
+                                        startContent={<FiPlus className="text-xl"/>} className="h-10 px-4">
+                                    Dashboard
                                 </Button>
                             </NavbarItem>
                         </>

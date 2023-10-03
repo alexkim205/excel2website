@@ -12,15 +12,15 @@ import {
 import {router} from "kea-router";
 import {urls} from "../utils/routes";
 import {useActions, useValues} from "kea";
-import {homeLogic} from "../logics/homeLogic";
+import {dashboardGridLogic} from "../logics/dashboardGridLogic";
 import {v4 as uuidv4} from "uuid";
 import {AiOutlinePlus} from "react-icons/ai";
 import clsx from "clsx";
 import {RxDotsVertical, RxPencil1, RxTrash} from "react-icons/rx";
 
 export function Dashboards() {
-    const {dashboards, dashboardsLoading} = useValues(homeLogic)
-    const {deleteDashboard} = useActions(homeLogic)
+    const {dashboards, dashboardsLoading} = useValues(dashboardGridLogic)
+    const {deleteDashboard} = useActions(dashboardGridLogic)
 
     return (
         <div className="flex flex-col w-full max-w-[1024px] px-6 sm:gap-6 gap-4">

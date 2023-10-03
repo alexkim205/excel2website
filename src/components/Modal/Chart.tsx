@@ -75,7 +75,7 @@ export function Chart({props, className}: ChartProps) {
     return (
         <div id={`${props.id}-chart`} ref={ref} className={
             clsx("rounded-small w-full transition-background transition-colors py-4 px-2 bg-white",
-                data ? "sm:h-full h-[400px]" : "flex grow justify-center items-center text-base text-default-400 h-auto",
+                data ? "h-full" : "flex grow justify-center items-center text-base text-default-400 h-auto",
                 className
             )
         }>
@@ -154,7 +154,7 @@ export function StaticChart({props}: StaticChartProps) {
     return (
         <div id={`${props.chart.id}-chart`} ref={ref} className={
             clsx("rounded-small w-full transition-background transition-colors py-4 px-2 bg-white",
-                data ? "sm:h-full h-[400px]" : "flex grow justify-center items-center text-base text-default-400 h-auto",
+                data ? "h-full" : "flex grow justify-center items-center text-base text-default-400 h-auto",
             )
         }>
             {dataLoading ? (

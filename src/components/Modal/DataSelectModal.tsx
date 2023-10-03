@@ -114,10 +114,10 @@ export function DataSelectModal({props}: {
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalBody className="py-6 overflow-y-auto">
+                        <ModalBody className="overflow-y-auto">
                             <div className="px-6 flex flex-row sm:flex-col gap-2">
                                 <div className="flex flex-col justify-between sm:flex-row gap-3 w-full sm:gap-6">
-                                    <div className="flex flex-col w-full sm:w-[calc(33%-0.75rem)] gap-3">
+                                    <div className="flex flex-col w-full sm:w-[calc(33%-0.75rem)] py-6 gap-3">
                                         <h2 className="text-lg font-bold">Data</h2>
                                         <Input value={localMergedChart?.data?.srcUrl ?? ""}
                                                onValueChange={(value) => setLocalChart({data: {srcUrl: value}})}
@@ -177,13 +177,16 @@ export function DataSelectModal({props}: {
                                         </div>
                                     </div>
                                     <div
-                                        className="flex flex-col w-full sm:w-[calc(66%-0.75rem)] p-2 bg-default-100 rounded-large">
+                                        onScroll={(e) => {
+                                            console.log("STO{Ed", e.isPropagationStopped())
+                                        }}
+                                        className="sm:absolute overflow-hidden flex flex-col w-full h-[500px] sm:h-[calc(100%-7rem)] sm:w-[calc(66%-2.75rem)] right-8 top-6 bottom-6 p-2 bg-default-100 rounded-large">
                                         <Tabs
                                             fullWidth
                                             aria-label="Data Table"
                                             selectedKey={dataTableTab}
                                             onSelectionChange={(nextTab) => setDataTableTab(nextTab as PanelTab)}
-                                            classNames={{panel: "px-1 py-1.5 h-full sticky top-0"}}
+                                            classNames={{panel: "px-1 py-1.5 h-full"}}
                                         >
                                             <Tab key={PanelTab.Chart} title="Chart">
                                                 <Chart props={props}/>

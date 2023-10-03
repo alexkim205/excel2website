@@ -4,7 +4,7 @@ import {sceneLogic} from "./logics/sceneLogic";
 import {SceneKey} from "./utils/routes";
 import {Home} from "./scenes/Home";
 import {Dashboard} from "./scenes/Dashboard";
-import {homeLogic} from "./logics/homeLogic";
+import {dashboardGridLogic} from "./logics/dashboardGridLogic";
 import {lazy} from "react";
 import {AdminDashboard} from "./scenes/AdminDashboard";
 import {Pricing} from "./scenes/Pricing";
@@ -13,7 +13,7 @@ import {Dashboards} from "./scenes/Dashboards";
 const PublicDashboard = lazy(() => import('./scenes/PublicDashboard'))
 
 function App() {
-    useMountedLogic(homeLogic)
+    useMountedLogic(dashboardGridLogic)
     const {scene, params, domain} = useValues(sceneLogic)
 
     if (domain) {

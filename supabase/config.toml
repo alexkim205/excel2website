@@ -70,3 +70,6 @@ redirect_uri = "http://localhost:54321/auth/v1/callback"
 # Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
 # or any other third-party OIDC providers.
 url = ""
+
+[functions.stripe-webhooks]
+verify_jwt = false

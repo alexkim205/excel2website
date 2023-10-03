@@ -4,6 +4,6 @@
     "https://esm.sh/v132/utils@0.3.1/index.d.ts": "https://esm.sh/utils@0.3.1",
     "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.33.2",
     "kea-router": "https://esm.sh/kea-router@3.1.4",
-    "http-proxy-middleware": "https://esm.sh/http-proxy-middleware@2.0.6"
+    "md5": "https://esm.sh/md5@2.3.0"
   }
 }
