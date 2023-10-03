@@ -16,10 +16,10 @@ import {homeLogic} from "../logics/homeLogic";
 
 export function Home() {
     const {gravatarIds} = useValues(homeLogic)
-    const {user} = useValues(userLogic)
+    const {user, gravatarLink} = useValues(userLogic)
     const {signInWithMicrosoft} = useActions(userLogic)
 
-    console.log("GRAVATAR IDS", gravatarIds)
+    console.log("GRAVATAR IDS", gravatarIds, gravatarLink.includes("154ede21f372bfb272f5466a74d29319"))
 
     return (
         <div className="flex flex-col w-full max-w-[1024px] px-6 sm:gap-12 gap-8">
@@ -52,14 +52,14 @@ export function Home() {
                      subtitle="Powering business owners, students, developers, product managers, and everything in between.">
                 <AvatarGroup
                     isBordered
-                    max={100}
+                    max={50}
                     total={100}
                     renderCount={() => (
                         <div className="flex flex-row items-center gap-2 ml-3"> + <span className="text-3xl">🫵</span></div>
                     )}
                 >
                     {gravatarIds.map((id) => (
-                        <Avatar src={id} key={id} size="lg" />
+                        <Avatar src={`https://www.gravatar.com/avatar/${id}`} key={id} size="lg" />
                     ))}
                 </AvatarGroup>
             </Section>
