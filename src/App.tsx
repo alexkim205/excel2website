@@ -7,6 +7,8 @@ import {Dashboard} from "./scenes/Dashboard";
 import {homeLogic} from "./logics/homeLogic";
 import {lazy} from "react";
 import {AdminDashboard} from "./scenes/AdminDashboard";
+import {Pricing} from "./scenes/Pricing";
+import {Dashboards} from "./scenes/Dashboards";
 
 const PublicDashboard = lazy(() => import('./scenes/PublicDashboard'))
 
@@ -19,12 +21,14 @@ function App() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen items-center gap-8">
+        <div className="flex flex-col min-h-screen items-center gap-12">
             <Nav/>
             {{
                 [SceneKey.Home]: <Home/>,
+                [SceneKey.Dashboards]: <Dashboards/>,
                 [SceneKey.Dashboard]: <Dashboard props={{id: params.id}}/>,
                 [SceneKey.Admin]: <AdminDashboard/>,
+                [SceneKey.Pricing]: <Pricing/>,
             }[scene as SceneKey.Home | SceneKey.Dashboard]}
 
         </div>
