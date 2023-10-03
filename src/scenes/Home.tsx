@@ -55,7 +55,7 @@ export function Home() {
                     max={50}
                     total={100}
                     renderCount={() => (
-                        <div className="flex flex-row items-center gap-2 ml-3"> + <span className="text-3xl">🫵</span></div>
+                        <div className="flex flex-row items-center gap-2 ml-3 text-2xl"> + <span className="text-3xl">🫵</span></div>
                     )}
                 >
                     {gravatarIds.map((id) => (
