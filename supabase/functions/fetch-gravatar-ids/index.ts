@@ -35,7 +35,7 @@ serve(async (req) => {
   // Calculate gravatar id's
   return new Response(
       JSON.stringify({
-        values: data.users?.map(({email}:{email: string}) => md5(email?.toLowerCase() || ""))
+        values: data.users?.map(({email}:{email: string}) => ({hash: md5(email?.toLowerCase() || ""), initials: email.substring(0, 2)}))
       }),
       { headers: corsHeaders },
   )

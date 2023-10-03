@@ -57,8 +57,8 @@ export function Home() {
                         <div className="flex flex-row items-center gap-2 ml-3 text-2xl"> + <span className="text-3xl">🫵</span></div>
                     )}
                 >
-                    {gravatarIds.map((id) => (
-                        <Avatar classNames={{base: "shrink-0"}} src={id ? `https://www.gravatar.com/avatar/${id}` : undefined} key={id} size="lg" />
+                    {gravatarIds.map(({hash, initials}) => (
+                        <Avatar color="primary" classNames={{base: "shrink-0", name: "font-medium text-xl"}} src={hash ? `https://www.gravatar.com/avatar/${hash}` : undefined} name={initials.toUpperCase()} key={hash} size="lg" />
                     ))}
                 </AvatarGroup>
             </Section>
