@@ -9,7 +9,7 @@ import {urls} from "../utils/routes";
 import {useActions, useValues} from "kea";
 import {userLogic} from "../logics/userLogic";
 import {FiPlus} from "react-icons/fi";
-import HeroImage from '../assets/hero.png?h=1200&w=1600&position=top&webp&imagetools'
+import HeroImage from '../assets/hero.png?h=1200&w=1600&position=top&format=webp&imagetools'
 import {Features} from "../components/Home/Features";
 import {Section} from "../components/Home/Section";
 import {homeLogic} from "../logics/homeLogic";

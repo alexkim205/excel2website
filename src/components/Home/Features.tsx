@@ -1,8 +1,8 @@
 import {Card, CardBody} from "@nextui-org/react";
 import {Section} from "./Section";
-import ExampleDataInputImage from "../../assets/example_data_input.png?webp&imagetools"
-import ExampleChart from "../../assets/example_chart.png?webp&imagetools"
-import ExampleDashboard from "../../assets/example_dashboard.png?webp&imagetools"
+import ExampleDataInputImage from "../../assets/example_data_input.png?format=webp&imagetools"
+import ExampleChart from "../../assets/example_chart.png?format=webp&imagetools"
+import ExampleDashboard from "../../assets/example_dashboard.png?format=webp&imagetools"
 
 function Feature({title, subtitle, imgSrc}: {title: string,subtitle: string, imgSrc: string}) {
     return (
@@ -46,7 +46,7 @@ export function Features() {
         <Section
             title={
                 <>
-                    Finally, <span className="underline underline-offset-4">a dead simple way</span> ⚰️ to create
+                    Finally, <span className="underline underline-offset-4">a pain-free simple way</span> to create
                     dashboards.
                 </>
             }
