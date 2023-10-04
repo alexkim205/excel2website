@@ -18,7 +18,7 @@ import {AiOutlinePlus} from "react-icons/ai";
 import clsx from "clsx";
 import {RxDotsVertical, RxPencil1, RxTrash} from "react-icons/rx";
 
-export function Dashboards() {
+function Dashboards() {
     const {dashboards, dashboardsLoading} = useValues(dashboardGridLogic)
     const {deleteDashboard} = useActions(dashboardGridLogic)
 
@@ -120,3 +120,5 @@ export function Dashboards() {
         </div>
     )
 }
+
+export default Dashboards

@@ -15,7 +15,7 @@ import {Section} from "../components/Home/Section";
 import {homeLogic} from "../logics/homeLogic";
 import {Footer} from "../components/Footer";
 
-export function Home() {
+function Home() {
     const {gravatarIds} = useValues(homeLogic)
     const {user} = useValues(userLogic)
     const {signInWithMicrosoft} = useActions(userLogic)
@@ -72,3 +72,5 @@ export function Home() {
         </div>
     )
 }
+
+export default Home

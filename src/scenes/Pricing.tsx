@@ -1,7 +1,7 @@
 import {Footer} from "../components/Footer";
 import {PaywallBlurb, PaywallTiers} from "../components/Modal/PublishModal";
 
-export function Pricing() {
+function Pricing() {
     return (
         <div id={`admin-wrapper`} className="flex flex-col justify-center w-full gap-4 max-w-[1024px] px-6 my-8">
             <div className="flex flex-col gap-2">
@@ -18,3 +18,5 @@ export function Pricing() {
         </div>
     )
 }
+
+export default Pricing

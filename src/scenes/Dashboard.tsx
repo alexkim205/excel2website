@@ -1,20 +1,24 @@
 import {DashboardItem, NewDashboardItem} from "../components/DashboardItem";
 import {Grid} from "../components/Grid/Grid";
 import {useActions, useValues} from "kea";
-import {dashboardLogic, DashboardLogicProps} from "../logics/dashboardLogic";
+import {dashboardLogic} from "../logics/dashboardLogic";
 import AutosizeInput from 'react-input-autosize';
 import {Badge, Button, Skeleton, Tooltip} from "@nextui-org/react";
 import {RxLink2} from "react-icons/rx";
 import {publishModalLogic} from "../logics/publishModalLogic";
 import {PublishModal} from "../components/Modal/PublishModal";
 import {RiShareBoxLine} from "react-icons/ri";
-import {A} from "kea-router";
+import {A, router} from "kea-router";
 import {PricingTier, PublishStatus} from "../utils/types";
 import useCopy from "@react-hook/copy";
 import {toast} from "react-toastify";
 import {userLogic} from "../logics/userLogic";
 
-export function Dashboard({props}: { props: DashboardLogicProps }) {
+function Dashboard() {
+    const {location} = useValues(router)
+    const props = {
+        id: location.pathname.replace("/dashboard/", "")
+    }
     const newUUID = `${props.id}-new-item`
     const dashboardProps = {...props, newDashboardItemId: newUUID}
     const publishModalProps = {id: props.id}
@@ -153,3 +157,5 @@ export function Dashboard({props}: { props: DashboardLogicProps }) {
         </>
     )
 }
+
+export default Dashboard

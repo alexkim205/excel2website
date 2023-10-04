@@ -1,13 +1,13 @@
 import clsx from "clsx";
 import {dashboardItemLogic, DashboardItemLogicProps} from "../../logics/dashboardItemLogic";
 import {useEffect, useRef} from "react";
-import {getInstanceByDom, init} from "echarts";
 import {useValues} from "kea";
-import {ECBasicOption} from "echarts/types/dist/shared";
+import type {ECBasicOption} from "echarts/types/dist/shared";
 import {graphTypeToOptions} from "./graph";
 import pick from "lodash.pick";
 import {Spinner} from "@nextui-org/react";
 import {publicDashboardItemLogic, PublicDashboardItemLogicProps} from "../../logics/publicDashboardItemLogic";
+import echarts from "../../utils/echarts"
 
 export interface ChartProps {
     props: DashboardItemLogicProps,
@@ -23,7 +23,7 @@ export function Chart({props, className}: ChartProps) {
     useEffect(() => {
         // Update chart
         if (ref.current) {
-            const chart = getInstanceByDom(ref.current);
+            const chart = echarts.getInstanceByDom(ref.current);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             if (dataLoading) {
                 chart?.showLoading()
@@ -35,7 +35,7 @@ export function Chart({props, className}: ChartProps) {
 
     useEffect(() => {
         if (ref.current && data) {
-            const chart = init(ref.current);
+            const chart = echarts.init(ref.current);
             const option = graphTypeToOptions[localMergedChart.data.type](data, localMergedChart.data)
             chart.setOption(option as ECBasicOption);
 
@@ -64,7 +64,7 @@ export function Chart({props, className}: ChartProps) {
         if (!ref.current || !data) {
             return
         }
-        const chart = getInstanceByDom(ref.current)
+        const chart = echarts.getInstanceByDom(ref.current)
         if (chart && localMergedChart.data.type) {
             const option = graphTypeToOptions[localMergedChart.data.type](data, localMergedChart.data)
             chart.clear()
@@ -102,7 +102,7 @@ export function StaticChart({props}: StaticChartProps) {
     useEffect(() => {
         // Update chart
         if (ref.current) {
-            const chart = getInstanceByDom(ref.current);
+            const chart = echarts.getInstanceByDom(ref.current);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             if (dataLoading) {
                 chart?.showLoading()
@@ -114,7 +114,7 @@ export function StaticChart({props}: StaticChartProps) {
 
     useEffect(() => {
         if (ref.current && data) {
-            const chart = init(ref.current);
+            const chart = echarts.init(ref.current);
             const option = graphTypeToOptions[thisChart.data.type](data, thisChart.data)
             chart.setOption(option as ECBasicOption);
 
@@ -143,7 +143,7 @@ export function StaticChart({props}: StaticChartProps) {
         if (!ref.current || !data) {
             return
         }
-        const chart = getInstanceByDom(ref.current)
+        const chart = echarts.getInstanceByDom(ref.current)
         if (chart && thisChart.data.type) {
             const option = graphTypeToOptions[thisChart.data.type](data, thisChart.data)
             chart.clear()

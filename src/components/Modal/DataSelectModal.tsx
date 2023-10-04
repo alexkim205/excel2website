@@ -177,9 +177,6 @@ export function DataSelectModal({props}: {
                                         </div>
                                     </div>
                                     <div
-                                        onScroll={(e) => {
-                                            console.log("STO{Ed", e.isPropagationStopped())
-                                        }}
                                         className="sm:absolute overflow-hidden flex flex-col w-full h-[500px] sm:h-[calc(100%-7rem)] sm:w-[calc(66%-2.75rem)] right-8 top-6 bottom-6 p-2 bg-default-100 rounded-large">
                                         <Tabs
                                             fullWidth
