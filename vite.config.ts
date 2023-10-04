@@ -6,7 +6,7 @@ import { dependencies } from './package.json';
 function renderChunks(deps: Record<string, string>) {
   const chunks = {};
   Object.keys(deps).forEach((key) => {
-    if (key === "react" || key === "react-dom" || key === '@nextui-org/react') return;
+    if (key === "react" || key === "react-dom") return;
     chunks[key] = [key];
   });
   return chunks;
@@ -20,7 +20,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', '@nextui-org/react'],
+          vendor: ['react', 'react-dom'],
           ...renderChunks(dependencies),
         },
       },
