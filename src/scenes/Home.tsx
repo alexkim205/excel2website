@@ -9,16 +9,19 @@ import {urls} from "../utils/routes";
 import {useActions, useValues} from "kea";
 import {userLogic} from "../logics/userLogic";
 import {FiPlus} from "react-icons/fi";
-import HeroImage from '../assets/hero.png?h=1200&w=1600&position=top&format=webp&imagetools'
+import HeroImage from '../assets/hero.png?w=600;1200;1600;&position=top&format=webp&as=source&imagetools'
 import {Features} from "../components/Home/Features";
 import {Section} from "../components/Home/Section";
 import {homeLogic} from "../logics/homeLogic";
 import {Footer} from "../components/Footer";
+import {ResponsiveImage} from "../components/ResponsiveImage";
 
 function Home() {
     const {gravatarIds} = useValues(homeLogic)
     const {user} = useValues(userLogic)
     const {signInWithMicrosoft} = useActions(userLogic)
+
+    console.log("HERO", HeroImage)
 
     return (
         <div className="flex flex-col w-full max-w-[1024px] px-6 sm:gap-12 gap-8">
@@ -43,7 +46,10 @@ function Home() {
             <Card fullWidth shadow="md" className="sm:text-2xl max-w-[900px] aspect-[4/3] mx-auto text-xl border-none"
                   classNames={{body: "p-0 overflow-hidden"}}>
                 <CardBody>
-                    <img srcSet={HeroImage} alt="Hero image"/>
+                    <ResponsiveImage
+                        srcSet={HeroImage}
+                        alt="Hero image"
+                    />
                 </CardBody>
             </Card>
             <Section
