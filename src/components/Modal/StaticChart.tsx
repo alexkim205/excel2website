@@ -1,21 +1,21 @@
-import clsx from "clsx";
-import {dashboardItemLogic, DashboardItemLogicProps} from "../../logics/dashboardItemLogic";
-import {useEffect, useRef} from "react";
+import {publicDashboardItemLogic, PublicDashboardItemLogicProps} from "../../logics/publicDashboardItemLogic";
 import {useValues} from "kea";
-import type {ECBasicOption} from "echarts/types/dist/shared";
+import {useEffect, useRef} from "react";
+import echarts from "../../utils/echarts";
 import {graphTypeToOptions} from "./graph";
+import {ECBasicOption} from "echarts/types/dist/shared";
 import pick from "lodash.pick";
+import clsx from "clsx";
 import {Spinner} from "@nextui-org/react";
-import echarts from "../../utils/echarts"
 
-export interface ChartProps {
-    props: DashboardItemLogicProps,
-    className?: string
+export interface StaticChartProps {
+    props: PublicDashboardItemLogicProps,
 }
 
-function Chart({props, className}: ChartProps) {
-    const logic = dashboardItemLogic(props)
-    const {open, localMergedChart, dataLoading, data} = useValues(logic)
+function StaticChart({props}: StaticChartProps) {
+    const logic = publicDashboardItemLogic(props)
+    const thisChart = props.chart
+    const {data, dataLoading} = useValues(logic)
 
     const ref = useRef<HTMLDivElement>(null)
 
@@ -35,7 +35,7 @@ function Chart({props, className}: ChartProps) {
     useEffect(() => {
         if (ref.current && data) {
             const chart = echarts.init(ref.current);
-            const option = graphTypeToOptions[localMergedChart.data.type](data, localMergedChart.data)
+            const option = graphTypeToOptions[thisChart.data.type](data, thisChart.data)
             chart.setOption(option as ECBasicOption);
 
             // Add chart resize listener
@@ -53,10 +53,10 @@ function Chart({props, className}: ChartProps) {
                 window.removeEventListener("resize", resizeChart);
             };
         }
-    }, [ref.current, open, data, JSON.stringify([
-        pick(localMergedChart.data.coordinates.sm, ["w", "h"]),
-        pick(localMergedChart.data.coordinates.md, ["w", "h"]),
-        pick(localMergedChart.data.coordinates.lg, ["w", "h"])
+    }, [ref.current, data, JSON.stringify([
+        pick(thisChart.data.coordinates.sm, ["w", "h"]),
+        pick(thisChart.data.coordinates.md, ["w", "h"]),
+        pick(thisChart.data.coordinates.lg, ["w", "h"])
     ])])
 
     useEffect(() => {
@@ -64,18 +64,17 @@ function Chart({props, className}: ChartProps) {
             return
         }
         const chart = echarts.getInstanceByDom(ref.current)
-        if (chart && localMergedChart.data.type) {
-            const option = graphTypeToOptions[localMergedChart.data.type](data, localMergedChart.data)
+        if (chart && thisChart.data.type) {
+            const option = graphTypeToOptions[thisChart.data.type](data, thisChart.data)
             chart.clear()
             chart.setOption(option as ECBasicOption);
         }
-    }, [JSON.stringify(localMergedChart.data.chart), JSON.stringify(localMergedChart.data.type)])
+    }, [JSON.stringify(thisChart.data.chart), JSON.stringify(thisChart.data.type)])
 
     return (
-        <div id={`${props.id}-chart`} ref={ref} className={
+        <div id={`${props.chart.id}-chart`} ref={ref} className={
             clsx("rounded-small w-full transition-background transition-colors py-4 px-2 bg-white",
                 data ? "h-full" : "flex grow justify-center items-center text-base text-default-400 h-auto",
-                className
             )
         }>
             {dataLoading ? (
@@ -87,4 +86,4 @@ function Chart({props, className}: ChartProps) {
     )
 }
 
-export default Chart
+export default StaticChart

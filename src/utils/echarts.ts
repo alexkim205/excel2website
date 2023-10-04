@@ -5,7 +5,8 @@ import {
     TooltipComponent,
     GridComponent,
     DatasetComponent,
-    TransformComponent
+    TransformComponent,
+    LegendComponent
 } from 'echarts/components';
 import {CanvasRenderer} from "echarts/renderers";
 import { LabelLayout, UniversalTransition } from 'echarts/features';
@@ -22,7 +23,8 @@ _echarts.use([
     TransformComponent,
     LabelLayout,
     UniversalTransition,
-    CanvasRenderer
+    CanvasRenderer,
+    LegendComponent
 ]);
 
 export default _echarts

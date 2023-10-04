@@ -4,7 +4,6 @@ import {sceneLogic} from "./logics/sceneLogic";
 import {SceneKey} from "./utils/routes";
 import {dashboardGridLogic} from "./logics/dashboardGridLogic";
 import {lazy, Suspense} from "react";
-import {Spinner} from "@nextui-org/react";
 
 
 const ROUTES: Record<SceneKey, any> = {
@@ -31,7 +30,7 @@ function App() {
         <div className="flex flex-col min-h-screen items-center gap-12 overflow-hidden">
             <>
                 <Nav/>
-                <Suspense fallback={<Spinner />}>
+                <Suspense fallback={<></>}>
                     <Scene {...(scene === SceneKey.Dashboard ? {id: params.id} : {})}/>
                 </Suspense>
             </>

@@ -17,17 +17,18 @@ import {
     TableRow,
     Tabs,
     Textarea,
-    Checkbox
+    Checkbox, Spinner
 } from "@nextui-org/react";
 import {useActions, useValues} from "kea";
 import {dashboardItemLogic, DashboardItemLogicProps} from "../../logics/dashboardItemLogic";
 import {DashboardLogicProps} from "../../logics/dashboardLogic";
-import {FormEvent, useState} from "react";
+import {FormEvent, lazy, Suspense, useState} from "react";
 import {MdOutlineSync} from "react-icons/md";
-import {Chart} from "./Chart";
 import {graphTypeTabs} from "./graph";
 import {ChartPresetType, PanelTab} from "../../utils/types";
 import {RxTrash} from "react-icons/rx";
+
+const Chart = lazy(() => import('./Chart'))
 
 export function DataSelectModal({props}: {
     dashboardProps: DashboardLogicProps,
@@ -186,7 +187,9 @@ export function DataSelectModal({props}: {
                                             classNames={{panel: "px-1 py-1.5 h-full"}}
                                         >
                                             <Tab key={PanelTab.Chart} title="Chart">
-                                                <Chart props={props}/>
+                                                <Suspense fallback={<Spinner />}>
+                                                    <Chart props={props}/>
+                                                </Suspense>
                                             </Tab>
                                             <Tab key={PanelTab.PreviewData} title="Data">
                                                 {data ? (

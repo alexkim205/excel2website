@@ -14,12 +14,14 @@ import {useActions, useValues} from "kea";
 import {dashboardItemLogic} from "../logics/dashboardItemLogic";
 import {DashboardItemType} from "../utils/types";
 import {DataSelectModal} from "./Modal/DataSelectModal";
-import {forwardRef, useState} from "react";
+import {forwardRef, lazy, useState} from "react";
 import {RxDotsVertical, RxDragHandleDots2, RxPencil1, RxTrash} from "react-icons/rx";
 import {DashboardLogicProps} from "../logics/dashboardLogic";
-import {Chart, StaticChart} from "./Modal/Chart";
 import clsx from "clsx";
 import {PublicDashboardItemLogicProps} from "../logics/publicDashboardItemLogic";
+
+const Chart = lazy(() => import('./Modal/Chart'))
+const StaticChart = lazy(() => import('./Modal/StaticChart'))
 
 export const DashboardItem = forwardRef<HTMLDivElement, {
     chart: DashboardItemType,
