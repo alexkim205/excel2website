@@ -65,10 +65,14 @@ enable_confirmations = false
 enabled = true
 client_id = "fff80049-a08a-40fa-915a-8ce95fcbc650"
 secret = "tL.8Q~uYariI3SyW6H69mmKd84dOURXXFVM5tbfB"
-# Overrides the default auth redirectUrl.
 redirect_uri = "http://localhost:54321/auth/v1/callback"
-# Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
-# or any other third-party OIDC providers.
+url = ""
+
+[auth.external.google]
+enabled = true
+client_id = "fff80049-a08a-40fa-915a-8ce95fcbc650"
+secret = "tL.8Q~uYariI3SyW6H69mmKd84dOURXXFVM5tbfB"
+redirect_uri = "http://localhost:54321/auth/v1/callback"
 url = ""
 
 [functions.stripe-webhooks]

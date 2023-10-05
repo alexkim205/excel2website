@@ -18,7 +18,9 @@ export const userLogic = kea<userLogicType>([
         billingPortalLink: "" as string
     })),
     actions(() => ({
+        signInWithEmail: true,
         signInWithMicrosoft: true,
+        signInWithGoogle: true,
         signOut: true,
         setUser: (user: Session | null) => ({user}),
         refreshToken: true,

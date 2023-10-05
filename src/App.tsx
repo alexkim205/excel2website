@@ -13,6 +13,7 @@ const ROUTES: Record<SceneKey, any> = {
     [SceneKey.PublicDashboard]: lazy(() => import('./scenes/PublicDashboard')),
     [SceneKey.Admin]: lazy(() => import('./scenes/AdminDashboard')),
     [SceneKey.Pricing]: lazy(() => import('./scenes/Pricing')),
+    [SceneKey.TermsAndPrivacy]: lazy(() => import("./scenes/TermsAndPrivacy"))
 }
 
 function App() {
