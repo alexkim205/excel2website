@@ -70,8 +70,8 @@ url = ""
 
 [auth.external.google]
 enabled = true
-client_id = "fff80049-a08a-40fa-915a-8ce95fcbc650"
-secret = "tL.8Q~uYariI3SyW6H69mmKd84dOURXXFVM5tbfB"
+client_id = "486551013154-8d6bpcfbdmtop7ut95hm2jsilhtghk5p.apps.googleusercontent.com"
+secret = "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"
 redirect_uri = "http://localhost:54321/auth/v1/callback"
 url = ""
 
