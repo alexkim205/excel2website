@@ -21,8 +21,6 @@ function Home() {
     const {user} = useValues(userLogic)
     const {signInWithMicrosoft} = useActions(userLogic)
 
-    console.log("HERO", HeroImage)
-
     return (
         <div className="flex flex-col w-full max-w-[1024px] px-6 sm:gap-12 gap-8">
             <div className="flex flex-col justify-center items-center gap-5 my-8">
@@ -30,18 +28,27 @@ function Home() {
                     your spreadsheets as beautiful dashboards.</h1>
                 <p className="sm:text-xl text-center text-lg max-w-3xl">Sheets to Dashboard helps you build dashboards
                     from your Excel spreadsheets and share them as links.</p>
-                {user ? (
-                    <Button as={A} href={urls.dashboards()} color="default" size="lg" radius="sm"
-                            className="h-10 px-4 font-medium bg-black text-white">
-                        Go to Dashboard
-                    </Button>
-                ) : (
-                    <Button as={Link} onPress={() => signInWithMicrosoft()} color="default" size="lg" radius="sm"
-                            className="h-10 px-4 font-medium bg-black text-white"
-                            endContent={<FiPlus className="text-xl"/>}>
-                        Make a dashboard
-                    </Button>
-                )}
+                <div className="flex flex-row gap-3">
+                    {user ? (
+                        <Button as={A} href={urls.dashboards()} color="default" size="lg" radius="sm"
+                                className="h-10 px-4 font-medium bg-black text-white">
+                            Go to Dashboard
+                        </Button>
+                    ) : (
+                        <>
+                            <Button as={Link} onPress={() => signInWithMicrosoft()} color="primary" size="lg" radius="sm"
+                                    className="h-10 px-4 font-medium"
+                                    endContent={<FiPlus className="text-xl"/>}>
+                                Make a dashboard
+                            </Button>
+                            <Button as={A} target="_blank" href="https://demo.sheetstodashboard.com" color="default" size="lg" radius="sm"
+                                    className="h-10 px-4 font-medium bg-black text-white">
+                                Live demo
+                            </Button>
+                        </>
+
+                    )}
+                </div>
             </div>
             <Card fullWidth shadow="md" className="sm:text-2xl max-w-[900px] aspect-[4/3] mx-auto text-xl border-none"
                   classNames={{body: "p-0 overflow-hidden"}}>

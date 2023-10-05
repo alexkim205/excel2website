@@ -19,9 +19,9 @@ import {RxDotsVertical, RxDragHandleDots2, RxPencil1, RxTrash} from "react-icons
 import {DashboardLogicProps} from "../logics/dashboardLogic";
 import clsx from "clsx";
 import {PublicDashboardItemLogicProps} from "../logics/publicDashboardItemLogic";
+import StaticChart from "./Modal/StaticChart";
 
 const Chart = lazy(() => import('./Modal/Chart'))
-const StaticChart = lazy(() => import('./Modal/StaticChart'))
 
 export const DashboardItem = forwardRef<HTMLDivElement, {
     chart: DashboardItemType,

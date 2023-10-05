@@ -145,26 +145,26 @@ export function PublishModal({props}: PublishModalProps) {
 
 export function PaywallBlurb() {
     return (
-        <>
-            <p className="text-sm font-normal mb-2">Hi 👋 this is Alex, the solo founder of Sheets to
+        <div className="flex flex-col gap-4 leading-relaxed">
+            <p className="font-normal mb-2">Hi 👋 this is Alex, the solo founder of Sheets to
                 Dashboard. I initially made this product to solve a problem I was running into, and was
                 floored by the positive feedback I got when I released the beta. I'd love to keep
                 this product free, however with server/api/data/domain/email costs (and my own bills to
                 pay 🫠), I have concerns about sustaining this product and its growth if it remains
                 entirely free.</p>
-            <p className="text-sm font-normal mb-2"><span className="font-semibold">There are paid tiers, but there will always be a freemium
+            <p className="font-normal mb-2"><span className="font-semibold">There are paid tiers, but there will always be a freemium
                                 tier for Sheets to Dashboard</span>, which at its bare minimum lets you create an
                 unlimited amount of offline
                 dashboards for your personal use. If you pay for a license, you can publish your
                 dashboards to your own custom domain or a subdomain like abc.sheetstodashboard.com.
                 Plus, it comes with other features you might find helpful. And of course, if you are a
                 non-profit or current student, shoot me an email at
-                <Link size="sm" className="mx-1"
+                <Link size="md" className="mx-1"
                       href="mailto:hellosimplelanding@gmail.com">hellosimplelanding@gmail.com</Link>
                 with details for a discounted license.</p>
-            <p className="text-sm">Thank you for supporting this product. Looking forward
+            <p>Thank you for supporting this product. Looking forward
                 to hearing your feedback and making a great product! :)</p>
-        </>
+        </div>
     )
 }
 
