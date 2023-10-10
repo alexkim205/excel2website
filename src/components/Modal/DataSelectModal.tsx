@@ -23,9 +23,9 @@ import {useActions, useValues} from "kea";
 import {dashboardItemLogic, DashboardItemLogicProps} from "../../logics/dashboardItemLogic";
 import {DashboardLogicProps} from "../../logics/dashboardLogic";
 import {FormEvent, lazy, Suspense, useState} from "react";
-import {MdOutlineSync} from "react-icons/md";
-import {graphTypeTabs} from "./graph";
-import {ChartPresetType, PanelTab} from "../../utils/types";
+import {MdGridOn, MdOutlineCheck, MdOutlineSync, MdOutlineWarningAmber} from "react-icons/md";
+import {dataTypeTabs, graphTypeTabs} from "./graph";
+import {ChartPresetType, PanelTab, Provider} from "../../utils/types";
 import {RxTrash} from "react-icons/rx";
 
 const Chart = lazy(() => import('./Chart'))
@@ -95,7 +95,7 @@ export function DataSelectModal({props}: {
             size="sm"
             className="font-medium"
             isSelected={!!localMergedChart?.data?.chart?.legend?.show}
-                  onValueChange={(nextSelected) => setLocalChart({data: {chart: {legend: {show: nextSelected}}}})}>
+            onValueChange={(nextSelected) => setLocalChart({data: {chart: {legend: {show: nextSelected}}}})}>
             Show legend
         </Checkbox>
     </>
@@ -120,6 +120,21 @@ export function DataSelectModal({props}: {
                                 <div className="flex flex-col justify-between sm:flex-row gap-3 w-full sm:gap-6">
                                     <div className="flex flex-col w-full sm:w-[calc(33%-0.75rem)] py-6 gap-3">
                                         <h2 className="text-lg font-bold">Data</h2>
+                                        <Select placeholder="Data type" aria-label="Data type"
+                                                labelPlacement="outside" label="Data type"
+                                                startContent={<MdGridOn className="text-lg"/>}
+                                                selectedKeys={new Set(localMergedChart?.data?.srcProvider ? [String(localMergedChart.data.srcProvider)] : [])}
+                                                onSelectionChange={(keys) => {
+                                                    setLocalChart({data: {srcProvider: Array.from(keys)?.[0] ? String(Array.from(keys)[0]) as Provider : undefined}})
+                                                }}
+                                        >
+                                            {Object.values(dataTypeTabs).map((type) => (
+                                                <SelectItem key={type.id} value={type.id}
+                                                >
+                                                    {type.label}
+                                                </SelectItem>
+                                            ))}
+                                        </Select>
                                         <Input value={localMergedChart?.data?.srcUrl ?? ""}
                                                onValueChange={(value) => setLocalChart({data: {srcUrl: value}})}
                                                isClearable
@@ -148,13 +163,17 @@ export function DataSelectModal({props}: {
                                         />
                                         <Button
                                             className="font-semibold disabled:cursor-not-allowed disabled:opacity-60"
-                                            startContent={dataLoading ? null : <MdOutlineSync className="text-xl"/>}
-                                            color="primary" isLoading={dataLoading}
+                                            startContent={dataLoading ? null : !syncable ?
+                                                <MdOutlineWarningAmber className="text-xl"/> : synced ?
+                                                    <MdOutlineCheck className="text-xl"/> :
+                                                    <MdOutlineSync className="text-xl"/>}
+                                            color={!syncable ? "danger" : synced ? "default" : "primary"}
+                                            isLoading={dataLoading}
                                             disabled={!(!synced && syncable)}
                                             onClick={() => {
                                                 fetchData({})
                                             }}>
-                                            Sync data
+                                            {!syncable ? "Check data setup" : synced ? "Up to date" : "Sync"}
                                         </Button>
                                         <Divider/>
                                         <h2 className="text-lg font-bold">Chart</h2>
@@ -187,7 +206,7 @@ export function DataSelectModal({props}: {
                                             classNames={{panel: "px-1 py-1.5 h-full"}}
                                         >
                                             <Tab key={PanelTab.Chart} title="Chart">
-                                                <Suspense fallback={<Spinner />}>
+                                                <Suspense fallback={<Spinner/>}>
                                                     <Chart props={props}/>
                                                 </Suspense>
                                             </Tab>
@@ -255,7 +274,7 @@ export function DataSelectModal({props}: {
                         <ModalFooter className="flex flex-row items-center justify-between">
                             <div className="flex flex-row items-center">
                                 {!isNew && (
-                                    <Button color="danger" variant="light" isIconOnly onPress={()=>{
+                                    <Button color="danger" variant="light" isIconOnly onPress={() => {
                                         if (chartLoading) {
                                             return
                                         }

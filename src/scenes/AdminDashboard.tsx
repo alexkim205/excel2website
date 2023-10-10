@@ -1,12 +1,12 @@
 import {useActions, useValues} from "kea";
 import {adminLogic} from "../logics/adminLogic";
-import {Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow} from "@nextui-org/react";
+import {Button, Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow} from "@nextui-org/react";
 import {capitalizeFirstLetter} from "kea-forms/lib/utils";
 import {PricingTier} from "../utils/types";
 
 function AdminDashboard() {
     const {users} = useValues(adminLogic)
-    const {changeUserPlan} = useActions(adminLogic)
+    const {changeUserPlan, deleteUser} = useActions(adminLogic)
 
     const userRows = users.map((user) => ({
         key: user.id,
@@ -22,6 +22,13 @@ function AdminDashboard() {
                     </Chip>
                 ))}
             </div>
+        ),
+        delete: (
+            <Button color="danger" size="sm" onPress={() => {
+                deleteUser(user.id)
+            }}>
+                Delete
+            </Button>
         )
     }))
 
@@ -38,6 +45,10 @@ function AdminDashboard() {
             key: "change_plan",
             label: "CHANGE PLAN",
         },
+        {
+            key: "delete",
+            label: "DELETE"
+        }
     ];
 
     return (

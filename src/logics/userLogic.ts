@@ -7,9 +7,10 @@ import {SceneKey, urls} from "../utils/routes";
 import md5 from "md5"
 import merge from "lodash.merge";
 import {loaders} from "kea-loaders";
-import {PricingTier} from "../utils/types";
+import {PricingTier, Provider} from "../utils/types";
 import {_generateBillingPortalLink} from "./pricingLogic";
 import posthog from "posthog-js";
+import {generateUserMetadata} from "../utils/utils";
 
 
 export const userLogic = kea<userLogicType>([
@@ -23,7 +24,7 @@ export const userLogic = kea<userLogicType>([
         signInWithGoogle: true,
         signOut: true,
         setUser: (user: Session | null) => ({user}),
-        refreshToken: true,
+        refreshToken: (provider: Provider) => ({provider}),
     })),
     reducers(() => ({
         user: {
@@ -63,6 +64,7 @@ export const userLogic = kea<userLogicType>([
             const {error} = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
+                    scopes: "openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.readonly  https://www.googleapis.com/auth/spreadsheets.readonly",
                     queryParams: {
                         access_type: 'offline',
                         prompt: 'consent',
@@ -81,32 +83,43 @@ export const userLogic = kea<userLogicType>([
             }
             router.actions.push(urls.home())
         },
-        refreshToken: async () => {
-            if (!values.user || !values.refreshToken) {
+        refreshTokens: async () => {
+            const azureRefreshToken = values.getRefreshToken(Provider.Azure)
+            const googleRefreshToken = values.getRefreshToken(Provider.Google)
+            if (!values.user || !(azureRefreshToken || googleRefreshToken)) {
                 return
             }
-            const {data, error} = await supabase.functions.invoke("refresh-token", {
-                body: {
-                    refreshToken: values.refreshToken
+            let nextUserMetadata = {}
+            if (azureRefreshToken) {
+                const {data, error} = await supabase.functions.invoke("refresh-token", {
+                    body: {
+                        refreshToken: azureRefreshToken,
+                        provider: Provider.Azure
+                    }
+                })
+                if (error) {
+                    throw new Error(error.message)
                 }
-            })
-            if (error) {
-                throw new Error(error.message)
+                nextUserMetadata = {...nextUserMetadata, ...generateUserMetadata(data)}
+            }
+            if (googleRefreshToken) {
+                const {data, error} = await supabase.functions.invoke("refresh-token", {
+                    body: {
+                        refreshToken: googleRefreshToken,
+                        provider: Provider.Google
+                    }
+                })
+                if (error) {
+                    throw new Error(error.message)
+                }
+                nextUserMetadata = {...nextUserMetadata, ...generateUserMetadata(data)}
             }
             await supabase.auth.updateUser({
-                data: {
-                    provider_token: data.access_token,
-                    provider_refresh_token: data.refresh_token
-                }
+                data: nextUserMetadata
             })
             actions.setUser(merge({}, values.user, {
-                provider_token: data.access_token,
-                provider_refresh_token: data.refresh_token,
                 user: {
-                    user_metadata: {
-                        provider_token: data.access_token,
-                        provider_refresh_token: data.refresh_token
-                    }
+                    user_metadata: nextUserMetadata
                 }
             }));
         },
@@ -142,10 +155,7 @@ export const userLogic = kea<userLogicType>([
             email: currentSession.user.email,
         })
         await supabase.auth.updateUser({
-            data: {
-                provider_token: currentSession.provider_token,
-                provider_refresh_token: currentSession.provider_refresh_token
-            }
+            data: generateUserMetadata(currentSession)
         })
 
         actions.generateBillingPortalLink({})
@@ -154,10 +164,10 @@ export const userLogic = kea<userLogicType>([
         cache.unsubscribeOnAuthStateChange?.();
     }),
     selectors(() => ({
-        providerToken: [
+        getProviderToken: [
             (s) => [s.user],
-            (user) => {
-                return user?.user?.user_metadata?.provider_token
+            (user) => (provider: Provider) => {
+                return user?.user?.user_metadata?.[provider]?.provider_token
             }
         ],
         plan: [
@@ -166,10 +176,10 @@ export const userLogic = kea<userLogicType>([
                 return user?.user?.user_metadata?.plan ?? PricingTier.Free
             }
         ],
-        refreshToken: [
+        getRefreshToken: [
             (s) => [s.user],
-            (user) => {
-                return user?.user?.user_metadata?.provider_refresh_token
+            (user) => (provider: Provider) => {
+                return user?.user?.user_metadata?.[provider]?.provider_refresh_token
             }
         ],
         gravatarLink: [

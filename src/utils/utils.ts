@@ -1,5 +1,7 @@
-import {ChartPresetType, DashboardDataType, DashboardItemDataType} from "./types";
-import { customAlphabet } from 'nanoid'
+import {ChartPresetType, DashboardDataType, DashboardItemDataType, Provider} from "./types";
+import {customAlphabet} from 'nanoid'
+import type {Session} from "@supabase/gotrue-js/dist/module/lib/types";
+import {combineUrl} from "kea-router";
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8)
 
@@ -24,6 +26,7 @@ export function generateEmptyDashboardItem(id: DashboardItemDataType["id"]): Das
         id,
         type: ChartPresetType.BasicBar,
         srcUrl: "",
+        srcProvider: Provider.Azure,
         dataRange: "'Sheet1'!A1:B17",
         coordinates: {
             sm: {x: 0, y: 0, w: 3, h: 3, static: true},
@@ -62,3 +65,38 @@ export function generateDashboardSubdomain(): string {
 
 export const EMAIL_REGEX =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([a-zA-Z\-\d]+\.)+[a-zA-Z]{2,}))$/;
+
+export function generateUserMetadata(session: Session): Record<string, {provider_token: string, provider_refresh_token: string}> & Record<string, any> {
+    const provider: Provider = session.user.app_metadata.provider as Provider
+    if (!provider || ![Provider.Azure, Provider.Google].includes(provider)) {
+        return {}
+    }
+
+    return {
+        [provider]: {
+            provider_token: session.provider_token as string,
+            provider_refresh_token: session.provider_refresh_token as string
+        }
+    }
+}
+
+export function parseWorkbookUrlAndGetId(provider: string, url: string | null | undefined): string {
+    if (!url) {
+        return ""
+    }
+    if (provider === "raw") {
+        return ""
+    }
+    if (provider === "azure") {
+        return combineUrl(url).searchParams?.resid ?? ""
+    }
+    if (provider === "google") {
+        const splitUrl = url.split("/")
+        const indexOfId = splitUrl.findIndex((param) => param === "d")
+        if (indexOfId === -1) {
+            return ""
+        }
+        return splitUrl[indexOfId + 1]
+    }
+    return ""
+}

@@ -1,5 +1,5 @@
 import {actions, afterMount, connect, defaults, kea, key, listeners, path, props, reducers, selectors} from "kea";
-import {dashboardLogic, DashboardLogicProps, graphFetch} from "./dashboardLogic";
+import {dashboardLogic, DashboardLogicProps} from "./dashboardLogic";
 import {DashboardItemType, DataType, SupabaseTable} from "../utils/types";
 import {userLogic} from "./userLogic";
 import {loaders} from "kea-loaders";
@@ -11,9 +11,10 @@ import pick from "lodash.pick"
 import omit from "lodash.omit"
 import {toast} from "react-toastify";
 import {v4 as uuidv4} from "uuid";
-import {generateEmptyDashboardItem} from "../utils/utils";
+import {generateEmptyDashboardItem, parseWorkbookUrlAndGetId} from "../utils/utils";
 import merge from "lodash.merge";
-import {combineUrl} from "kea-router";
+import {api} from "../utils/api";
+import type {User} from "@supabase/supabase-js";
 
 export interface DashboardItemLogicProps {
     id: DashboardItemType["id"],
@@ -23,11 +24,11 @@ export interface DashboardItemLogicProps {
 
 export const dashboardItemLogic = kea<dashboardItemLogicType>([
     key((props) => `${props.dashboardProps.id}-${props.id}`),
-    path((key) => ["src", "dataLogic", key]),
+    path((key) => ["src", "dashboardItemLogic", key]),
     props({autoSync: false} as DashboardItemLogicProps),
     connect((props: DashboardItemLogicProps) => ({
-        values: [dashboardLogic(props.dashboardProps), ["charts"], userLogic, ["providerToken", "user"]],
-        actions: [dashboardLogic(props.dashboardProps), ["setChart", "loadCharts", "setCharts", "setChildChartsLoading"], userLogic, ["signOut", "refreshToken"]]
+        values: [dashboardLogic(props.dashboardProps), ["charts"], userLogic, ["getProviderToken", "user"]],
+        actions: [dashboardLogic(props.dashboardProps), ["setChart", "loadCharts", "setCharts", "setChildChartsLoading"]]
     })),
     defaults({
         open: false as boolean,
@@ -45,20 +46,20 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
         data: {
             fetchData: async (_, breakpoint) => {
                 // Make api call
-                if (!values.syncable || !values.user || !values.parsedWorkbookId) {
+                if (!values.syncable || !values.user || !values.parsedWorkbookId || !values.parsedRange.sheet || !values.parsedRange.range) {
                     return
                 }
                 await breakpoint(100)
-                const response = await graphFetch({
-                    url: `items/${values.parsedWorkbookId}/workbook/worksheets/${values.parsedRange.sheet}/range(address='${values.parsedRange.range}')`,
-                    method: "GET",
-                    providerToken: values.providerToken,
+                const {data, error} = await api.fetchSheetData({
+                    chart: {
+                        ...values.localMergedChart,
+                        user: values.user.user.id// make sure user gets injected even on new items
+                    }
                 })
-                const data = await response.json()
                 breakpoint()
-                if (response.status === 401) {
-                    actions.refreshToken()
-                    return
+
+                if (error) {
+                    throw new Error(error.message)
                 }
 
                 // Set last synced data
@@ -196,8 +197,7 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
         parsedWorkbookId: [
             (s) => [s.localMergedChart],
             (localMergedChart) => {
-                const url = localMergedChart?.data?.srcUrl ?? ""
-                return combineUrl(url).searchParams?.resid ?? ""
+                return parseWorkbookUrlAndGetId(localMergedChart.data.srcProvider, localMergedChart.data.srcUrl)
             }
         ],
         parsedRange: [
@@ -222,14 +222,14 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
             }
         ],
         syncable: [
-            (s) => [s.providerToken, s.parsedRange, s.parsedWorkbookId],
-            (providerToken, parsedRange, parsedWorkbookId) => {
-                return providerToken && parsedRange.sheet && parsedRange.range && parsedWorkbookId
+            (s) => [s.user, s.parsedRange, s.parsedWorkbookId],
+            (user: User, parsedRange: { sheet: string; range: string; }, parsedWorkbookId: string) => {
+                return user && parsedRange.sheet && parsedRange.range && parsedWorkbookId
             }
         ],
         synced: [
             (s) => [s.lastSyncedChart, s.localMergedChart],
-            (lastSyncedChart, localMergedChart) => equal(pick(lastSyncedChart?.data, ["srcUrl", "dataRange"]), pick(localMergedChart?.data, ["srcUrl", "dataRange"]))
+            (lastSyncedChart, localMergedChart) => equal(pick(lastSyncedChart?.data, ["srcUrl", "dataRange", "srcProvider"]), pick(localMergedChart?.data, ["srcUrl", "dataRange", "srcProvider"]))
         ],
     })),
     afterMount(({props, actions}) => {

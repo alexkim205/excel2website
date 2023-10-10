@@ -11,22 +11,6 @@ import type {Layout, Layouts} from "react-grid-layout";
 import equal from "lodash.isequal";
 import pick from "lodash.pick";
 
-export function graphFetch({url = "", method = "GET", providerToken, body}: {
-    url: string,
-    method?: "GET" | "POST",
-    providerToken: string,
-    body?: Record<string, any>
-}) {
-    return fetch(`https://graph.microsoft.com/v1.0/me/drive/${url}`, {
-        method,
-        headers: new Headers({
-            Authorization: `Bearer ${providerToken}`,
-            Host: "graph.microsoft.com"
-        }),
-        body: JSON.stringify(body)
-    })
-}
-
 export interface DashboardLogicProps {
     id: DashboardType["id"]
     newDashboardItemId?: DashboardItemType["id"] // keep track of new item id at top level
@@ -34,10 +18,10 @@ export interface DashboardLogicProps {
 
 export const dashboardLogic = kea<dashboardLogicType>([
     props({} as DashboardLogicProps),
-    path((key) => ["src", "logics", "apiLogic", key]),
+    path((key) => ["src", "logics", "dashboardLogic", key]),
     key((props) => props.id),
     connect(() => ({
-        values: [userLogic, ["providerToken", "user"]],
+        values: [userLogic, ["user"]],
         actions: [userLogic, ["setUser", "signOut", "refreshToken"]]
     })),
     defaults(({props}) => ({
@@ -64,7 +48,7 @@ export const dashboardLogic = kea<dashboardLogicType>([
             setChildChartsLoading: (prev, {id, loading}) => merge({}, prev, {[id]: loading})
         }
     })),
-    loaders(({values, props, actions}) => ({
+    loaders(({values, props}) => ({
         dashboard: {
             loadDashboard: async (_, breakpoint) => {
                 if (props.id === "global") {
@@ -147,25 +131,9 @@ export const dashboardLogic = kea<dashboardLogicType>([
             },
             setCharts: ({charts}) => charts as DashboardItemType[],
         },
-        workbooks: {
-            loadWorkbooks: async (_, breakpoint) => {
-                if (!values.providerToken) {
-                    return values.workbooks
-                }
-                await breakpoint(1)
-                const response = await graphFetch({url: "root/children", providerToken: values.providerToken})
-                const data = await response.json()
-                breakpoint()
-                if (response.status === 401) {
-                    actions.refreshToken()
-                    return
-                }
-                return data.value.filter(({name}: { name: string }) => name.endsWith(".xlsx")) ?? []
-            }
-        },
         publishStatus: {
             verifyPublishStatus: async (_, breakpoint) => {
-                if (!values.providerToken || !values.dashboard?.custom_domain) {
+                if (!values.user || !values.dashboard?.custom_domain) {
                     return values.publishStatus
                 }
                 await breakpoint(1)
@@ -221,7 +189,7 @@ export const dashboardLogic = kea<dashboardLogicType>([
         }
     })),
     afterMount(({actions, values}) => {
-        if (values.providerToken) {
+        if (values.user) {
             actions.loadDashboard({})
             // actions.loadWorkbooks({})
         }

@@ -20,6 +20,8 @@ export function UserCircle() {
 
     const currentTier = TIERS_WITH_LIFE.find(({value}) => value === plan)
 
+    console.log("USER", user)
+
     return (
         <>
             <Avatar src={gravatarLink ?? ""} onClick={() => onOpen()} size="md" showFallback name={user?.user.email}

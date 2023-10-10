@@ -1,4 +1,4 @@
-import {actions, connect, defaults, kea, listeners, path} from "kea";
+import {actions, afterMount, connect, defaults, kea, listeners, path} from "kea";
 import {userLogic} from "./userLogic";
 import type {adminLogicType} from "./adminLogicType";
 import {loaders} from "kea-loaders";
@@ -21,12 +21,14 @@ export const adminLogic = kea<adminLogicType>([
     }),
     actions(() => ({
         changeUserPlan: (userId: User["id"], plan: PricingTier) => ({userId, plan}),
+        deleteUser: (userId: User["id"]) => ({userId})
     })),
     loaders(({values}) => ({
         users: {
             loadUsers: async (_, breakpoint) => {
                 await breakpoint(1)
                 const {data, error} = await supabaseService.auth.admin.listUsers()
+                console.log("LOAD USERS", data)
                 breakpoint()
                 if (error) {
                     throw new Error(error.message)
@@ -44,6 +46,17 @@ export const adminLogic = kea<adminLogicType>([
                     throw new Error(error.message)
                 }
                 return values.users.map((user) => user.id === userId ? merge({}, user, {user_metadata: {plan}}) : user)
+            },
+            deleteUser: async ({userId}, breakpoint) => {
+                await breakpoint(1)
+                const {error} = await supabaseService.auth.admin.deleteUser(
+                    userId
+                )
+                breakpoint()
+                if (error) {
+                    throw new Error(error.message)
+                }
+                return values.users.filter((user) => user.id !== userId)
             }
         }
     })),
@@ -55,4 +68,10 @@ export const adminLogic = kea<adminLogicType>([
             actions.loadUsers({})
         }
     })),
+    afterMount(({values, actions}) => {
+        if (import.meta.env.PROD && values?.user?.user?.id !== PROD_SUPER_USER_ID) {
+            router.actions.push(urls.home())
+        }
+        actions.loadUsers({})
+    })
 ])

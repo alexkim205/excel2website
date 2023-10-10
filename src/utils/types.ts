@@ -32,6 +32,7 @@ export interface DashboardItemDataType {
     id: string
     type: ChartPresetType
     srcUrl: string | undefined | null
+    srcProvider: Provider
     dataRange: string | undefined // Sheet and range in this format, i.e. 'Sheet1'!A3:B9
     coordinates: {
         sm: { x: number, y: number, w: number, h: number, static?: boolean },
@@ -107,4 +108,10 @@ export interface AuthFormData {
     email: string
     password: string
     password2: string
+}
+
+export enum Provider {
+    Azure = 'azure',
+    Google = 'google',
+    Raw = 'raw'
 }
