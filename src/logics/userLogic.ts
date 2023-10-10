@@ -58,6 +58,22 @@ export const userLogic = kea<userLogicType>([
                 throw new Error(error.message)
             }
         },
+        signInWithGoogle: async (_, breakpoint) => {
+            breakpoint()
+            const {error} = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    queryParams: {
+                        access_type: 'offline',
+                        prompt: 'consent',
+                    },
+                },
+            })
+
+            if (error) {
+                throw new Error(error.message)
+            }
+        },
         signOut: async () => {
             const {error} = await supabase.auth.signOut()
             if (error) {
