@@ -7,6 +7,8 @@ import {corsHeaders} from "../_shared/cors.ts";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import {createStripeClient} from "../_shared/stripe.ts";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import {combineUrl} from "kea-router";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

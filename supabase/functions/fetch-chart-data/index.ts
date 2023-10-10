@@ -109,25 +109,27 @@ serve(async (req) => {
 
     try {
         if (provider === "azure") {
-            const graphDataResponse = await fetch(`https://graph.microsoft.com/v1.0/me/drive/items/${workbookId}/workbook/worksheets/${sheet}/range(address='${parsedRange}')`, {
-                method: "GET",
-                headers: new Headers({
-                    Authorization: `Bearer ${refreshTokenData.access_token}`,
-                    Host: "graph.microsoft.com"
-                }),
-            })
+            const graphDataResponse = await fetch(
+                `https://graph.microsoft.com/v1.0/me/drive/items/${workbookId}/workbook/worksheets/${sheet}/range(address='${parsedRange}')`, {
+                    method: "GET",
+                    headers: new Headers({
+                        Authorization: `Bearer ${refreshTokenData.access_token}`,
+                        Host: "graph.microsoft.com"
+                    }),
+                })
             if (!graphDataResponse.ok) {
                 throw new Error(graphDataResponse.statusText)
             }
             graphData = (await graphDataResponse.json()).values
         } else if (provider === "google") {
-            const graphDataResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${workbookId}?includeGridData=true&ranges=${sheet}!${parsedRange}&key=${GOOGLE_API_KEY}`, {
-                method: "GET",
-                headers: new Headers({
-                    Authorization: `Bearer ${refreshTokenData.access_token}`,
-                    Accept: 'application/json'
+            const graphDataResponse = await fetch(
+                `https://sheets.googleapis.com/v4/spreadsheets/${workbookId}?includeGridData=true&ranges=${sheet}!${parsedRange}&key=${GOOGLE_API_KEY}`, {
+                    method: "GET",
+                    headers: new Headers({
+                        Authorization: `Bearer ${refreshTokenData.access_token}`,
+                        Accept: 'application/json'
+                    })
                 })
-            })
             const data = await graphDataResponse.json()
             if (!graphDataResponse.ok) {
                 throw new Error(graphDataResponse.statusText)
