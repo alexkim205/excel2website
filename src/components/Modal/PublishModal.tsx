@@ -27,6 +27,8 @@ import useCopy from "@react-hook/copy";
 import {toast} from "react-toastify";
 import {useState} from "react";
 import {pricingLogic} from "../../logics/pricingLogic";
+import {A} from "kea-router";
+import {urls} from "../../utils/routes";
 
 export interface PublishModalProps {
     props: DashboardLogicProps
@@ -171,6 +173,9 @@ export function PaywallBlurb() {
 export function PaywallTiers() {
     const {loadingPaymentLinkPricingTier} = useValues(pricingLogic)
     const {generatePaymentLink} = useActions(pricingLogic)
+    const {user} = useValues(userLogic)
+
+    console.log("USER", user)
 
     return (
         <>
@@ -179,7 +184,7 @@ export function PaywallTiers() {
                     <Card key={value} shadow="none" className="w-full border-medium p-2 gap-3"
                           classNames={{body: "p-0", footer: "p-0"}}>
                         <CardHeader
-                            className="text-lg flex flex-col gap-1 font-medium text-center justify-center bg-default-200 p-3 rounded-medium">
+                            className="text-2xl flex flex-col gap-2 font-bold text-center justify-center bg-primary-500 py-5 px-3 text-white rounded-medium">
                             {capitalizeFirstLetter(value)}
                             <div className="flex flex-row gap-1 text-4xl">
                                 <span className="text-lg self-start">$</span>{price}
@@ -200,9 +205,20 @@ export function PaywallTiers() {
                                         fullWidth size="lg">
                                     Current plan
                                 </Button>
+                            ) : !user ? (
+                                <Button
+                                    as={A}
+                                    href={urls.sign_up()}
+                                    radius="md"
+                                    className="text-base font-medium disabled:opacity-50"
+                                    color="primary"
+                                    fullWidth size="lg"
+                                >
+                                    Sign up
+                                </Button>
                             ) : (
                                 <Button
-                                    variant="flat" radius="md"
+                                    radius="md"
                                     className="text-base font-medium disabled:opacity-50"
                                     color="primary"
                                     fullWidth size="lg"

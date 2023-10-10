@@ -34,8 +34,8 @@ function PublicDashboard({subdomain}: PublicDashboardProps) {
     }
 
     return (
-        <div id={`${subdomain}-dashboard-wrapper`} className="flex flex-col w-full px-3 py-6 sm:gap-6 gap-4">
-            <div className="max-w-[1024px] mx-auto px-6 flex flex-row justify-between gap-4 w-full">
+        <div id={`${subdomain}-dashboard-wrapper`} className="min-h-screen flex flex-col w-full px-3 py-6 sm:gap-6 gap-4">
+            <div className="max-w-[1024px] mx-auto px-6 flex flex-col sm:flex-row justify-between gap-4 w-full">
                 <div className="flex flex-col gap-2 w-full">
                     <h1
                         id="dashboard-title-field"
@@ -57,7 +57,7 @@ function PublicDashboard({subdomain}: PublicDashboardProps) {
                     showAnchorIcon
                     isBlock
                     size="sm"
-                    className="whitespace-nowrap text-default-500 self-start hover:text-primary"
+                    className="-ml-2 whitespace-nowrap text-default-500 self-start hover:text-primary"
                     color="primary"
                 >
                     Made with <BsFillFileEarmarkSpreadsheetFill className="text-sm text-green-700 ml-1.5 mr-1"/> SheetsToDashboard + <RxHeartFilled className="text-sm ml-1 text-red-500"/>

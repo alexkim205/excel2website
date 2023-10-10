@@ -37,7 +37,7 @@ function Dashboard() {
 
     return (
         <>
-            <div id={`${dashboardProps.id}-dashboard-wrapper`} className="flex flex-col w-full px-3 sm:gap-6 gap-4">
+            <div id={`${dashboardProps.id}-dashboard-wrapper`} className="min-h-[calc(100vh-64px)] pt-12 flex flex-col w-full px-3 sm:gap-6 gap-4">
                 <div className="max-w-[1024px] mx-auto px-6 flex flex-col sm:flex-row justify-between gap-4 w-full">
                     <div className="flex flex-col gap-1 w-full">
                         {dashboardLoading && !dashboard ? (

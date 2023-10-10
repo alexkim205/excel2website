@@ -3,13 +3,14 @@ import type {userLogicType} from "./userLogicType";
 import supabase from "../utils/supabase";
 import type {Session} from "@supabase/gotrue-js/dist/module/lib/types";
 import {router} from "kea-router";
-import {urls} from "../utils/routes";
+import {SceneKey, urls} from "../utils/routes";
 import md5 from "md5"
 import merge from "lodash.merge";
 import {loaders} from "kea-loaders";
 import {PricingTier} from "../utils/types";
 import {_generateBillingPortalLink} from "./pricingLogic";
 import posthog from "posthog-js";
+
 
 export const userLogic = kea<userLogicType>([
     path(["src", "logics", "userLogic"]),
@@ -18,7 +19,6 @@ export const userLogic = kea<userLogicType>([
         billingPortalLink: "" as string
     })),
     actions(() => ({
-        signInWithEmail: true,
         signInWithMicrosoft: true,
         signInWithGoogle: true,
         signOut: true,
@@ -115,7 +115,10 @@ export const userLogic = kea<userLogicType>([
 
         // Check if user is already logged in
         if (!currentSession) {
-            router.actions.push(urls.home())
+            // Redirect on reset password page if user isn't signed in via email link
+            if (![urls.sign_in(), urls.sign_up(), urls.forgot_password()].includes(router.values.currentLocation.pathname as SceneKey)) {
+                router.actions.push(urls.home())
+            }
             return
         }
 

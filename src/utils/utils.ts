@@ -59,3 +59,6 @@ export function generateEmptyDashboardItem(id: DashboardItemDataType["id"]): Das
 export function generateDashboardSubdomain(): string {
     return nanoid()
 }
+
+export const EMAIL_REGEX =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([a-zA-Z\-\d]+\.)+[a-zA-Z]{2,}))$/;

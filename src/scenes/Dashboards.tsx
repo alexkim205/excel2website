@@ -23,7 +23,7 @@ function Dashboards() {
     const {deleteDashboard} = useActions(dashboardGridLogic)
 
     return (
-        <div className="flex flex-col w-full max-w-[1024px] px-6 sm:gap-6 gap-4">
+        <div className="flex flex-col w-full max-w-[1024px] min-h-[calc(100vh-64px)] pt-12 px-6 sm:gap-6 gap-4">
             <>
                 <h2 className="sm:text-4xl text-3xl font-bold">Dashboards</h2>
                 <div className="grid sm:grid-cols-2 md:grid-cols-3 grid-cols-1 gap-4">

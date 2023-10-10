@@ -18,13 +18,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <NextUIProvider>
         <App/>
         <ToastContainer
-            position="top-center"
+            position="bottom-center"
             transition={Slide}
             autoClose={3000}
             closeOnClick
             pauseOnFocusLoss
             draggable
             pauseOnHover
+            bodyClassName="text-sm"
         />
     </NextUIProvider>
 )

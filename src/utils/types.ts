@@ -102,3 +102,9 @@ export enum PublishStatus {
     Misconfigured = "misconfigured",
     Online = 'online'
 }
+
+export interface AuthFormData {
+    email: string
+    password: string
+    password2: string
+}

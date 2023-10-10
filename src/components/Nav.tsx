@@ -11,7 +11,7 @@ import {FiPlus} from "react-icons/fi";
 export function Nav() {
     const {scene} = useValues(sceneLogic)
     const {user} = useValues(userLogic)
-    const {signInWithMicrosoft, signOut} = useActions(userLogic)
+    const {signOut} = useActions(userLogic)
 
     return (
         <>
@@ -66,20 +66,19 @@ export function Nav() {
                                 </NavbarItem>
                             )}
                         </>
-                    ) : (
+                    ) : ![SceneKey.SignIn, SceneKey.SignUp, SceneKey.ForgotPassword, SceneKey.ResetPassword].includes(scene) && (
                         <>
                             <NavbarItem className="hidden sm:flex">
-                                <Button as={Link} color="primary" size="lg" radius="sm"
+                                <Button as={A} href={urls.sign_in()} color="primary" size="lg" radius="sm"
                                         className="font-medium h-10 px-4"
                                         endContent={<FiPlus className="text-xl"/>}
-                                        onPress={() => signInWithMicrosoft()}
                                 >
                                     Make a dashboard
                                 </Button>
                             </NavbarItem>
                             <NavbarItem className="flex sm:hidden">
-                                <Button color="primary" size="lg" radius="sm" onPress={() => signInWithMicrosoft()}
-                                        startContent={<FiPlus className="text-xl"/>} className="h-10 px-4">
+                                <Button as={A} href={urls.sign_in()} color="primary" size="lg" radius="sm"
+                                        endContent={<FiPlus className="text-xl"/>} className="h-10 px-4 font-medium">
                                     Dashboard
                                 </Button>
                             </NavbarItem>

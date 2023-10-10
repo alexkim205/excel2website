@@ -13,7 +13,8 @@
     "sync:secrets": "vercel pull --environment=development && cp .vercel/.env.development.local ./supabase/.env.local && sed -i '' '/^SUPABASE/d' ./supabase/.env.local && vercel pull --environment=production && cp .vercel/.env.production.local ./supabase/.env && sed -i '' '/^SUPABASE/d' ./supabase/.env && supabase secrets set --env-file ./supabase/.env",
     "start:functions": "supabase start && supabase functions serve --env-file ./supabase/.env.local",
     "push:functions": "pnpm sync:secrets && supabase functions deploy refresh-token --project-ref qsnewyjxoevltgutfuts && supabase functions deploy fetch-chart-data --project-ref qsnewyjxoevltgutfuts && supabase functions deploy create-payment-link --project-ref qsnewyjxoevltgutfuts && supabase functions deploy stripe-webhooks --project-ref qsnewyjxoevltgutfuts && supabase functions deploy create-billing-portal-link --project-ref qsnewyjxoevltgutfuts && supabase functions deploy domains --project-ref qsnewyjxoevltgutfuts && supabase functions deploy fetch-gravatar-ids --project-ref qsnewyjxoevltgutfuts",
-    "start:stripe": "stripe listen --forward-to localhost:54321/functions/v1/stripe-webhooks"
+    "start:stripe": "stripe listen --forward-to localhost:54321/functions/v1/stripe-webhooks",
+    "sitemap": "node src/sitemap.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
@@ -69,6 +70,7 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "kea-typegen": "^3.3.0",
     "postcss": "^8.4.29",
+    "sitemap": "^7.1.1",
     "tailwindcss": "^3.3.3",
     "typescript": "^4.9.4",
     "vercel": "^32.2.4",

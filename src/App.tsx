@@ -4,6 +4,7 @@ import {sceneLogic} from "./logics/sceneLogic";
 import {SceneKey} from "./utils/routes";
 import {dashboardGridLogic} from "./logics/dashboardGridLogic";
 import {lazy, Suspense} from "react";
+import clsx from "clsx";
 
 
 const ROUTES: Record<SceneKey, any> = {
@@ -13,6 +14,10 @@ const ROUTES: Record<SceneKey, any> = {
     [SceneKey.PublicDashboard]: lazy(() => import('./scenes/PublicDashboard')),
     [SceneKey.Admin]: lazy(() => import('./scenes/AdminDashboard')),
     [SceneKey.Pricing]: lazy(() => import('./scenes/Pricing')),
+    [SceneKey.SignIn]: lazy(() => import('./scenes/Auth/SignIn')),
+    [SceneKey.SignUp]: lazy(() => import('./scenes/Auth/SignUp')),
+    [SceneKey.ForgotPassword]: lazy(() => import('./scenes/Auth/ForgotPassword')),
+    [SceneKey.ResetPassword]: lazy(() => import('./scenes/Auth/ResetPassword')),
 }
 
 function App() {
@@ -27,9 +32,11 @@ function App() {
     const Scene = ROUTES[scene as SceneKey]
 
     return (
-        <div className="flex flex-col min-h-screen items-center gap-12 overflow-hidden">
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        <div className={clsx("flex flex-col items-center overflow-hidden")}>
             <>
-                <Nav/>
+                <Nav key={scene}/>
                 <Suspense fallback={<></>}>
                     <Scene {...(scene === SceneKey.Dashboard ? {id: params.id} : {})}/>
                 </Suspense>

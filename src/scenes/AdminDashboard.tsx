@@ -41,7 +41,7 @@ function AdminDashboard() {
     ];
 
     return (
-        <div id={`admin-wrapper`} className="flex flex-col justify-start w-full gap-4 max-w-[1024px] px-6">
+        <div id={`admin-wrapper`} className="flex flex-col  min-h-[calc(100vh-64px)] pt-12 justify-start w-full gap-4 max-w-[1024px] px-6">
             <h3 className="text-3xl font-bold">Admin Dashboard</h3>
             <Table aria-label="Example table with dynamic content" shadow="sm" isStriped isHeaderSticky>
                 <TableHeader columns={columns}>
