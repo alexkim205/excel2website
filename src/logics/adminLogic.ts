@@ -28,7 +28,6 @@ export const adminLogic = kea<adminLogicType>([
             loadUsers: async (_, breakpoint) => {
                 await breakpoint(1)
                 const {data, error} = await supabaseService.auth.admin.listUsers()
-                console.log("LOAD USERS", data)
                 breakpoint()
                 if (error) {
                     throw new Error(error.message)

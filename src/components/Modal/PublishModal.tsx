@@ -175,8 +175,6 @@ export function PaywallTiers() {
     const {generatePaymentLink} = useActions(pricingLogic)
     const {user} = useValues(userLogic)
 
-    console.log("USER", user)
-
     return (
         <>
             <div className="grid sm:grid-cols-4 grid-cols-2 gap-3">

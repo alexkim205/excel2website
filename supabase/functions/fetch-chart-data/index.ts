@@ -25,8 +25,6 @@ serve(async (req) => {
     const {chart} = await req.json()
     const supabase = createSupabaseClient()
 
-    console.log("FETCH", chart)
-
     // Fetch user's refresh
     const {data: userData, error} = await supabase.auth.admin.getUserById(chart.user)
     if (error) {
@@ -44,7 +42,6 @@ serve(async (req) => {
     const provider = chart?.data?.srcProvider
 
     // Check if user has linked specified provider
-    console.log("CHECK ME", userData.user.user_metadata, provider)
     if (!userData.user.user_metadata?.[provider]?.provider_token || !userData.user.user_metadata?.[provider]?.provider_refresh_token) {
         return new Response(JSON.stringify({error: `Data provider is not linked: ${provider}`}), {
             headers: corsHeaders,
@@ -83,8 +80,6 @@ serve(async (req) => {
             refreshToken: userData.user.user_metadata?.[provider]?.provider_refresh_token
         }
     })
-
-    console.log("refreshTokenData", refreshTokenData)
 
     if (refreshTokenError) {
         return new Response(JSON.stringify({error: refreshTokenError.message}), {
