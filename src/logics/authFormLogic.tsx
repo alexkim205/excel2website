@@ -1,5 +1,5 @@
 import {connect, defaults, kea, key, listeners, path, props, reducers} from "kea";
-import {SceneKey, urls} from "../utils/routes";
+import {AuthSceneKey, SceneKey, urls} from "../utils/routes";
 import {forms} from "kea-forms";
 import {AuthFormData} from "../utils/types";
 import {EMAIL_REGEX} from "../utils/utils";
@@ -12,7 +12,7 @@ import type {authFormLogicType} from "./authFormLogicType";
 import {toast} from "react-toastify";
 
 export interface AuthFormLogicProps {
-    scene: SceneKey.SignUp | SceneKey.SignIn | SceneKey.ForgotPassword | SceneKey.ResetPassword
+    scene: AuthSceneKey
 }
 
 export const authFormLogic = kea<authFormLogicType>([

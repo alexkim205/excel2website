@@ -11,6 +11,8 @@ export enum SceneKey {
     ResetPassword = 'reset_password'
 }
 
+export type AuthSceneKey = SceneKey.SignUp | SceneKey.SignIn | SceneKey.ForgotPassword | SceneKey.ResetPassword
+
 export const urls: Record<SceneKey, (a?: any) => string> = {
     [SceneKey.Home]: () => '/',
     [SceneKey.Dashboards]: () => '/dashboards',
