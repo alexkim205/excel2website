@@ -21,12 +21,12 @@ export function generateEmptyDashboardData(id: DashboardDataType["id"]): Dashboa
     }
 }
 
-export function generateEmptyDashboardItem(id: DashboardItemDataType["id"]): DashboardItemDataType {
+export function generateEmptyDashboardItem(id: DashboardItemDataType["id"], defaultProvider: Provider): DashboardItemDataType {
     return {
         id,
         type: ChartPresetType.BasicBar,
         srcUrl: "",
-        srcProvider: Provider.Azure,
+        srcProvider: defaultProvider,
         dataRange: "'Sheet1'!A1:B17",
         coordinates: {
             sm: {x: 0, y: 0, w: 3, h: 3, static: true},
@@ -84,13 +84,13 @@ export function parseWorkbookUrlAndGetId(provider: string, url: string | null | 
     if (!url) {
         return ""
     }
-    if (provider === "raw") {
+    if (provider === Provider.Raw) {
         return ""
     }
-    if (provider === "azure") {
+    if (provider === Provider.Azure) {
         return combineUrl(url).searchParams?.resid ?? ""
     }
-    if (provider === "google") {
+    if (provider === Provider.Google) {
         const splitUrl = url.split("/")
         const indexOfId = splitUrl.findIndex((param) => param === "d")
         if (indexOfId === -1) {
@@ -99,4 +99,8 @@ export function parseWorkbookUrlAndGetId(provider: string, url: string | null | 
         return splitUrl[indexOfId + 1]
     }
     return ""
+}
+
+export function findFirstLinkedProvider(linkedProviders: Record<Provider, boolean>): Provider {
+    return Object.entries(linkedProviders).find(([, isLinked]) => isLinked)?.[0] as Provider
 }

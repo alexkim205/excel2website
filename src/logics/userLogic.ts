@@ -164,6 +164,26 @@ export const userLogic = kea<userLogicType>([
         cache.unsubscribeOnAuthStateChange?.();
     }),
     selectors(() => ({
+        linkedProviders: [
+            (s) => [s.user, s.getProviderToken],
+            (user, getProviderToken) => {
+                let linkedProviders = {
+                    [Provider.Azure]: false,
+                    [Provider.Google]: false,
+                    [Provider.Raw]: true
+                }
+                if (!user) {
+                    return linkedProviders
+                }
+                [Provider.Azure, Provider.Google].forEach((provider) => {
+                    linkedProviders = {
+                        ...linkedProviders,
+                        [provider]: !!getProviderToken(provider)
+                    }
+                })
+                return linkedProviders
+            }
+        ],
         getProviderToken: [
             (s) => [s.user],
             (user) => (provider: Provider) => {

@@ -17,16 +17,17 @@ import {
     TableRow,
     Tabs,
     Textarea,
-    Checkbox, Spinner
+    Checkbox, Spinner, Chip
 } from "@nextui-org/react";
 import {useActions, useValues} from "kea";
 import {dashboardItemLogic, DashboardItemLogicProps} from "../../logics/dashboardItemLogic";
 import {DashboardLogicProps} from "../../logics/dashboardLogic";
 import {FormEvent, lazy, Suspense, useState} from "react";
 import {MdGridOn, MdOutlineCheck, MdOutlineSync, MdOutlineWarningAmber} from "react-icons/md";
-import {dataTypeTabs, graphTypeTabs} from "./graph";
+import {graphTypeTabs} from "./graph";
 import {ChartPresetType, PanelTab, Provider} from "../../utils/types";
 import {RxTrash} from "react-icons/rx";
+import {userLogic} from "../../logics/userLogic";
 
 const Chart = lazy(() => import('./Chart'))
 
@@ -35,6 +36,7 @@ export function DataSelectModal({props}: {
     props: DashboardItemLogicProps
 }) {
     const logic = dashboardItemLogic(props)
+    const {linkedProviders} = useValues(userLogic)
     const {
         open,
         localMergedChart,
@@ -100,6 +102,24 @@ export function DataSelectModal({props}: {
         </Checkbox>
     </>
 
+
+    const dataTypeTabs = {
+        [Provider.Azure]: {
+            id: Provider.Azure,
+            label: "Microsoft Excel",
+            unlinked: !linkedProviders[Provider.Azure]
+        },
+        [Provider.Google]: {
+            id: Provider.Google,
+            label: "Google Sheets",
+            unlinked: !linkedProviders[Provider.Google]
+        },
+        /*    [Provider.Raw]: {
+                id: Provider.Raw,
+                label: "Raw Data",
+            },*/
+    }
+
     return (
         <Modal
             size="full"
@@ -129,8 +149,7 @@ export function DataSelectModal({props}: {
                                                 }}
                                         >
                                             {Object.values(dataTypeTabs).map((type) => (
-                                                <SelectItem key={type.id} value={type.id}
-                                                >
+                                                <SelectItem isDisabled={type.unlinked} key={type.id} value={type.id} endContent={type.unlinked ? <Chip size="sm">Not linked</Chip> : undefined}>
                                                     {type.label}
                                                 </SelectItem>
                                             ))}

@@ -6,7 +6,12 @@ import merge from "lodash.merge"
 import type {DeepPartial} from "kea-forms/lib/types";
 import type {dashboardLogicType} from "./dashboardLogicType";
 import supabase from "../utils/supabase";
-import {generateDashboardSubdomain, generateEmptyDashboardData, generateEmptyDashboardItem} from "../utils/utils";
+import {
+    findFirstLinkedProvider,
+    generateDashboardSubdomain,
+    generateEmptyDashboardData,
+    generateEmptyDashboardItem
+} from "../utils/utils";
 import type {Layout, Layouts} from "react-grid-layout";
 import equal from "lodash.isequal";
 import pick from "lodash.pick";
@@ -21,17 +26,12 @@ export const dashboardLogic = kea<dashboardLogicType>([
     path((key) => ["src", "logics", "dashboardLogic", key]),
     key((props) => props.id),
     connect(() => ({
-        values: [userLogic, ["user"]],
+        values: [userLogic, ["user", "linkedProviders"]],
         actions: [userLogic, ["setUser", "signOut", "refreshToken"]]
     })),
-    defaults(({props}) => ({
+    defaults(() => ({
         dashboard: null as DashboardType | null,
-        charts: [{
-            id: props.newDashboardItemId,
-            dashboard: props.id,
-            data: generateEmptyDashboardItem(props.newDashboardItemId as string),
-            created_at: null
-        }] as DashboardItemType[],
+        charts: [] as DashboardItemType[],
         workbooks: [] as WorkbookType[],
         childChartsLoading: {} as Record<DashboardItemType["id"], boolean>,
         publishStatus: PublishStatus.Online as PublishStatus,
@@ -188,11 +188,21 @@ export const dashboardLogic = kea<dashboardLogicType>([
             actions.saveDashboard({})
         }
     })),
-    afterMount(({actions, values}) => {
+    afterMount(({actions, values, props}) => {
         if (values.user) {
             actions.loadDashboard({})
             // actions.loadWorkbooks({})
         }
+
+        // Populate dashboard with first new chart
+        actions.setCharts([
+            {
+                id: props.newDashboardItemId,
+                dashboard: props.id,
+                data: generateEmptyDashboardItem(props.newDashboardItemId as string, findFirstLinkedProvider(values.linkedProviders)),
+                created_at: null
+            }
+        ], new Set())
     }),
     selectors(() => ({
         layouts: [

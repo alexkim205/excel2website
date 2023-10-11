@@ -1,4 +1,4 @@
-import {AxisType, ChartPresetType, DashboardItemDataType, DataType, Provider} from "../../utils/types";
+import {AxisType, ChartPresetType, DashboardItemDataType, DataType} from "../../utils/types";
 import type {ECBasicOption} from "echarts/types/dist/shared";
 import {
     MdAreaChart,
@@ -81,21 +81,6 @@ export const graphTypeTabs = {
         Icon: MdScatterPlot,
         expectedData: EXPECTED_DATA_MULTI_SERIES
     }
-}
-
-export const dataTypeTabs = {
-    [Provider.Azure]: {
-        id: Provider.Azure,
-        label: "Microsoft Excel",
-    },
-    [Provider.Google]: {
-        id: Provider.Google,
-        label: "Google Sheets",
-    },
-    [Provider.Raw]: {
-        id: Provider.Raw,
-        label: "Raw Data",
-    },
 }
 
 

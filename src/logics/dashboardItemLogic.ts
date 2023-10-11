@@ -11,7 +11,7 @@ import pick from "lodash.pick"
 import omit from "lodash.omit"
 import {toast} from "react-toastify";
 import {v4 as uuidv4} from "uuid";
-import {generateEmptyDashboardItem, parseWorkbookUrlAndGetId} from "../utils/utils";
+import {findFirstLinkedProvider, generateEmptyDashboardItem, parseWorkbookUrlAndGetId} from "../utils/utils";
 import merge from "lodash.merge";
 import {api} from "../utils/api";
 import type {User} from "@supabase/supabase-js";
@@ -27,7 +27,7 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
     path((key) => ["src", "dashboardItemLogic", key]),
     props({autoSync: false} as DashboardItemLogicProps),
     connect((props: DashboardItemLogicProps) => ({
-        values: [dashboardLogic(props.dashboardProps), ["charts"], userLogic, ["getProviderToken", "user"]],
+        values: [dashboardLogic(props.dashboardProps), ["charts"], userLogic, ["getProviderToken", "user", "linkedProviders"]],
         actions: [dashboardLogic(props.dashboardProps), ["setChart", "loadCharts", "setCharts", "setChildChartsLoading"]]
     })),
     defaults({
@@ -109,7 +109,7 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                 if (values.isNew) {
                     actions.loadCharts({})
                     // reset data in new modal
-                    actions.setThisChart(generateEmptyDashboardItem(props.id))
+                    actions.setThisChart(generateEmptyDashboardItem(props.id, findFirstLinkedProvider(values.linkedProviders)))
                 } else {
                     actions.setThisChart(data as DashboardItemType)
                 }
