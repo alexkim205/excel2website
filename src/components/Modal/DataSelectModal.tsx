@@ -145,11 +145,23 @@ export function DataSelectModal({props}: {
                                                 startContent={<MdGridOn className="text-lg"/>}
                                                 selectedKeys={new Set(localMergedChart?.data?.srcProvider ? [String(localMergedChart.data.srcProvider)] : [])}
                                                 onSelectionChange={(keys) => {
-                                                    setLocalChart({data: {srcProvider: Array.from(keys)?.[0] ? String(Array.from(keys)[0]) as Provider : undefined}})
+                                                    const nextProvider = Array.from(keys)?.[0] ? String(Array.from(keys)[0]) as Provider : undefined
+                                                    if (!nextProvider) {
+                                                        return
+                                                    }
+                                                    const isLinked = linkedProviders[nextProvider as Provider]
+                                                    if (isLinked) {
+                                                        setLocalChart({data: {srcProvider: nextProvider}})
+                                                    } else {
+                                                        // Open up modal to sign into account
+                                                        alert("Coming soon.")
+                                                    }
                                                 }}
                                         >
                                             {Object.values(dataTypeTabs).map((type) => (
-                                                <SelectItem isDisabled={type.unlinked} key={type.id} value={type.id} endContent={type.unlinked ? <Chip size="sm">Not linked</Chip> : undefined}>
+                                                <SelectItem isDisabled={type.unlinked} key={type.id} value={type.id} endContent={type.unlinked ?
+                                                    <Chip classNames={{content: "font-medium text-white"}} size="sm"
+                                                          color="success">Click to link coming soon</Chip> : undefined}>
                                                     {type.label}
                                                 </SelectItem>
                                             ))}
@@ -157,7 +169,7 @@ export function DataSelectModal({props}: {
                                         <Input value={localMergedChart?.data?.srcUrl ?? ""}
                                                onValueChange={(value) => setLocalChart({data: {srcUrl: value}})}
                                                isClearable
-                                               label="Workbook URL"
+                                               label="Sheet URL"
                                                labelPlacement="outside"
                                                size="md"
                                                radius="sm" type="text"
