@@ -14,6 +14,7 @@ const ROUTES: Record<SceneKey, any> = {
     [SceneKey.PublicDashboard]: lazy(() => import('./scenes/PublicDashboard')),
     [SceneKey.Admin]: lazy(() => import('./scenes/AdminDashboard')),
     [SceneKey.Pricing]: lazy(() => import('./scenes/Pricing')),
+    [SceneKey.Trust]: lazy(() => import("./scenes/Trust")),
     [SceneKey.SignIn]: lazy(() => import('./scenes/Auth/SignIn')),
     [SceneKey.SignUp]: lazy(() => import('./scenes/Auth/SignUp')),
     [SceneKey.ForgotPassword]: lazy(() => import('./scenes/Auth/ForgotPassword')),

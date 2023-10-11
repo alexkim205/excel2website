@@ -26,14 +26,23 @@ export function Nav() {
                     </Badge>
                 </NavbarBrand>
                 <NavbarContent justify="end">
-                    {(scene === SceneKey.Home || scene === SceneKey.Pricing) && (
-                        <NavbarItem className="flex">
-                            <Button as={A} href={urls.pricing()} color="default"
-                                    className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent px-2 min-w-fit"
-                                    variant="flat" size="lg">
-                                Pricing
-                            </Button>
-                        </NavbarItem>
+                    {(scene === SceneKey.Home || scene === SceneKey.Pricing || scene === SceneKey.Trust) && (
+                        <>
+                            <NavbarItem className="flex">
+                                <Button as={A} href={urls.trust()} color="default"
+                                        className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent px-2 min-w-fit"
+                                        variant="flat" size="lg">
+                                    Trust & Security
+                                </Button>
+                            </NavbarItem>
+                            <NavbarItem className="flex">
+                                <Button as={A} href={urls.pricing()} color="default"
+                                        className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent px-2 min-w-fit"
+                                        variant="flat" size="lg">
+                                    Pricing
+                                </Button>
+                            </NavbarItem>
+                        </>
                     )}
                     {user ? (
                         <>
