@@ -97,7 +97,7 @@ export function Nav() {
                     )}
                     {user ? (
                         <>
-                            <NavbarItem className="flex">
+                            <NavbarItem className="sm:flex hidden">
                                 <Button as={Link} color="default"
                                         className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent px-2 min-w-fit"
                                         variant="flat" size="lg"
