@@ -25,8 +25,8 @@ function Home() {
             <div className="flex flex-col justify-center items-center gap-5 my-8">
                 <h1 className="sm:text-7xl text-6xl font-bold sm:!leading-[5rem] !leading-[4rem] text-center max-w-full">Publish
                     your spreadsheets as beautiful dashboards.</h1>
-                <p className="sm:text-xl text-center text-lg max-w-3xl">Sheets to Dashboard helps you build dashboards
-                    from your Excel spreadsheets and share them as links.</p>
+                <p className="sm:text-xl text-center text-lg max-w-3xl sm:!leading-[1.8rem]">Sheets to Dashboard helps you build dashboards
+                    from your spreadsheets and share them as links. Integrates with Google Sheets and Microsoft Excel.</p>
                 <div className="flex flex-row gap-3">
                     {user ? (
                         <>

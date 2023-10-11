@@ -27,7 +27,7 @@ function Feature({title, subtitle, imgSrcSet}: {title: string,subtitle: string, 
 const FEATURES = [
     {
         title: "Add a data source",
-        subtitle: "Copy and paste the Excel workbook URL and define the data range to use for the chart.",
+        subtitle: "Copy and paste the Microsoft Excel/Google Sheets workbook URL and define the data range to use for the chart. Or if you prefer, copy and paste the raw data!",
         imgSrcSet: ExampleDataInputImage
     },
     {
