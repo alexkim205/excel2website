@@ -17,6 +17,7 @@ import {BsFillFileEarmarkSpreadsheetFill} from "react-icons/bs";
 import {UserCircle} from "./Modal/UserCircle";
 import {sceneLogic} from "../logics/sceneLogic";
 import {useState} from "react";
+import clsx from "clsx";
 
 export function Nav() {
     const {scene} = useValues(sceneLogic)
@@ -28,12 +29,10 @@ export function Nav() {
         {
             label: "Trust & Security",
             href: urls.trust(),
-            color: "foreground"
         },
         {
             label: "Pricing",
             href: urls.pricing(),
-            color: "foreground"
         },
         ...(user ? [
             {
@@ -50,7 +49,6 @@ export function Nav() {
             {
                 label: "Log in",
                 href: urls.sign_in(),
-                color: "foreground"
             },
             {
                 label: "Sign up",
@@ -62,7 +60,7 @@ export function Nav() {
 
     return (
         <>
-            <Navbar onMenuOpenChange={setIsMenuOpen} position="static" className="bg-gray-950 text-gray-100" maxWidth={isAuthPage ? "full" : undefined}>
+            <Navbar onMenuOpenChange={setIsMenuOpen} position="static" classNames={{menu: "bg-gray-950", base: "bg-gray-950 text-gray-100"}} maxWidth={isAuthPage ? "full" : undefined}>
                 <NavbarContent justify="start">
                     <NavbarMenuToggle
                         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -150,7 +148,7 @@ export function Nav() {
                     {menuItems.map(({label, ...linkProps}, index) => (
                         <NavbarMenuItem key={`${label}-${index}`}>
                             <Link
-                                className="w-full"
+                                className={clsx("w-full", !linkProps.color && "text-gray-200")}
                                 size="lg"
                                 {...linkProps}
                             >
