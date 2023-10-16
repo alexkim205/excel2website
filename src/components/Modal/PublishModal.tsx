@@ -177,7 +177,7 @@ export function PaywallTiers() {
 
     return (
         <>
-            <div className="grid sm:grid-cols-4 grid-cols-2 gap-3">
+            <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3">
                 {TIERS.map(({value, price, perks}) => (
                     <Card key={value} shadow="none" className="w-full border-medium p-2 gap-3"
                           classNames={{body: "p-0", footer: "p-0"}}>

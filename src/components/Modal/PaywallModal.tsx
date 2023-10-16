@@ -8,7 +8,7 @@ export interface PaywallModalProps {
 
 export function PaywallModal({open, setOpen}:PaywallModalProps) {
     return (
-        <Modal size="3xl" isOpen={open} onClose={() => setOpen(false)}
+        <Modal size="4xl" isOpen={open} onClose={() => setOpen(false)}
                scrollBehavior="inside">
             <ModalContent>
                 <ModalHeader className="flex-col items-center justify-center">

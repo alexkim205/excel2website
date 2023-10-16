@@ -135,7 +135,7 @@ export function Nav() {
                                         <Button as={Link} onPress={() => linkedAccountsModalDisclosureProps.onOpen()}
                                                 color="primary" size="lg" radius="sm"
                                                 className="h-10 px-4 font-medium min-w-fit"
-                                                startContent={<LuPlus className="text-xl"/>}
+                                                endContent={<LuPlus className="text-xl"/>}
                                         >
                                             Add Data
                                         </Button>
