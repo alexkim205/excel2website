@@ -2,11 +2,13 @@ import {
     Button,
     Chip,
     Divider,
-    Input, Link,
+    Input,
+    Link,
     Modal,
     ModalBody,
     ModalContent,
-    ModalHeader, Tooltip,
+    ModalHeader,
+    Tooltip,
 } from "@nextui-org/react";
 import {Provider} from "../../utils/types";
 import {Session} from "@supabase/gotrue-js/dist/module/lib/types";
@@ -90,13 +92,14 @@ export interface LinkedAccountRowProps {
 
 export function LinkedAccountRow({provider, label, user, linkAccount}: LinkedAccountRowProps) {
     const linked = !!user?.user?.user_metadata?.[provider]?.provider_token
-    const [linkSetupOpen, setLinkSetupOpen] = useState(false)
+    const [linkSetupOpen, setLinkSetupOpen] = useState(!linked)
     const [email, setEmail] = useState<string>('')
 
     const submittable = EMAIL_REGEX.test(email)
 
     const submitButton = (
-        <Button color="primary" size="md"
+        <Button color="primary" size="sm"
+                radius="md"
                 className="px-4 text-base font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 variant="solid"
                 onPress={() => {
@@ -109,8 +112,8 @@ export function LinkedAccountRow({provider, label, user, linkAccount}: LinkedAcc
     )
 
     return (
-        <div className={clsx("flex flex-col gap-2", linkSetupOpen && "px-3 border-medium rounded-medium py-1.5")}>
-            <div className="flex flex-row justify-between items-center" key={provider}>
+        <div className={clsx("flex flex-col gap-2", linkSetupOpen && "px-2 border-medium border-primary-400 rounded-medium py-2")}>
+            <div className={clsx("flex flex-row justify-between", linkSetupOpen ? "items-start" : "items-center")} key={provider}>
                 <span className="text-base">{label}</span>
                 {linked ? (
                     <Chip color="success" classNames={{content: "font-semibold text-white"}}
@@ -137,6 +140,8 @@ export function LinkedAccountRow({provider, label, user, linkAccount}: LinkedAcc
                 <div className="flex flex-row justify-between items-end gap-2">
                     <Input type="email" key={`${provider}-linked-email-field`} name={`${provider}-linked-email-field`}
                            aria-label={`${provider}-linked-email-field`}
+                           size="sm"
+                           radius="md"
                            id={`${provider}-linked-email-field`} label="Email" placeholder="alex@abc.com"
                            labelPlacement="outside"
                            value={email}
