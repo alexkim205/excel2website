@@ -6,10 +6,13 @@ import {serve} from "https://deno.land/std@0.168.0/http/server.ts"
 import {corsHeaders} from "../_shared/cors.ts";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {createSupabaseClient} from "../_shared/supabase.ts";
+import {createSupabaseClient, createUserSupabaseClient} from "../_shared/supabase.ts";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import {parseWorkbookUrlAndGetId} from "../_shared/utils.ts";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import merge from "lodash.merge";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -24,15 +27,25 @@ serve(async (req) => {
 
     const {chart} = await req.json()
     const supabase = createSupabaseClient()
+    const supabaseClient = createUserSupabaseClient(req.headers.get('Authorization')!)
 
     // Fetch user's refresh
-    const {data: userData, error} = await supabase.auth.admin.getUserById(chart.user)
+    const {data: _userData, error} = await supabase.auth.admin.getUserById(chart.user)
     if (error) {
         return new Response(JSON.stringify({error: error.message}), {
             headers: corsHeaders,
             status: 400,
         })
     }
+    const {data: userMetadata, error: userMetadataError} = await supabaseClient.functions.invoke("fetch-user-metadata")
+    if (userMetadataError) {
+        return new Response(JSON.stringify({error: userMetadataError.message}), {
+            headers: corsHeaders,
+            status: 400,
+        })
+    }
+    const userData = merge({}, _userData, {user: {user_metadata: userMetadata}})
+
 
     // Fetch graph data
     const range = chart?.data?.dataRange

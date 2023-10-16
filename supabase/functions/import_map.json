@@ -4,6 +4,7 @@
     "https://esm.sh/v133/utils@0.3.1/index.d.ts": "https://esm.sh/utils@0.3.1",
     "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.33.2",
     "kea-router": "https://esm.sh/kea-router@3.1.4",
-    "md5": "https://esm.sh/md5@2.3.0"
+    "md5": "https://esm.sh/md5@2.3.0",
+    "lodash.merge": "https://esm.sh/lodash.merge@4.6.2"
   }
 }
