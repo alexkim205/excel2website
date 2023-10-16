@@ -156,14 +156,14 @@ export function Nav() {
                     ) : !isAuthPage && (
                         <>
                             <NavbarItem className="hidden sm:flex">
-                                <Button as={A} href={urls.sign_in()} color="primary" size="lg" radius="sm"
+                                <Button as={A} href={urls.sign_up()} color="primary" size="lg" radius="sm"
                                         className="font-medium h-10 px-4"
                                 >
                                     Get Started
                                 </Button>
                             </NavbarItem>
                             <NavbarItem className="flex sm:hidden">
-                                <Button as={A} href={urls.sign_in()} color="primary" size="lg" radius="sm"
+                                <Button as={A} href={urls.sign_up()} color="primary" size="lg" radius="sm"
                                         className="h-10 px-4 font-medium">
                                     Get Started
                                 </Button>

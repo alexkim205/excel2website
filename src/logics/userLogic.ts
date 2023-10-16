@@ -179,7 +179,7 @@ export const userLogic = kea<userLogicType>([
         // Check if user is already logged in
         if (!currentSession) {
             // Redirect on reset password page if user isn't signed in via email link
-            if (![urls.sign_in(), urls.sign_up(), urls.forgot_password()].includes(router.values.currentLocation.pathname as SceneKey)) {
+            if ([urls.dashboards(), urls.dashboard()].includes(router.values.currentLocation.pathname as SceneKey)) {
                 router.actions.push(urls.home())
             }
             return

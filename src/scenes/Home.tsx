@@ -41,7 +41,7 @@ function Home() {
                         </>
                     ) : (
                         <>
-                            <Button as={A} href={urls.sign_in()} color="primary" size="lg" radius="sm"
+                            <Button as={A} href={urls.sign_up()} color="primary" size="lg" radius="sm"
                                     className="h-10 px-4 font-medium"
                                     endContent={<FiPlus className="text-xl"/>}>
                                 Make a dashboard
