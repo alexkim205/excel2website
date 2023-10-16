@@ -71,6 +71,9 @@ export function generateUserMetadata(session: Session): Record<string, {provider
     if (!provider || ![Provider.Azure, Provider.Google].includes(provider)) {
         return {}
     }
+    if (!session.provider_token || !session.provider_refresh_token) {
+        return {}
+    }
 
     return {
         [provider]: {

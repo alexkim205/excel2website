@@ -1,13 +1,16 @@
 import {
     Badge,
     Button,
-    Link, LinkProps,
+    Link,
+    LinkProps,
     Navbar,
     NavbarBrand,
     NavbarContent,
     NavbarItem,
-    NavbarMenu, NavbarMenuItem,
-    NavbarMenuToggle
+    NavbarMenu,
+    NavbarMenuItem,
+    NavbarMenuToggle,
+    useDisclosure
 } from "@nextui-org/react";
 import {useActions, useValues} from "kea";
 import {userLogic} from "../logics/userLogic";
@@ -18,13 +21,17 @@ import {UserCircle} from "./Modal/UserCircle";
 import {sceneLogic} from "../logics/sceneLogic";
 import {useState} from "react";
 import clsx from "clsx";
+import {LinkedAccountsModal} from "./Modal/LinkedAccountsModal";
+import {LuPlus} from "react-icons/lu";
 
 export function Nav() {
     const {scene} = useValues(sceneLogic)
     const {user} = useValues(userLogic)
     const {signOut} = useActions(userLogic)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const linkedAccountsModalDisclosureProps = useDisclosure()
     const isAuthPage = [SceneKey.SignIn, SceneKey.SignUp, SceneKey.ForgotPassword, SceneKey.ResetPassword].includes(scene)
+    const isPrivatePage = [SceneKey.Dashboard, SceneKey.Dashboards].includes(scene)
     const menuItems = [
         {
             label: "Trust & Security",
@@ -56,11 +63,13 @@ export function Nav() {
                 color: "warning"
             },
         ])
-    ] as ({label: string} & LinkProps)[]
+    ] as ({ label: string } & LinkProps)[]
 
     return (
         <>
-            <Navbar onMenuOpenChange={setIsMenuOpen} position="static" classNames={{menu: "bg-gray-950", base: "bg-gray-950 text-gray-100"}} maxWidth={isAuthPage ? "full" : undefined}>
+            <Navbar onMenuOpenChange={setIsMenuOpen} position="static"
+                    classNames={{menu: "bg-gray-950", base: "bg-gray-950 text-gray-100"}}
+                    maxWidth={isAuthPage ? "full" : undefined}>
                 <NavbarContent justify="start">
                     <NavbarMenuToggle
                         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -97,14 +106,6 @@ export function Nav() {
                     )}
                     {user ? (
                         <>
-                            <NavbarItem className="sm:flex hidden">
-                                <Button as={Link} color="default"
-                                        className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent px-2 min-w-fit"
-                                        variant="flat" size="lg"
-                                        onClick={() => signOut()}>
-                                    Logout
-                                </Button>
-                            </NavbarItem>
                             {scene === SceneKey.Home ? (
                                 <>
                                     <NavbarItem className="hidden sm:flex">
@@ -120,11 +121,37 @@ export function Nav() {
                                         </Button>
                                     </NavbarItem>
                                 </>
-                            ) : (
-                                <NavbarItem>
-                                    <UserCircle/>
+                            ) : isPrivatePage ? (
+                                <>
+                                    <NavbarItem className="sm:flex hidden">
+                                        <Button as={Link} color="default"
+                                                className="text-gray-400 hover:text-white hover:bg-transparent bg-transparent px-2 min-w-fit"
+                                                variant="flat" size="lg"
+                                                onClick={() => signOut()}>
+                                            Logout
+                                        </Button>
+                                    </NavbarItem>
+                                    <NavbarItem className="sm:flex hidden">
+                                        <Button as={Link} onPress={() => linkedAccountsModalDisclosureProps.onOpen()}
+                                                color="primary" size="lg" radius="sm"
+                                                className="h-10 px-4 font-medium min-w-fit"
+                                                startContent={<LuPlus className="text-xl"/>}
+                                        >
+                                            Add Data
+                                        </Button>
+                                    </NavbarItem>
+                                    <NavbarItem>
+                                        <UserCircle/>
+                                    </NavbarItem>
+                                </>
+                            ) : <>
+                                <NavbarItem className="hidden sm:flex">
+                                    <Button as={A} href={urls.dashboards()} color="primary" size="lg" radius="sm"
+                                            className="h-10 px-4 font-medium min-w-fit">
+                                        Go to Dashboard
+                                    </Button>
                                 </NavbarItem>
-                            )}
+                            </>}
                         </>
                     ) : !isAuthPage && (
                         <>
@@ -132,13 +159,13 @@ export function Nav() {
                                 <Button as={A} href={urls.sign_in()} color="primary" size="lg" radius="sm"
                                         className="font-medium h-10 px-4"
                                 >
-                                    Sign up
+                                    Get Started
                                 </Button>
                             </NavbarItem>
                             <NavbarItem className="flex sm:hidden">
                                 <Button as={A} href={urls.sign_in()} color="primary" size="lg" radius="sm"
                                         className="h-10 px-4 font-medium">
-                                    Sign up
+                                    Get Started
                                 </Button>
                             </NavbarItem>
                         </>
@@ -158,6 +185,7 @@ export function Nav() {
                     ))}
                 </NavbarMenu>
             </Navbar>
+            <LinkedAccountsModal {...linkedAccountsModalDisclosureProps}/>
         </>
     )
 }

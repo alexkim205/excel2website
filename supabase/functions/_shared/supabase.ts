@@ -18,3 +18,21 @@ export function createSupabaseClient(): SupabaseClient {
     )
     return supabaseClient
 }
+
+export function createUserSupabaseClient(authKey: string): SupabaseClient {
+    const supabaseClient = createClient(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        Deno.env.get('SUPABASE_URL') ?? '',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        Deno.env.get('VITE_SUPABASE_ANON_KEY') ?? '',
+        {
+            auth: {
+                persistSession: false,
+            },
+            global: { headers: { Authorization: authKey } }
+        }
+    )
+    return supabaseClient
+}

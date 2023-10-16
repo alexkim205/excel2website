@@ -1,4 +1,4 @@
-import {Avatar, AvatarGroup, Button, Divider, Input, Tooltip} from "@nextui-org/react";
+import {Avatar, AvatarGroup, Button, Divider, Input, Link, Tooltip} from "@nextui-org/react";
 import {useActions, useValues} from "kea";
 import {authFormLogic, AuthFormLogicProps} from "../../logics/authFormLogic";
 import {SceneKey, urls} from "../../utils/routes";
@@ -6,9 +6,9 @@ import {Field, Form} from "kea-forms";
 import {A} from "kea-router"
 import {Fragment, ReactNode} from "react";
 import {homeLogic} from "../../logics/homeLogic";
-import {BsGoogle} from "react-icons/bs";
 import {TfiMicrosoftAlt} from "react-icons/tfi";
 import {LuCheck} from "react-icons/lu";
+import {FcGoogle} from "react-icons/fc";
 
 type FieldType = "email" | "password" | "password2"
 
@@ -204,29 +204,29 @@ export function AuthSwitchComponent(logicProps: AuthFormLogicProps) {
                                     size="lg"
                                     radius="md"
                                     variant="flat"
-                                    color="primary"
+                                    color="default"
                                     fullWidth
                                     isLoading={isAuthFormSubmitting}
                                     onPress={() => signInWithGoogle()}
-                                    className="px-4 font-medium text-sm"
+                                    className="px-2 font-medium text-sm"
                                     startContent={!isAuthFormSubmitting &&
-                                        <BsGoogle className="shrink-0 text-lg text-[#4285F4]"/>}
+                                        <FcGoogle className="shrink-0 text-2xl text-[#4285F4]"/>}
                                 >
-                                    <span>Link with Google</span>
+                                    <span>{logicProps.scene === SceneKey.SignIn ? "Sign in" : "Sign up"} with Google</span>
                                 </Button>
                                 <Button
                                     size="lg"
                                     radius="md"
-                                    color="primary"
+                                    color="default"
                                     variant="flat"
                                     fullWidth
                                     isLoading={isAuthFormSubmitting}
                                     onPress={() => signInWithMicrosoft()}
-                                    className="px-4 font-medium text-sm"
+                                    className="px-2 font-medium text-sm"
                                     startContent={!isAuthFormSubmitting &&
-                                        <TfiMicrosoftAlt className="shrink-0 text-lg text-[#00A4EF]"/>}
+                                        <TfiMicrosoftAlt className="shrink-0 text-xl text-[#00A4EF]"/>}
                                 >
-                                    <span>Link with Microsoft</span>
+                                    <span>{logicProps.scene === SceneKey.SignIn ? "Sign in" : "Sign up"} with Microsoft</span>
                                 </Button>
                                 <Tooltip
                                     size="sm"
@@ -237,7 +237,16 @@ export function AuthSwitchComponent(logicProps: AuthFormLogicProps) {
                                             Google or Microsoft account to access worksheets in your Google Sheets
                                             and/or Microsoft
                                             Excel account. SheetsToDashboard does not store any spreadsheet data and
-                                            never will.
+                                            never will. Read more about our privacy practices
+                                            <Link
+                                                href={urls.trust()}
+                                                isExternal
+                                                showAnchorIcon
+                                                className="ml-1 text-xs"
+                                                color="primary"
+                                            >
+                                                here
+                                            </Link>.
                                         </div>
                                     )}>
                                     <div

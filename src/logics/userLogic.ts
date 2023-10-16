@@ -23,8 +23,9 @@ export const userLogic = kea<userLogicType>([
         signInWithMicrosoft: true,
         signInWithGoogle: true,
         signOut: true,
-        setUser: (user: Session | null) => ({user}),
+        setUser: (user: Session | null, fetchMetadata: boolean = false) => ({user, fetchMetadata}),
         refreshToken: (provider: Provider) => ({provider}),
+        linkAccount: (provider: Provider, toEmail: string) => ({provider, toEmail})
     })),
     reducers(() => ({
         user: {
@@ -64,7 +65,7 @@ export const userLogic = kea<userLogicType>([
             const {error} = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    scopes: "openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.readonly  https://www.googleapis.com/auth/spreadsheets.readonly",
+                    scopes: "openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file  https://www.googleapis.com/auth/spreadsheets.readonly",
                     queryParams: {
                         access_type: 'offline',
                         prompt: 'consent',
@@ -74,6 +75,26 @@ export const userLogic = kea<userLogicType>([
 
             if (error) {
                 throw new Error(error.message)
+            }
+        },
+        linkAccount: async({provider, toEmail}, breakpoint) => {
+            if (!values.user) {
+                return
+            }
+            breakpoint()
+            const {error} = await supabase.functions.invoke("link-account", {
+                body: {
+                    from_email: values.user.user.email,
+                    to_email: toEmail
+                }
+            })
+            if (error) {
+                throw new Error(error.message)
+            }
+            if (provider === Provider.Google) {
+                actions.signInWithGoogle()
+            } else if (provider === Provider.Azure) {
+                actions.signInWithMicrosoft()
             }
         },
         signOut: async () => {
@@ -123,6 +144,19 @@ export const userLogic = kea<userLogicType>([
                 }
             }));
         },
+        setUser: async ({fetchMetadata}, breakpoint) => {
+            if (!fetchMetadata) {
+                return
+            }
+            // Get full metadata of all linked accounts
+            await breakpoint(1)
+            const {data, error} = await supabase.functions.invoke("fetch-user-metadata")
+            if (error) {
+                throw new Error(error.message)
+            }
+            // Overwrite metadata
+            actions.setUser(merge({}, values.user, {user: {user_metadata: data}}))
+        }
     })),
     afterMount(async ({actions, cache}) => {
         // Redirect to home if user isn't authenticated but private route is requested
@@ -137,7 +171,7 @@ export const userLogic = kea<userLogicType>([
                     return
                 }
                 if (authState === "USER_UPDATED") {
-                    actions.setUser(session);
+                    actions.setUser(session, true);
                 }
             }
         );
@@ -154,9 +188,17 @@ export const userLogic = kea<userLogicType>([
         posthog.identify(currentSession.user.id, {
             email: currentSession.user.email,
         })
-        await supabase.auth.updateUser({
-            data: generateUserMetadata(currentSession)
-        })
+        const nextUserMetadata = generateUserMetadata(currentSession)
+        // Don't overwrite if tokens are invalid
+        if (Object.values(nextUserMetadata).length !== 0) {
+            await supabase.auth.updateUser({
+                data: nextUserMetadata
+            })
+        } else {
+            // setUser trigger isn't called if updateUser isn't called - call it manually here
+            // hacky workaround
+            actions.setUser(currentSession, true);
+        }
 
         actions.generateBillingPortalLink({})
     }),

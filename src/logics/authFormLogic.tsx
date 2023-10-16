@@ -127,7 +127,7 @@ export const authFormLogic = kea<authFormLogicType>([
             const {
                 data: {session: currentSession},
             } = await supabase.auth.getSession();
-            actions.setUser(currentSession)
+            actions.setUser(currentSession, true)
             router.actions.push(urls.dashboards())
         }
     }))

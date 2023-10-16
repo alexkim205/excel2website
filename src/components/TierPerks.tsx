@@ -13,12 +13,13 @@ export function TierPerks({perks}: TierPerksProps) {
             color="default"
             variant="solid"
             className="p-0"
+            aria-label={`tier-perks`}
             itemClasses={{base: "data-[hover=true]:bg-white cursor-default select-none"}}
         >
             {perks.map(({Icon, label}) => (
                 <ListboxItem
-                    classNames={{title: "whitespace-normal"}}
-                    startContent={<Icon className="text-lg"/>}
+                    classNames={{title: "whitespace-normal text-base"}}
+                    startContent={<Icon className="text-xl"/>}
                     key={label}>{label}</ListboxItem>
             ))}
         </Listbox>
