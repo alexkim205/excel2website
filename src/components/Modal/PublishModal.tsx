@@ -225,7 +225,7 @@ export function PaywallTiers() {
                                 generatePaymentLink(PricingTier.Life)
                             }}
                         >
-                            Subscribe
+                            Pay once
                         </Button>
                     )}
                 </CardFooter>
