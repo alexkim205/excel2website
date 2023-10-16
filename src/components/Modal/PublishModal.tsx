@@ -99,7 +99,7 @@ export const TIERS_WITH_LIFE = [...TIERS, {
     perks: [
         {
             Icon: TbStar,
-            label: "Thank you for being one of the first 50 users! Enjoy a lifetime license for free as a token of gratitude."
+            label: "Thank you for being one of the first adopters! You have lifetime access to all future updates of Sheets to Dashboard."
         },
         {
             Icon: TbLayoutGrid,
@@ -177,6 +177,59 @@ export function PaywallTiers() {
 
     return (
         <>
+            {/* TODO: Remove once lifetime deal is over */}
+            <Card key="lifetime" shadow="none" className="w-full shrink-0 border-medium p-2 gap-3"
+                  classNames={{body: "p-0", footer: "p-0"}}>
+                <CardHeader
+                    className="text-2xl flex flex-col gap-2 font-bold text-center justify-center bg-warning py-5 px-3 rounded-medium">
+                    Lifetime
+                    <div className="flex flex-row gap-1 text-2xl">
+                        One time $20 payment
+                    </div>
+                </CardHeader>
+                <CardBody>
+                    <TierPerks perks={[
+                        {
+                            Icon: TbLayoutGrid,
+                            label: "Unlimited shareable dashboards"
+                        },
+                        {
+                            Icon: TbWorldWww,
+                            label: "Custom domain"
+                        },
+                        {
+                            Icon: TbMessageQuestion,
+                            label: "Priority support"
+                        },
+                    ]}/>
+                </CardBody>
+                <CardFooter>
+                    {!user ? (
+                        <Button
+                            as={A}
+                            href={urls.sign_up()}
+                            radius="md"
+                            className="text-base font-medium disabled:opacity-50"
+                            color="warning"
+                            fullWidth size="lg"
+                        >
+                            Sign up
+                        </Button>
+                    ) : (
+                        <Button
+                            radius="md"
+                            className="text-base font-medium disabled:opacity-50"
+                            color="warning"
+                            fullWidth size="lg"
+                            onPress={() => {
+                                generatePaymentLink(PricingTier.Life)
+                            }}
+                        >
+                            Subscribe
+                        </Button>
+                    )}
+                </CardFooter>
+            </Card>
             <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3">
                 {TIERS.map(({value, price, perks}) => (
                     <Card key={value} shadow="none" className="w-full border-medium p-2 gap-3"

@@ -78,7 +78,7 @@ export function Nav() {
                     <NavbarBrand className="flex gap-3 items-center cursor-pointer"
                                  onClick={() => router.actions.push(urls.home())}>
                         <BsFillFileEarmarkSpreadsheetFill className="text-3xl"/>
-                        <Badge content="Beta!" disableOutline size="lg" color="primary" placement="top-right"
+                        <Badge content="Beta" disableOutline size="lg" color="primary" placement="top-right"
                                classNames={{badge: "sm:block hidden top-2 px-2 py-1 tracking-wider font-semibold text-xs -right-3 rotate-[20deg]"}}>
                             <p className="sm:block hidden font-bold text-3xl text-inherit">Sheets to Dashboard</p>
                             <p className="sm:hidden block font-bold text-3xl text-inherit">S2D</p>

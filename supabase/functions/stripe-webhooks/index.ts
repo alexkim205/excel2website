@@ -47,10 +47,33 @@ serve(async (req) => {
 
     const supabase = createSupabaseClient();
     const dataObject = receivedEvent?.data?.object
-    const userId = dataObject?.description;
+    const userId = dataObject?.description ?? dataObject?.metadata?.user;
     const productId = dataObject?.items?.data?.[0]?.plan?.product
 
-    if (["customer.subscription.created", "customer.subscription.deleted", "customer.subscription.updated"].includes(receivedEvent.type)) {
+    // TODO: remove this once lifetime promo ends
+    if (receivedEvent.type === "checkout.session.completed" && dataObject?.metadata?.plan === "life") {
+        console.log(`🔔 Event received: ${receivedEvent.type} ${receivedEvent.id}`)
+
+        // Temporary Lifetime plan
+        if (!userId) {
+            return new Response(JSON.stringify({error: 'Webhook event is missing user id metadata'}), {
+                headers: corsHeaders,
+                status: 400,
+            })
+        }
+        const {error: updateUserPlanError} = await supabase.auth.admin.updateUserById(userId, {
+            user_metadata: {
+                stripe_customer: dataObject.customer,
+                plan: "life"
+            }
+        })
+        if (updateUserPlanError) {
+            return new Response(JSON.stringify({error: 'Error updating user plan'}), {
+                headers: corsHeaders,
+                status: 400,
+            })
+        }
+    } else if (["customer.subscription.created", "customer.subscription.deleted", "customer.subscription.updated"].includes(receivedEvent.type)) {
         console.log(`🔔 Event received: ${receivedEvent.type} ${receivedEvent.id}`)
         if (!userId || !productId) {
             return new Response(JSON.stringify({error: 'Webhook event is missing user/product id metadata'}), {
