@@ -251,7 +251,7 @@ export function AuthSwitchComponent(logicProps: AuthFormLogicProps) {
                                     )}>
                                     <div
                                         className="text-xs underline-offset-[3px] text-default-500 underline decoration-dashed">
-                                        What does linking do?
+                                        What does linking your account do?
                                     </div>
                                 </Tooltip>
                             </div>
