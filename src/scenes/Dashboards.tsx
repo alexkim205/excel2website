@@ -32,7 +32,7 @@ function Dashboards() {
                     <div>
                         <Button as={Link} onPress={() => linkedAccountsModalDisclosureProps.onOpen()}
                                 color="primary" size="lg" radius="md"
-                                className="h-10 px-4 font-medium min-w-fit"
+                                className="font-medium"
                                 startContent={<LuPlus className="text-xl"/>}
                         >
                             Add data sources
