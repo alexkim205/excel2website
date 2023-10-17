@@ -150,10 +150,9 @@ export function PaywallBlurb() {
         <div className="flex flex-col gap-4 leading-relaxed">
             <p className="font-normal mb-2">Hi 👋 this is Alex, the solo founder of Sheets to
                 Dashboard. I initially made this product to solve a problem I was running into, and was
-                floored by the positive feedback I got when I released the beta. I'd love to keep
+                floored by the positive feedback I got when I released the beta. At the end of the day, I'd like to keep
                 this product free, however with server/api/data/domain/email costs (and my own bills to
-                pay 🫠), I have concerns about sustaining this product and its growth if it remains
-                entirely free.</p>
+                pay 🫠), I cannot sustain this product and its growth if it remains entirely free.</p>
             <p className="font-normal mb-2"><span className="font-semibold">There are paid tiers, but there will always be a freemium
                                 tier for Sheets to Dashboard</span>, which at its bare minimum lets you create an
                 unlimited amount of offline
@@ -178,11 +177,11 @@ export function PaywallTiers() {
     return (
         <>
             {/* TODO: Remove once lifetime deal is over */}
-            <Card key="lifetime" shadow="none" className="w-full shrink-0 border-medium p-2 gap-3"
+            <Card key="lifetime" shadow="none" className="w-full shrink-0 border-medium mb-3 p-2 gap-3"
                   classNames={{body: "p-0", footer: "p-0"}}>
                 <CardHeader
                     className="text-2xl flex flex-col gap-2 font-bold text-center justify-center bg-warning py-5 px-3 rounded-medium">
-                    Lifetime
+                    Limited Lifetime Deal
                     <div className="flex flex-row gap-1 text-2xl">
                         One time $20 payment
                     </div>
@@ -230,7 +229,7 @@ export function PaywallTiers() {
                     )}
                 </CardFooter>
             </Card>
-            <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3">
+            <div className="grid sm:grid-cols-2 grid-cols-1 gap-3">
                 {TIERS.map(({value, price, perks}) => (
                     <Card key={value} shadow="none" className="w-full border-medium p-2 gap-3"
                           classNames={{body: "p-0", footer: "p-0"}}>

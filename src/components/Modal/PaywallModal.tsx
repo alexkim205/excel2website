@@ -1,14 +1,10 @@
 import {Divider, Modal, ModalBody, ModalContent, ModalHeader} from "@nextui-org/react";
 import {PaywallBlurb, PaywallTiers} from "./PublishModal";
+import {UseDisclosureReturn} from "@nextui-org/use-disclosure";
 
-export interface PaywallModalProps {
-    open: boolean,
-    setOpen: (open: boolean) => void
-}
-
-export function PaywallModal({open, setOpen}:PaywallModalProps) {
+export function PaywallModal({isOpen, onClose}:UseDisclosureReturn) {
     return (
-        <Modal size="4xl" isOpen={open} onClose={() => setOpen(false)}
+        <Modal size="3xl" isOpen={isOpen} onClose={onClose}
                scrollBehavior="inside">
             <ModalContent>
                 <ModalHeader className="flex-col items-center justify-center">
@@ -16,8 +12,14 @@ export function PaywallModal({open, setOpen}:PaywallModalProps) {
                 </ModalHeader>
                 <Divider/>
                 <ModalBody>
-                    <PaywallBlurb/>
-                    <PaywallTiers/>
+                    <div className="flex sm:flex-row flex-col-reverse gap-6">
+                        <div className="sm:w-1/2 w-full">
+                            <PaywallTiers/>
+                        </div>
+                        <div className="sm:w-1/2 w-full">
+                            <PaywallBlurb/>
+                        </div>
+                    </div>
                 </ModalBody>
             </ModalContent>
         </Modal>

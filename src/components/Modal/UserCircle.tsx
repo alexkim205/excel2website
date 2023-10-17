@@ -20,7 +20,7 @@ import {LinkedAccountContent} from "./LinkedAccountsModal";
 
 export function UserCircle() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
-    const {isOpen: isPublishModalOpen, onClose: closePublishModal, onOpen: openPublishModal} = useDisclosure()
+    const paywallModalDisclosureProps = useDisclosure()
     const {user, gravatarLink, billingPortalLinkLoading, billingPortalLink, plan} = useValues(userLogic)
 
     const currentTier = TIERS_WITH_LIFE.find(({value}) => value === plan)
@@ -58,7 +58,7 @@ export function UserCircle() {
                                             isLoading={billingPortalLinkLoading} isDisabled={billingPortalLinkLoading}
                                             onPress={() => {
                                                 if (plan === PricingTier.Free) {
-                                                    openPublishModal()
+                                                    paywallModalDisclosureProps.onOpen()
                                                     return
                                                 }
                                                 if (billingPortalLink) {
@@ -82,13 +82,7 @@ export function UserCircle() {
                     )}
                 </ModalContent>
             </Modal>
-            <PaywallModal open={isPublishModalOpen} setOpen={(open) => {
-                if (open) {
-                    openPublishModal()
-                } else {
-                    closePublishModal()
-                }
-            }}/>
+            <PaywallModal {...paywallModalDisclosureProps}/>
         </>
     )
 }

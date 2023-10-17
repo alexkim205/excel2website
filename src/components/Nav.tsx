@@ -9,8 +9,7 @@ import {
     NavbarItem,
     NavbarMenu,
     NavbarMenuItem,
-    NavbarMenuToggle,
-    useDisclosure
+    NavbarMenuToggle, useDisclosure,
 } from "@nextui-org/react";
 import {useActions, useValues} from "kea";
 import {userLogic} from "../logics/userLogic";
@@ -21,15 +20,14 @@ import {UserCircle} from "./Modal/UserCircle";
 import {sceneLogic} from "../logics/sceneLogic";
 import {useState} from "react";
 import clsx from "clsx";
-import {LinkedAccountsModal} from "./Modal/LinkedAccountsModal";
-import {LuPlus} from "react-icons/lu";
+import {PaywallModal} from "./Modal/PaywallModal";
 
 export function Nav() {
     const {scene} = useValues(sceneLogic)
     const {user} = useValues(userLogic)
     const {signOut} = useActions(userLogic)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const linkedAccountsModalDisclosureProps = useDisclosure()
+    const paywallModalDisclosureProps = useDisclosure()
     const isAuthPage = [SceneKey.SignIn, SceneKey.SignUp, SceneKey.ForgotPassword, SceneKey.ResetPassword].includes(scene)
     const isPrivatePage = [SceneKey.Dashboard, SceneKey.Dashboards].includes(scene)
     const menuItems = [
@@ -131,13 +129,10 @@ export function Nav() {
                                             Logout
                                         </Button>
                                     </NavbarItem>
-                                    <NavbarItem className="sm:flex hidden">
-                                        <Button as={Link} onPress={() => linkedAccountsModalDisclosureProps.onOpen()}
-                                                color="primary" size="lg" radius="sm"
-                                                className="h-10 px-4 font-medium min-w-fit"
-                                                endContent={<LuPlus className="text-xl"/>}
-                                        >
-                                            Add Data
+                                    <NavbarItem>
+                                        <Button as={Link} onPress={() => paywallModalDisclosureProps.onOpen()} color="warning" size="lg" radius="sm"
+                                                className="h-10 px-4 font-medium min-w-fit">
+                                            Upgrade for life
                                         </Button>
                                     </NavbarItem>
                                     <NavbarItem>
@@ -185,7 +180,7 @@ export function Nav() {
                     ))}
                 </NavbarMenu>
             </Navbar>
-            <LinkedAccountsModal {...linkedAccountsModalDisclosureProps}/>
+            <PaywallModal {...paywallModalDisclosureProps}/>
         </>
     )
 }
