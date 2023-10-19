@@ -20,8 +20,9 @@ export const publicDashboardItemLogic = kea<publicDashboardItemLogicType>([
             fetchData: async (_, breakpoint) => {
                 // Make api call
                 await breakpoint(100)
-                const {data, error} = await supabase.functions.invoke('fetch-chart-data', {
+                const {data, error} = await supabase.functions.invoke('root-function', {
                     body: {
+                        functionName: "fetch-chart-data",
                         chart: props.chart
                     }
                 })

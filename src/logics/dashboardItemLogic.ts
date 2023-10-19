@@ -13,7 +13,6 @@ import {toast} from "react-toastify";
 import {v4 as uuidv4} from "uuid";
 import {findFirstLinkedProvider, generateEmptyDashboardItem, parseWorkbookUrlAndGetId} from "../utils/utils";
 import merge from "lodash.merge";
-import {api} from "../utils/api";
 import type {User} from "@supabase/supabase-js";
 
 export interface DashboardItemLogicProps {
@@ -50,10 +49,13 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                     return
                 }
                 await breakpoint(100)
-                const {data, error} = await api.fetchSheetData({
-                    chart: {
-                        ...values.localMergedChart,
-                        user: values.user.user.id// make sure user gets injected even on new items
+                const {data, error} = await supabase.functions.invoke('root-function', {
+                    body: {
+                        functionName: 'fetch-chart-data',
+                        chart: {
+                            ...values.localMergedChart,
+                            user: values.user.user.id, // make sure user gets injected even on new items
+                        }
                     }
                 })
                 breakpoint()

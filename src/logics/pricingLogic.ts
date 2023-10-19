@@ -53,8 +53,9 @@ export const pricingLogic = kea<pricingLogicType>([
 ])
 
 export async function _generatePaymentLink(plan: PricingTier, session: Session): Promise<string> {
-    const {data, error} = await supabase.functions.invoke("create-payment-link", {
+    const {data, error} = await supabase.functions.invoke("root-function", {
         body: {
+            functionName: "create-payment-link",
             plan,
             user: session.user.id,
             redirectUrl: window.location.href
@@ -72,8 +73,9 @@ export async function _generateBillingPortalLink(session: Session): Promise<stri
     if (!session.user.user_metadata.stripe_customer) {
         return ""
     }
-    const {data, error} = await supabase.functions.invoke("create-billing-portal-link", {
+    const {data, error} = await supabase.functions.invoke("root-function", {
         body: {
+            functionName: "create-billing-portal-link",
             customer: session.user.user_metadata.stripe_customer,
             redirectUrl: window.location.href
         }

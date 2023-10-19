@@ -7,3 +7,4 @@
 - Add raw data input
 - Dummy data to get started
 - Refactor edge functions to not invoke each other
+- Migrate from Resend to SES

@@ -82,8 +82,9 @@ export const userLogic = kea<userLogicType>([
                 return
             }
             breakpoint()
-            const {error} = await supabase.functions.invoke("link-account", {
+            const {error} = await supabase.functions.invoke("root-function", {
                 body: {
+                    functionName: "link-account",
                     from_email: values.user.user.email,
                     to_email: toEmail
                 }
@@ -112,8 +113,9 @@ export const userLogic = kea<userLogicType>([
             }
             let nextUserMetadata = {}
             if (azureRefreshToken) {
-                const {data, error} = await supabase.functions.invoke("refresh-token", {
+                const {data, error} = await supabase.functions.invoke("root-function", {
                     body: {
+                        functionName: "refresh-token",
                         refreshToken: azureRefreshToken,
                         provider: Provider.Azure
                     }
@@ -124,8 +126,9 @@ export const userLogic = kea<userLogicType>([
                 nextUserMetadata = {...nextUserMetadata, ...generateUserMetadata(data)}
             }
             if (googleRefreshToken) {
-                const {data, error} = await supabase.functions.invoke("refresh-token", {
+                const {data, error} = await supabase.functions.invoke("root-function", {
                     body: {
+                        functionName: "refresh-token",
                         refreshToken: googleRefreshToken,
                         provider: Provider.Google
                     }
@@ -150,7 +153,11 @@ export const userLogic = kea<userLogicType>([
             }
             // Get full metadata of all linked accounts
             await breakpoint(1)
-            const {data, error} = await supabase.functions.invoke("fetch-user-metadata")
+            const {data, error} = await supabase.functions.invoke("root-function", {
+                body: {
+                    functionName: "fetch-user-metadata"
+                }
+            })
             if (error) {
                 throw new Error(error.message)
             }

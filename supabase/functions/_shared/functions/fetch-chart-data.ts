@@ -1,34 +1,26 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {serve} from "https://deno.land/std@0.168.0/http/server.ts"
+import {corsHeaders} from "../cors.ts";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {corsHeaders} from "../_shared/cors.ts";
+import {createSupabaseClient} from "../supabase.ts";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {createSupabaseClient} from "../_shared/supabase.ts";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import {parseWorkbookUrlAndGetId} from "../_shared/utils.ts";
+import {parseWorkbookUrlAndGetId} from "../utils.ts";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import merge from "lodash.merge";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {adminFetchUserMetadata} from "../_shared/admin-fetch-user-metadata.ts";
+import {adminFetchUserMetadata} from "../admin-fetch-user-metadata.ts";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const GOOGLE_API_KEY = Deno.env.get('VITE_SUPABASE_AUTH_GOOGLE_REST_API_KEY') ?? ''
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-serve(async (req) => {
-    if (req.method === 'OPTIONS') {
-        return new Response('ok', {headers: corsHeaders})
-    }
 
-    const {chart} = await req.json()
+export async function fetchChartData(body: Record<string, any>) {
+    const {chart} = body
     const supabase = createSupabaseClient()
 
     // Fetch user's refresh
@@ -48,7 +40,6 @@ serve(async (req) => {
         })
     }
     const userData = merge({}, _userData, {user: {user_metadata: fetchMetadataData}})
-    console.log("USER DATA", userData)
 
     // Fetch graph data
     const range = chart?.data?.dataRange
@@ -90,8 +81,9 @@ serve(async (req) => {
     }
 
     // Refresh token
-    const {data: refreshTokenData, error: refreshTokenError} = await supabase.functions.invoke('refresh-token', {
+    const {data: refreshTokenData, error: refreshTokenError} = await supabase.functions.invoke('root-function', {
         body: {
+            functionName: 'refresh-token',
             provider,
             refreshToken: userData.user.user_metadata?.[provider]?.provider_refresh_token
         }
@@ -175,10 +167,4 @@ serve(async (req) => {
         }),
         {headers: corsHeaders},
     )
-})
-
-// To invoke:
-// curl -i --location --request POST 'http://localhost:54321/functions/v1/' \
-//   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-//   --header 'Content-Type: application/json' \
-//   --data '{"name":"Functions"}'
+}
