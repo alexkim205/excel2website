@@ -48,11 +48,14 @@ export function DataSelectModal({props}: {
         synced,
         data,
         chartLoading,
-        parsedWorkbookId
+        parsedWorkbookId,
+        isDemoDashboard
     } = useValues(logic)
     const {setOpen, setLocalChart, fetchData, saveThisChart, deleteThisChart} = useActions(logic)
     const [dataTableTab, setDataTableTab] = useState<PanelTab>(PanelTab.Chart)
     const linkedAccountsModalDisclosureProps = useDisclosure()
+
+    console.log("DEMO", isDemoDashboard)
 
     const ThisChartIcon = graphTypeTabs[localMergedChart.data.type].Icon
     const renderChartInputFields = () => <>
@@ -145,9 +148,13 @@ export function DataSelectModal({props}: {
                                             <h2 className="text-lg font-bold">Data</h2>
                                             <Select placeholder="Data type" aria-label="Data type"
                                                     labelPlacement="outside" label="Data type"
+                                                    isDisabled={isDemoDashboard}
                                                     startContent={<MdGridOn className="text-lg"/>}
                                                     selectedKeys={new Set(localMergedChart?.data?.srcProvider ? [String(localMergedChart.data.srcProvider)] : [])}
                                                     onSelectionChange={(keys) => {
+                                                        if (isDemoDashboard) {
+                                                            return
+                                                        }
                                                         const nextProvider = Array.from(keys)?.[0] ? String(Array.from(keys)[0]) as Provider : undefined
                                                         if (!nextProvider) {
                                                             return
@@ -173,6 +180,7 @@ export function DataSelectModal({props}: {
                                                    onValueChange={(value) => setLocalChart({data: {srcUrl: value}})}
                                                    isClearable
                                                    label="Sheet URL"
+                                                   isDisabled={isDemoDashboard}
                                                    labelPlacement="outside"
                                                    size="md"
                                                    radius="sm" type="text"
@@ -187,6 +195,7 @@ export function DataSelectModal({props}: {
                                                    isClearable
                                                    label="Cell range"
                                                    labelPlacement="outside"
+                                                   isDisabled={isDemoDashboard}
                                                    size="md"
                                                    radius="sm" type="text"
                                                    classNames={{
@@ -203,11 +212,11 @@ export function DataSelectModal({props}: {
                                                         <MdOutlineSync className="text-xl"/>}
                                                 color={!syncable ? "danger" : synced ? "default" : "primary"}
                                                 isLoading={dataLoading}
-                                                disabled={!(!synced && syncable)}
+                                                disabled={isDemoDashboard || !(!synced && syncable)}
                                                 onClick={() => {
                                                     fetchData({})
                                                 }}>
-                                                {!syncable ? "Check data setup" : synced ? "Up to date" : "Sync"}
+                                                {isDemoDashboard ? "Using demo data" : !syncable ? "Check data setup" : synced ? "Up to date" : "Sync"}
                                             </Button>
                                             <Divider/>
                                             <h2 className="text-lg font-bold">Chart</h2>
@@ -327,10 +336,10 @@ export function DataSelectModal({props}: {
                                         Cancel
                                     </Button>
                                     <Button className="font-semibold disabled:cursor-not-allowed disabled:opacity-60"
-                                            color="primary" onPress={() => synced && syncable && saveThisChart()}
+                                            color="primary" onPress={() => !isDemoDashboard && synced && syncable && saveThisChart()}
                                             isLoading={chartLoading}
-                                            disabled={!(synced && syncable)}>
-                                        Save{isNew ? "" : " changes"}
+                                            disabled={isDemoDashboard || !(synced && syncable)}>
+                                        {isDemoDashboard ? "Save disabled in demo mode" : `Save${isNew ? "" : " changes"}`}
                                     </Button>
                                 </div>
                             </ModalFooter>

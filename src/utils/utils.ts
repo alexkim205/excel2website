@@ -21,11 +21,11 @@ export function generateEmptyDashboardData(id: DashboardDataType["id"]): Dashboa
     }
 }
 
-export function generateEmptyDashboardItem(id: DashboardItemDataType["id"], defaultProvider: Provider): DashboardItemDataType {
+export function generateEmptyDashboardItem(id: DashboardItemDataType["id"], defaultProvider: Provider, defaultUrl?: string): DashboardItemDataType {
     return {
         id,
         type: ChartPresetType.BasicBar,
-        srcUrl: "",
+        srcUrl: defaultUrl ?? "",
         srcProvider: defaultProvider,
         dataRange: "'Sheet1'!A1:B17",
         coordinates: {

@@ -1,7 +1,9 @@
 import {urlToAction} from "kea-router";
-import {actions, afterMount, kea, path, reducers} from "kea";
-import {SceneKey, urlsToScenes} from "../utils/routes";
+import {actions, afterMount, connect, kea, path, reducers} from "kea";
+import {SceneKey, urls, urlsToScenes} from "../utils/routes";
 import type {sceneLogicType} from "./sceneLogicType";
+import {userLogic} from "./userLogic";
+import {demoData} from "../components/Demo/demo.data";
 
 export const sceneLogic = kea<sceneLogicType>([
     path(["src", "routerLogic"]),
@@ -10,6 +12,9 @@ export const sceneLogic = kea<sceneLogicType>([
             scene,params
         }),
         setDomain: (domain: string | null) => ({domain})
+    }),
+    connect({
+        actions: [userLogic, ["setUser"]]
     }),
     reducers({
         scene: [
@@ -34,7 +39,15 @@ export const sceneLogic = kea<sceneLogicType>([
     urlToAction(({ actions }) => {
         return Object.fromEntries(
             Object.entries(urlsToScenes).map(([path, scene]) => {
-                return [path, (params) => actions.setScene(scene as SceneKey, params as Record<string, string>)];
+                return [path, (params) => {
+                    // set and unset demo user depending on scene
+                    if (path === urls.demo_dashboard()) {
+                        actions.setUser(demoData.user)
+                    } else {
+                        actions.setUser(null)
+                    }
+                    actions.setScene(scene as SceneKey, params as Record<string, string>)
+                }];
             })
         );
     }),

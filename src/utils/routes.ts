@@ -1,6 +1,7 @@
 export enum SceneKey {
     Home = "home",
     Dashboard = "dashboard",
+    DemoDashboard = 'demo_dashboard',
     PublicDashboard = "public_dashboard",
     Admin = 'admin',
     Pricing = 'pricing',
@@ -18,6 +19,7 @@ export const urls: Record<SceneKey, (a?: any) => string> = {
     [SceneKey.Home]: () => '/',
     [SceneKey.Dashboards]: () => '/dashboards',
     [SceneKey.Dashboard]: (id) => `/dashboard/${id}`,
+    [SceneKey.DemoDashboard]: () => '/demo-dashboard/edit',
     [SceneKey.PublicDashboard]: (subdomain) => `https://${subdomain}.sheetstodashboard.com`,
     [SceneKey.Admin]: () => '/admin',
     [SceneKey.Pricing]: () => '/pricing',
@@ -31,6 +33,7 @@ export const urls: Record<SceneKey, (a?: any) => string> = {
 export const urlsToScenes: Record<string, SceneKey> = {
     [urls.home()]: SceneKey.Home,
     [urls.dashboard(":id")]: SceneKey.Dashboard,
+    [urls.demo_dashboard()]: SceneKey.DemoDashboard,
     [urls.admin()]: SceneKey.Admin,
     [urls.pricing()]: SceneKey.Pricing,
     [urls.trust()]: SceneKey.Trust,

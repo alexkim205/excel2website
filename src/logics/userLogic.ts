@@ -178,6 +178,7 @@ export const userLogic = kea<userLogicType>([
                     return
                 }
                 if (authState === "USER_UPDATED") {
+                    console.log("SESSION", session)
                     actions.setUser(session, true);
                 }
             }

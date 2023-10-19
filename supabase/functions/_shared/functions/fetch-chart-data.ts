@@ -13,6 +13,9 @@ import merge from "lodash.merge";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import {adminFetchUserMetadata} from "../admin-fetch-user-metadata.ts";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import {demoData} from "../demo.data.ts";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -21,6 +24,17 @@ const GOOGLE_API_KEY = Deno.env.get('VITE_SUPABASE_AUTH_GOOGLE_REST_API_KEY') ??
 
 export async function fetchChartData(body: Record<string, any>) {
     const {chart} = body
+
+    // If demo data return static data
+    if (chart.data.srcUrl === "https://onedrive.live.com/edit.aspx?resid=demo") {
+        return new Response(
+            JSON.stringify({
+                values: demoData.values
+            }),
+            {headers: corsHeaders},
+        )
+    }
+
     const supabase = createSupabaseClient()
 
     // Fetch user's refresh
@@ -31,9 +45,7 @@ export async function fetchChartData(body: Record<string, any>) {
             status: 400,
         })
     }
-    // console.log("ERROR", _userData)
     const [fetchMetadataOk, fetchMetadataData] = await adminFetchUserMetadata(_userData.user, supabase)
-    // console.log("ERROR", _userData, fetchMetadataOk, fetchMetadataData)
 
     if (!fetchMetadataOk) {
         return new Response(JSON.stringify({error: fetchMetadataData.error.message}), {

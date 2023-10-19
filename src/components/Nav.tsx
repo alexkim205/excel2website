@@ -139,7 +139,7 @@ export function Nav() {
                                         <UserCircle/>
                                     </NavbarItem>
                                 </>
-                            ) : <>
+                            ) : scene !== SceneKey.DemoDashboard && <>
                                 <NavbarItem className="hidden sm:flex">
                                     <Button as={A} href={urls.dashboards()} color="primary" size="lg" radius="sm"
                                             className="h-10 px-4 font-medium min-w-fit">

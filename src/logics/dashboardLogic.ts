@@ -1,7 +1,7 @@
 import {actions, afterMount, connect, defaults, kea, key, listeners, path, props, reducers, selectors} from "kea";
 import {loaders} from "kea-loaders";
 import {userLogic} from "./userLogic";
-import {DashboardItemType, DashboardType, PublishStatus, SupabaseTable, WorkbookType} from "../utils/types";
+import {DashboardItemType, DashboardType, PublishStatus, SupabaseTable} from "../utils/types";
 import merge from "lodash.merge"
 import type {DeepPartial} from "kea-forms/lib/types";
 import type {dashboardLogicType} from "./dashboardLogicType";
@@ -32,7 +32,6 @@ export const dashboardLogic = kea<dashboardLogicType>([
     defaults(() => ({
         dashboard: null as DashboardType | null,
         charts: [] as DashboardItemType[],
-        workbooks: [] as WorkbookType[],
         childChartsLoading: {} as Record<DashboardItemType["id"], boolean>,
         publishStatus: PublishStatus.Online as PublishStatus,
     })),
@@ -191,7 +190,6 @@ export const dashboardLogic = kea<dashboardLogicType>([
     afterMount(({actions, values, props}) => {
         if (values.user) {
             actions.loadDashboard({})
-            // actions.loadWorkbooks({})
         }
 
         // Populate dashboard with first new chart

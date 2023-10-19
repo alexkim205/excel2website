@@ -34,7 +34,7 @@ function Home() {
                                     className="h-10 px-4 font-medium">
                                 Go to Dashboard
                             </Button>
-                            <Button as={A} target="_blank" href="https://demo.sheetstodashboard.com" color="default" size="lg" radius="sm"
+                            <Button as={A} href={urls.demo_dashboard()} color="default" size="lg" radius="sm"
                                     className="h-10 px-4 font-medium bg-black text-white">
                                 Live demo
                             </Button>
@@ -46,7 +46,7 @@ function Home() {
                                     endContent={<FiPlus className="text-xl"/>}>
                                 Make a dashboard
                             </Button>
-                            <Button as={A} target="_blank" href="https://demo.sheetstodashboard.com" color="default" size="lg" radius="sm"
+                            <Button as={A} href={urls.demo_dashboard()} color="default" size="lg" radius="sm"
                                     className="h-10 px-4 font-medium bg-black text-white">
                                 Live demo
                             </Button>

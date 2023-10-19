@@ -14,6 +14,8 @@ import {v4 as uuidv4} from "uuid";
 import {findFirstLinkedProvider, generateEmptyDashboardItem, parseWorkbookUrlAndGetId} from "../utils/utils";
 import merge from "lodash.merge";
 import type {User} from "@supabase/supabase-js";
+import {router} from "kea-router";
+import {urls} from "../utils/routes";
 
 export interface DashboardItemLogicProps {
     id: DashboardItemType["id"],
@@ -75,6 +77,11 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                 if (!values.syncable || !values.user) {
                     return null
                 }
+                if (values.isDemoDashboard) {
+                    actions.setOpen(false)
+                    return null
+                }
+
                 await breakpoint(100)
                 // generate new id if this is a new dashboard item
                 const newId = values.isNew ? uuidv4() : props.id
@@ -83,22 +90,25 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
                     x: 0,
                     y: 0
                 } : values.localMergedChart.data.coordinates[size]
+
+                const dataToUpsert = {
+                    id: newId,
+                    data: {
+                        ...values.localMergedChart.data,
+                        coordinates: {
+                            sm: findNewCoordinates("sm"),
+                            md: findNewCoordinates("md"),
+                            lg: findNewCoordinates("lg")
+                        },
+                        id: newId
+                    },
+                    dashboard: props.dashboardProps.id,
+                    user: values.user?.user?.id
+                }
+
                 const {data, error} = await supabase
                     .from(SupabaseTable.DashboardItems)
-                    .upsert({
-                        id: newId,
-                        data: {
-                            ...values.localMergedChart.data,
-                            coordinates: {
-                                sm: findNewCoordinates("sm"),
-                                md: findNewCoordinates("md"),
-                                lg: findNewCoordinates("lg")
-                            },
-                            id: newId
-                        },
-                        dashboard: props.dashboardProps.id,
-                        user: values.user?.user?.id
-                    }).select().maybeSingle()
+                    .upsert(dataToUpsert).select().maybeSingle()
                 breakpoint()
                 if (error) {
                     throw new Error(error.message)
@@ -184,6 +194,10 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
         }
     })),
     selectors(() => ({
+        isDemoDashboard: [
+            () => [router.selectors.location],
+            ({pathname}) => pathname.startsWith(urls.demo_dashboard())
+        ],
         isNew: [
             () => [(_, props) => props.id, (_, props) => props.dashboardProps.newDashboardItemId],
             (thisId, newDashboardItemId) => thisId === newDashboardItemId
@@ -235,7 +249,7 @@ export const dashboardItemLogic = kea<dashboardItemLogicType>([
         ],
     })),
     afterMount(({props, actions}) => {
-        if (props.autoSync) {
+        if (props.autoSync || router.values.location.pathname.startsWith(urls.demo_dashboard())) {
             actions.fetchData({})
         }
     })

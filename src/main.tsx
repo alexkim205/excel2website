@@ -5,11 +5,11 @@ import {NextUIProvider} from "@nextui-org/react";
 import {Slide, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
 import {resetContext} from 'kea'
-import {subscriptionsPlugin} from 'kea-subscriptions'
 import {createPostHogClient} from "./utils/analytics";
+import {localStoragePlugin} from "kea-localstorage";
 
 resetContext({
-    plugins: [subscriptionsPlugin],
+    plugins: [localStoragePlugin],
 })
 
 createPostHogClient()
