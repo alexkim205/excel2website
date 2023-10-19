@@ -6,7 +6,7 @@ import {corsHeaders} from "../cors.ts";
 import {createSupabaseClient} from "../supabase.ts";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {parseWorkbookUrlAndGetId} from "../utils.ts";
+import {parseWorkbookUrlAndGetId, refreshToken} from "../utils.ts";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import merge from "lodash.merge";
@@ -25,14 +25,16 @@ export async function fetchChartData(body: Record<string, any>) {
 
     // Fetch user's refresh
     const {data: _userData, error} = await supabase.auth.admin.getUserById(chart.user)
-    console.log("FETCH USER", _userData, error)
     if (error) {
         return new Response(JSON.stringify({error: error.message}), {
             headers: corsHeaders,
             status: 400,
         })
     }
-    const [fetchMetadataOk, fetchMetadataData] = await adminFetchUserMetadata(chart.user)
+    // console.log("ERROR", _userData)
+    const [fetchMetadataOk, fetchMetadataData] = await adminFetchUserMetadata(_userData.user, supabase)
+    // console.log("ERROR", _userData, fetchMetadataOk, fetchMetadataData)
+
     if (!fetchMetadataOk) {
         return new Response(JSON.stringify({error: fetchMetadataData.error.message}), {
             headers: corsHeaders,
@@ -81,20 +83,23 @@ export async function fetchChartData(body: Record<string, any>) {
     }
 
     // Refresh token
-    const {data: refreshTokenData, error: refreshTokenError} = await supabase.functions.invoke('root-function', {
-        body: {
-            functionName: 'refresh-token',
-            provider,
-            refreshToken: userData.user.user_metadata?.[provider]?.provider_refresh_token
-        }
-    })
 
-    if (refreshTokenError) {
-        return new Response(JSON.stringify({error: refreshTokenError.message}), {
+    let refreshTokenData
+    try {
+        refreshTokenData = await refreshToken[provider as 'google' | 'azure'](userData.user.user_metadata?.[provider]?.provider_refresh_token)
+    } catch (e: any) {
+        return new Response(JSON.stringify({error: e.message}), {
             headers: corsHeaders,
             status: 400,
         })
     }
+    if (!refreshTokenData) {
+        return new Response(JSON.stringify({error: "Refresh token data was empty."}), {
+            headers: corsHeaders,
+            status: 400,
+        })
+    }
+
     // Update metadata with new access and refresh tokens
     const {error: updateTokensInUserError} = await supabase.auth.admin.updateUserById(chart.user,
         {

@@ -1,28 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {createSupabaseClient} from "./supabase.ts";
+import {User} from "@supabase/supabase-js";
 
-export async function adminFetchUserMetadata(userId: string): Promise<[boolean, Record<string, any>]> {
-    // Must be authorized user
-    const supabase = createSupabaseClient()
-    // Now we can get the session or user object
-    const {
-        data: { user }, error: getUserError
-    } = await supabase.auth.admin.getUserById(userId)
-
-    if (getUserError) {
-        return [false, {
-            error: getUserError
-        }]
-    }
-    if (!user) {
-        return [false, {
-            error: new Error(`User does not exist.`)
-        }]
-    }
-
+export async function adminFetchUserMetadata(user: User, serviceSupabase: any): Promise<[boolean, Record<string, any>]> {
     // Get all linked email addresses
-    const {data: getLinkedEmailsData, error: getLinkedEmailsError} = await supabase
+    const {data: getLinkedEmailsData, error: getLinkedEmailsError} = await serviceSupabase
         .from("linked_accounts")
         .select("to_email")
         .eq("from_email", user.email)
@@ -36,7 +18,7 @@ export async function adminFetchUserMetadata(userId: string): Promise<[boolean, 
     // Get user metadata of all linked accounts
     let linkedMetadata: Record<string, any>[] = []
     const getIdsPromises = idsToFetch.map(async (email: string) => {
-        const {data: getUserIdByEmailData, error: getUserIdByEmailError} = await supabase.rpc("get_user_id_by_email", {email})
+        const {data: getUserIdByEmailData, error: getUserIdByEmailError} = await serviceSupabase.rpc("get_user_id_by_email", {email})
         if (getUserIdByEmailError) {
             throw new Error(`Getting user id by email: ${getUserIdByEmailError.message}`)
         }
@@ -45,7 +27,7 @@ export async function adminFetchUserMetadata(userId: string): Promise<[boolean, 
             return null
         }
         // Get user
-        const {data, error} = await supabase.auth.admin.getUserById(id)
+        const {data, error} = await serviceSupabase.auth.admin.getUserById(id)
         if (error) {
             throw new Error(`Getting user metadata: ${error.message}`)
         }
