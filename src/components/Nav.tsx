@@ -63,6 +63,8 @@ export function Nav() {
         ])
     ] as ({ label: string } & LinkProps)[]
 
+    console.log("USER", user)
+
     return (
         <>
             <Navbar onMenuOpenChange={setIsMenuOpen} position="static"

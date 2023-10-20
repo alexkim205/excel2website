@@ -14,6 +14,7 @@ export const sceneLogic = kea<sceneLogicType>([
         setDomain: (domain: string | null) => ({domain})
     }),
     connect({
+        values: [userLogic, ["user"]],
         actions: [userLogic, ["setUser"]]
     }),
     reducers({
@@ -36,14 +37,14 @@ export const sceneLogic = kea<sceneLogicType>([
             }
         ]
     }),
-    urlToAction(({ actions }) => {
+    urlToAction(({ actions, values }) => {
         return Object.fromEntries(
             Object.entries(urlsToScenes).map(([path, scene]) => {
                 return [path, (params) => {
                     // set and unset demo user depending on scene
                     if (path === urls.demo_dashboard()) {
                         actions.setUser(demoData.user)
-                    } else {
+                    } else if (values.user?.user?.email === "test@gmail.com") {
                         actions.setUser(null)
                     }
                     actions.setScene(scene as SceneKey, params as Record<string, string>)

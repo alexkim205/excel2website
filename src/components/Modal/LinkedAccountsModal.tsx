@@ -44,9 +44,9 @@ export function LinkedAccountsModal({isOpen, onOpenChange}: UseDisclosureReturn)
 
 export function LinkedAccountContent() {
     const {linkAccount} = useActions(userLogic)
-    const {user} = useValues(userLogic)
+    const {user, signInLoading} = useValues(userLogic)
 
-    const linkedAccounts: Omit<LinkedAccountRowProps, "user" | "linkAccount">[] = [
+    const linkedAccounts: Omit<LinkedAccountRowProps, "user" | "linkAccount" | "isLoading">[] = [
         {
             provider: Provider.Azure,
             label: "Microsoft Excel",
@@ -76,7 +76,7 @@ export function LinkedAccountContent() {
             <div className="flex flex-col gap-3">
                 {linkedAccounts.map((props) => (
                     <LinkedAccountRow user={user} {...props} key={props.provider}
-                                      linkAccount={linkAccount}/>
+                                      linkAccount={linkAccount} isLoading={signInLoading}/>
                 ))}
             </div>
         </div>
@@ -88,9 +88,10 @@ export interface LinkedAccountRowProps {
     label: string,
     user: Session | null,
     linkAccount: (provider: Provider, toEmail: string) => void
+    isLoading: boolean
 }
 
-export function LinkedAccountRow({provider, label, user, linkAccount}: LinkedAccountRowProps) {
+export function LinkedAccountRow({provider, label, user, linkAccount, isLoading}: LinkedAccountRowProps) {
     const linked = !!user?.user?.user_metadata?.[provider]?.provider_token
     const [linkSetupOpen, setLinkSetupOpen] = useState(!linked)
     const [email, setEmail] = useState<string>('')
@@ -105,6 +106,7 @@ export function LinkedAccountRow({provider, label, user, linkAccount}: LinkedAcc
                 onPress={() => {
                     submittable && linkAccount(provider, email)
                 }}
+                isLoading={isLoading}
                 disabled={!submittable}
         >
             Link

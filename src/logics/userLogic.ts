@@ -17,12 +17,14 @@ export const userLogic = kea<userLogicType>([
     path(["src", "logics", "userLogic"]),
     defaults(() => ({
         user: null as Session | null,
-        billingPortalLink: "" as string
+        billingPortalLink: "" as string,
+        signInLoading: false,
     })),
     actions(() => ({
         signInWithMicrosoft: true,
         signInWithGoogle: true,
         signOut: true,
+        setSignInLoading: (loading: boolean) => ({loading}),
         setUser: (user: Session | null, fetchMetadata: boolean = false) => ({user, fetchMetadata}),
         refreshToken: (provider: Provider) => ({provider}),
         linkAccount: (provider: Provider, toEmail: string) => ({provider, toEmail})
@@ -32,6 +34,9 @@ export const userLogic = kea<userLogicType>([
             setUser: (_, {user}) => user,
             signOut: () => null
         },
+        signInLoading: {
+            setSignInLoading: (_, {loading}) => loading
+        }
     })),
     loaders(({values}) => ({
         billingPortalLink: {
@@ -48,6 +53,7 @@ export const userLogic = kea<userLogicType>([
     })),
     listeners(({values, actions}) => ({
         signInWithMicrosoft: async (_, breakpoint) => {
+            actions.setSignInLoading(true)
             breakpoint()
             const {error} = await supabase.auth.signInWithOAuth({
                 provider: 'azure',
@@ -55,12 +61,13 @@ export const userLogic = kea<userLogicType>([
                     scopes: 'offline_access email Files.Read Files.Read.All',
                 },
             })
-
+            actions.setSignInLoading(false)
             if (error) {
                 throw new Error(error.message)
             }
         },
         signInWithGoogle: async (_, breakpoint) => {
+            actions.setSignInLoading(true)
             breakpoint()
             const {error} = await supabase.auth.signInWithOAuth({
                 provider: 'google',
@@ -72,7 +79,7 @@ export const userLogic = kea<userLogicType>([
                     },
                 },
             })
-
+            actions.setSignInLoading(false)
             if (error) {
                 throw new Error(error.message)
             }
@@ -81,6 +88,7 @@ export const userLogic = kea<userLogicType>([
             if (!values.user) {
                 return
             }
+            actions.setSignInLoading(true)
             breakpoint()
             const {error} = await supabase.functions.invoke("root-function", {
                 body: {
